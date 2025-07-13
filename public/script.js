@@ -40,11 +40,11 @@ navButtons.forEach(button => {
 });
 
 // 顯示"即將推出"消息的函數
+// 顯示"即將推出"消息的函數
 function showComingSoon(feature) {
-    // 隱藏所有部分
-const sections = document.querySelectorAll('.section');
-sections.forEach(section => section.classList.add('hidden'));
-
+    // 重新獲取所有部分
+    const allSections = document.querySelectorAll('.section');
+    allSections.forEach(section => section.classList.add('hidden'));
     
     // 創建或更新即將推出的部分
     let comingSoonSection = document.getElementById('coming-soon');
