@@ -1,5 +1,12 @@
 // 等待 DOM 完全載入
 // 獲取所有導航按鈕 - 使用正確的選擇器
+
+// 等待 DOM 完全載入
+// 獲取所有導航按鈕 - 使用正確的選擇器
+// 等待 DOM 完全載入
+document.addEventListener('DOMContentLoaded', function() {
+    // 獲取所有導航按鈕 - 使用正確的選擇器
+
 const navButtons  = document.querySelectorAll('.menu-item');
 const sections = document.querySelectorAll('.section');
 
@@ -98,4 +105,5 @@ navButtons.forEach(button => {
 
     // 每5秒更新一次狀態
     setInterval(updateSystemStatus, 5000);
+
 });
