@@ -323,39 +323,7 @@
             </div>
         </div>
     </div>
-
-    <script>
-        function updateModel(modelName) {
-            const button = event.target;
-            button.textContent = '更新中...';
-            button.disabled = true;
-            
-            setTimeout(() => {
-                button.textContent = '已更新';
-                button.style.background = '#3fb950';
-            }, 3000);
-        }
-        
-        async function loadStatus() {
-            try {
-                const response = await fetch('/.netlify/functions/status');
-                const data = await response.json();
-                document.getElementById('status-content').innerHTML = `
-                    <p>狀態: ${data.status}</p>
-                    <p>平台: ${data.system.platform}</p>
-                    <p>版本: ${data.system.version}</p>
-                    <p>運行時間: ${data.system.uptime}</p>
-                `;
-            } catch (error) {
-                document.getElementById('status-content').innerHTML = '<p>無法載入狀態</p>';
-            }
-        }
-        
-        loadStatus();
-        setInterval(loadStatus, 30000);
-
-<script src="script.js"></script>
+</script>  <!-- 加上這個結束標籤 -->
+    <script src="script.js"></script>
 </body>
 </html>
-      
-
