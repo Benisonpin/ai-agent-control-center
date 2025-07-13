@@ -1,6 +1,6 @@
 // 等待 DOM 完全載入
 // 獲取所有導航按鈕 - 使用正確的選擇器
-const navButtons = document.querySelectorAll('.menu-item');
+const navButtons  = document.querySelectorAll('.menu-item');
 const sections = document.querySelectorAll('.section');
 
 // 為每個導航按鈕添加點擊事件
