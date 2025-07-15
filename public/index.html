@@ -4,6 +4,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Agent 控制中心 - 進階版</title>
+
+/* 場景識別樣式 */
+.scene-modes {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.scene-mode-btn {
+    flex: 1;
+    padding: 10px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.scene-mode-btn.active,
+.scene-mode-btn:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* 物件追蹤樣式 */
+.tracking-list {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.tracking-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #334155;
+}
+
+.tracking-item:last-child {
+    border-bottom: none;
+}
+
+.tracking-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: #374151;
+}
+
+.tracking-status.active {
+    background: #10b981;
+    color: white;
+}
+
+/* 系統架構樣式 */
+.architecture-diagram {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.arch-component {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.arch-component h3 {
+    color: #3b82f6;
+    margin-bottom: 15px;
+}
+
+.arch-component ul {
+    list-style: none;
+    padding: 0;
+}
+
+.arch-component li {
+    padding: 5px 0;
+    color: #94a3b8;
+}
+
+.load-bar {
+    background: #1e293b;
+    height: 30px;
+    border-radius: 15px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.load-fill {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    color: white;
+    font-size: 12px;
+    transition: width 0.3s;
+}
+
+/* 記憶體優化樣式 */
+.memory-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 20px 0;
+}
+
+.circular-progress {
+    width: 150px;
+    height: 150px;
+    background: conic-gradient(#3b82f6 0deg, #3b82f6 259deg, #1e293b 259deg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+    position: relative;
+}
+
+.circular-progress::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: #0f172a;
+    border-radius: 50%;
+}
+
+.progress-value {
+    position: relative;
+    font-size: 32px;
+    font-weight: bold;
+    color: #3b82f6;
+}
+
+.memory-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #334155;
+}
+
+.optimization-actions {
+    margin-top: 30px;
+}
+
+.opt-button {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 20px;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.opt-button:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+/* HDR 控制樣式 */
+.hdr-settings {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.setting-group {
+    margin: 20px 0;
+}
+
+.toggle-group {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.toggle-btn.active {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.slider {
+    width: 100%;
+    margin: 10px 0;
+}
+
+.setting-select {
+    width: 100%;
+    padding: 10px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    color: #94a3b8;
+    margin-top: 10px;
+}
+
+.preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.preview-box {
+    height: 100px;
+    background: #1e293b;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.preview-box.active {
+    border-color: #3b82f6;
+    background: #1e3a8a;
+}
+
+/* 效能分析樣式 */
+.perf-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.metric-card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.metric-value {
+    font-size: 32px;
+    font-weight: bold;
+    color: #3b82f6;
+    margin: 10px 0;
+}
+
+.metric-trend {
+    font-size: 14px;
+    color: #94a3b8;
+}
+
+.metric-trend.up {
+    color: #10b981;
+}
+
+.metric-trend.down {
+    color: #ef4444;
+}
+
+.chart-placeholder {
+    height: 200px;
+    background: #1e293b;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    margin-top: 15px;
+}
+
+    
     <style>
         * {
             margin: 0;
