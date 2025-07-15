@@ -322,6 +322,249 @@
                 </div>
             </div>
         </div>
+
+
+<!-- 場景識別 Section -->
+<div id="scene-recognition" class="section hidden">
+    <h2>🎯 場景識別</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>當前場景</h3>
+            <p class="stat-value">室內辦公室</p>
+            <p class="stat-label">置信度: 94%</p>
+        </div>
+        <div class="stat-card">
+            <h3>光線條件</h3>
+            <p class="stat-value">日光燈</p>
+            <p class="stat-label">色溫: 4000K</p>
+        </div>
+        <div class="stat-card">
+            <h3>場景切換</h3>
+            <p class="stat-value">12</p>
+            <p class="stat-label">今日次數</p>
+        </div>
+        <div class="stat-card">
+            <h3>識別準確率</h3>
+            <p class="stat-value">96.5%</p>
+            <p class="stat-label">最近7天</p>
+        </div>
+    </div>
+    <div class="ota-section">
+        <h3>場景模式</h3>
+        <div class="scene-modes">
+            <button class="scene-mode-btn active">自動</button>
+            <button class="scene-mode-btn">室內</button>
+            <button class="scene-mode-btn">戶外</button>
+            <button class="scene-mode-btn">夜間</button>
+            <button class="scene-mode-btn">運動</button>
+        </div>
+    </div>
+</div>
+
+<!-- 物件追蹤 Section -->
+<div id="object-tracking" class="section hidden">
+    <h2>📍 物件追蹤</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>追蹤中物件</h3>
+            <p class="stat-value">3</p>
+            <p class="stat-label">目前活躍</p>
+        </div>
+        <div class="stat-card">
+            <h3>追蹤精度</h3>
+            <p class="stat-value">±2px</p>
+            <p class="stat-label">平均誤差</p>
+        </div>
+        <div class="stat-card">
+            <h3>處理速度</h3>
+            <p class="stat-value">18ms</p>
+            <p class="stat-label">每幀延遲</p>
+        </div>
+        <div class="stat-card">
+            <h3>丟失率</h3>
+            <p class="stat-value">0.8%</p>
+            <p class="stat-label">最近1小時</p>
+        </div>
+    </div>
+    <div class="tracking-list">
+        <h3>追蹤物件列表</h3>
+        <div class="tracking-item">
+            <span class="tracking-id">ID: 001</span>
+            <span class="tracking-type">人臉</span>
+            <span class="tracking-status active">追蹤中</span>
+        </div>
+        <div class="tracking-item">
+            <span class="tracking-id">ID: 002</span>
+            <span class="tracking-type">車輛</span>
+            <span class="tracking-status active">追蹤中</span>
+        </div>
+        <div class="tracking-item">
+            <span class="tracking-id">ID: 003</span>
+            <span class="tracking-type">行人</span>
+            <span class="tracking-status active">追蹤中</span>
+        </div>
+    </div>
+</div>
+
+<!-- 系統架構 Section -->
+<div id="system-architecture" class="section hidden">
+    <h2>🏗️ 系統架構</h2>
+    <div class="architecture-diagram">
+        <div class="arch-component">
+            <h3>前端感測器</h3>
+            <ul>
+                <li>4K CMOS 感測器</li>
+                <li>ToF 深度感測器</li>
+                <li>IMU 六軸感測器</li>
+            </ul>
+        </div>
+        <div class="arch-component">
+            <h3>AI 處理單元</h3>
+            <ul>
+                <li>神經網路加速器</li>
+                <li>DSP 處理器</li>
+                <li>GPU 運算單元</li>
+            </ul>
+        </div>
+        <div class="arch-component">
+            <h3>記憶體系統</h3>
+            <ul>
+                <li>4GB LPDDR4X</li>
+                <li>32MB SRAM</li>
+                <li>128KB L2 Cache</li>
+            </ul>
+        </div>
+    </div>
+    <div class="system-status">
+        <h3>系統負載</h3>
+        <div class="load-bar">
+            <div class="load-fill" style="width: 45%">CPU: 45%</div>
+        </div>
+        <div class="load-bar">
+            <div class="load-fill" style="width: 67%">GPU: 67%</div>
+        </div>
+        <div class="load-bar">
+            <div class="load-fill" style="width: 23%">NPU: 23%</div>
+        </div>
+    </div>
+</div>
+
+<!-- 記憶體優化 Section -->
+<div id="memory-optimization" class="section hidden">
+    <h2>💾 記憶體優化</h2>
+    <div class="memory-overview">
+        <div class="memory-chart">
+            <h3>記憶體使用率</h3>
+            <div class="circular-progress">
+                <span class="progress-value">72%</span>
+            </div>
+        </div>
+        <div class="memory-details">
+            <div class="memory-item">
+                <span>總容量</span>
+                <span>4096 MB</span>
+            </div>
+            <div class="memory-item">
+                <span>已使用</span>
+                <span>2949 MB</span>
+            </div>
+            <div class="memory-item">
+                <span>可用</span>
+                <span>1147 MB</span>
+            </div>
+            <div class="memory-item">
+                <span>快取</span>
+                <span>512 MB</span>
+            </div>
+        </div>
+    </div>
+    <div class="optimization-actions">
+        <h3>優化選項</h3>
+        <button class="opt-button">清理快取</button>
+        <button class="opt-button">壓縮紋理</button>
+        <button class="opt-button">釋放閒置記憶體</button>
+        <button class="opt-button">優化演算法</button>
+    </div>
+</div>
+
+<!-- HDR 控制 Section -->
+<div id="hdr-control" class="section hidden">
+    <h2>🌅 HDR 控制</h2>
+    <div class="hdr-settings">
+        <div class="setting-group">
+            <h3>HDR 模式</h3>
+            <div class="toggle-group">
+                <button class="toggle-btn active">開啟</button>
+                <button class="toggle-btn">關閉</button>
+            </div>
+        </div>
+        <div class="setting-group">
+            <h3>動態範圍</h3>
+            <input type="range" min="0" max="100" value="75" class="slider">
+            <span class="slider-value">75%</span>
+        </div>
+        <div class="setting-group">
+            <h3>色調映射</h3>
+            <select class="setting-select">
+                <option>自動</option>
+                <option>Reinhard</option>
+                <option>ACES</option>
+                <option>自定義</option>
+            </select>
+        </div>
+    </div>
+    <div class="hdr-preview">
+        <h3>效果預覽</h3>
+        <div class="preview-grid">
+            <div class="preview-item">
+                <div class="preview-box">SDR</div>
+                <p>標準動態範圍</p>
+            </div>
+            <div class="preview-item">
+                <div class="preview-box active">HDR</div>
+                <p>高動態範圍</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 效能分析 Section -->
+<div id="performance-analysis" class="section hidden">
+    <h2>📊 效能分析</h2>
+    <div class="perf-metrics">
+        <div class="metric-card">
+            <h3>FPS</h3>
+            <p class="metric-value">59.8</p>
+            <p class="metric-trend up">↑ 2.3%</p>
+        </div>
+        <div class="metric-card">
+            <h3>延遲</h3>
+            <p class="metric-value">12ms</p>
+            <p class="metric-trend down">↓ 8.5%</p>
+        </div>
+        <div class="metric-card">
+            <h3>吞吐量</h3>
+            <p class="metric-value">4.2GB/s</p>
+            <p class="metric-trend up">↑ 5.1%</p>
+        </div>
+        <div class="metric-card">
+            <h3>功耗</h3>
+            <p class="metric-value">3.8W</p>
+            <p class="metric-trend">— 0.0%</p>
+        </div>
+    </div>
+    <div class="perf-history">
+        <h3>24小時效能趨勢</h3>
+        <div class="chart-placeholder">
+            [效能圖表將在此顯示]
+        </div>
+    </div>
+</div>
+
+        
+
+
+        
     </div>
 </script>  <!-- 加上這個結束標籤 -->
     <script src="script.js"></script>
