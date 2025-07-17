@@ -44,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (targetSection) {
                 targetSection.style.display = 'block';
                 initializeSectionFeatures(text);
-            }
+            }else {
+                console.log('找不到對應的 section:', text);
         };
     });
     
