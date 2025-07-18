@@ -531,6 +531,16 @@
                 <div class="status-dot"></div>
             </div>
             
+                <!-- 在這裡加入 API 狀態顯示 2025-0718 --> 
+            <div class="api-status">
+                <p class="fpga-status">FPGA: 載入中...</p>
+                <p class="memory-status">記憶體: 載入中...</p>
+                <p class="ai-speed">推論速度: 載入中...</p>
+                <p class="network-latency">網路延遲: 載入中...</p>
+            </div>
+
+
+
             <div class="menu">
                 <div class="menu-item active">
                     <span>📊 系統總覽</span>
@@ -870,5 +880,26 @@
    
 </script>  <!-- 加上這個結束標籤 -->
     <script src="script.js"></script>
+
+
+   <!-- 載入 API 客戶端 -->
+<script src="api-client.js"></script>
+<script>
+    // 頁面載入後測試 API
+    window.addEventListener('load', async () => {
+        console.log('頁面載入完成，開始測試 API...');
+        
+        // 測試連接
+        await cteAPI.testConnection();
+        
+        // 開始定期更新狀態（每5秒）
+        setInterval(updateSystemStatus, 5000);
+        
+        // 立即更新一次
+        updateSystemStatus();
+    });
+</script>
+    
+
 </body>
 </html>
