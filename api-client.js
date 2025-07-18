@@ -50,29 +50,25 @@ async function updateSystemStatus() {
 }
 
 // 更新儀表板顯示
+// 更新儀表板顯示
 function updateDashboard(status) {
-    // 更新 FPGA 狀態
-    const fpgaStatus = document.querySelector('.fpga-status');
-    if (fpgaStatus) {
-        fpgaStatus.textContent = `FPGA: ${status.hardware.fpga.utilization}% | ${status.hardware.fpga.temperature.toFixed(1)}°C`;
-    }
-
-    // 更新記憶體使用
-    const memoryStatus = document.querySelector('.memory-status');
-    if (memoryStatus) {
-        const memoryPercent = ((status.hardware.memory.used / status.hardware.memory.total) * 100).toFixed(1);
-        memoryStatus.textContent = `記憶體: ${memoryPercent}%`;
-    }
-
-    // 更新 AI 推論速度
-    const aiSpeed = document.querySelector('.ai-speed');
-    if (aiSpeed) {
-        aiSpeed.textContent = `${status.ai.inferenceSpeed.toFixed(1)} FPS`;
-    }
-
-    // 更新網路延遲
-    const networkLatency = document.querySelector('.network-latency');
-    if (networkLatency) {
-        networkLatency.textContent = `${status.network.latency} ms`;
+    // 更新側邊欄顯示
+    const sidebarContent = document.querySelector('.sidebar');
+    if (sidebarContent) {
+        // 找到或創建顯示元素
+        let statusDisplay = document.querySelector('.live-status');
+        if (!statusDisplay) {
+            statusDisplay = document.createElement('div');
+            statusDisplay.className = 'live-status';
+            statusDisplay.style.cssText = 'padding: 15px; color: #8899a6; font-size: 14px;';
+            sidebarContent.appendChild(statusDisplay);
+        }
+        
+        statusDisplay.innerHTML = `
+            <p>FPGA: ${status.hardware.fpga.utilization}% | ${status.hardware.fpga.temperature.toFixed(1)}°C</p>
+            <p>記憶體: ${((status.hardware.memory.used / status.hardware.memory.total) * 100).toFixed(1)}%</p>
+            <p>${status.ai.inferenceSpeed.toFixed(1)} FPS</p>
+            <p>${status.network.latency} ms</p>
+        `;
     }
 }
