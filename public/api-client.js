@@ -50,25 +50,34 @@ async function updateSystemStatus() {
 }
 
 // 更新儀表板顯示
-// 更新儀表板顯示
 function updateDashboard(status) {
-    // 更新側邊欄顯示
-    const sidebarContent = document.querySelector('.sidebar');
-    if (sidebarContent) {
-        // 找到或創建顯示元素
+    // 在"進階版"文字下方顯示
+    const sidebarHeader = document.querySelector('.sidebar-header');
+    if (sidebarHeader) {
         let statusDisplay = document.querySelector('.live-status');
         if (!statusDisplay) {
             statusDisplay = document.createElement('div');
             statusDisplay.className = 'live-status';
-            statusDisplay.style.cssText = 'padding: 15px; color: #8899a6; font-size: 14px;';
-            sidebarContent.appendChild(statusDisplay);
+            statusDisplay.style.cssText = `
+                margin-top: 20px;
+                padding: 15px;
+                background: rgba(255,255,255,0.05);
+                border-radius: 8px;
+                font-size: 14px;
+                line-height: 1.8;
+            `;
+            // 插入到 sidebar-header 之後
+            sidebarHeader.parentNode.insertBefore(statusDisplay, sidebarHeader.nextSibling);
         }
         
         statusDisplay.innerHTML = `
-            <p>FPGA: ${status.hardware.fpga.utilization}% | ${status.hardware.fpga.temperature.toFixed(1)}°C</p>
-            <p>記憶體: ${((status.hardware.memory.used / status.hardware.memory.total) * 100).toFixed(1)}%</p>
-            <p>${status.ai.inferenceSpeed.toFixed(1)} FPS</p>
-            <p>${status.network.latency} ms</p>
+            <div style="color: #fff; margin-bottom: 10px;">
+                <strong>系統狀態</strong>
+            </div>
+            <p style="margin: 5px 0;">FPGA: ${status.hardware.fpga.utilization}% | ${status.hardware.fpga.temperature.toFixed(1)}°C</p>
+            <p style="margin: 5px 0;">記憶體: ${((status.hardware.memory.used / status.hardware.memory.total) * 100).toFixed(1)}%</p>
+            <p style="margin: 5px 0;">${status.ai.inferenceSpeed.toFixed(1)} FPS</p>
+            <p style="margin: 5px 0;">${status.network.latency} ms</p>
         `;
     }
 }
