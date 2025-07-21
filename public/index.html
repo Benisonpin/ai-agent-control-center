@@ -899,7 +899,46 @@
         updateSystemStatus();
     });
 </script>
+
+
+<!-- AI 程式碼生成器 2025-0722 -->
+<div class="card">
+    <h2>🤖 AI 程式碼生成器</h2>
+    <div class="ai-generator">
+        <input type="text" id="codeDescription" placeholder="描述您想要的功能..." style="width: 100%; padding: 10px; margin-bottom: 10px;">
+        <select id="codeLanguage" style="padding: 10px; margin-right: 10px;">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="c">C</option>
+            <option value="verilog">Verilog (RTL)</option>
+        </select>
+        <button onclick="generateAICode()" style="padding: 10px 20px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer;">生成程式碼</button>
+        <pre id="generatedCode" style="background: #1a1a1a; padding: 15px; margin-top: 15px; border-radius: 5px; overflow-x: auto; display: none;"></pre>
+    </div>
+</div>
+
+<script>
+async function generateAICode() {
+    const description = document.getElementById('codeDescription').value;
+    const language = document.getElementById('codeLanguage').value;
     
+    if (!description) {
+        alert('請輸入功能描述');
+        return;
+    }
+    
+    const result = await cteAPI.generateCode(description, language);
+    if (result.success) {
+        const codeDisplay = document.getElementById('generatedCode');
+        codeDisplay.textContent = result.code;
+        codeDisplay.style.display = 'block';
+    }
+}
+</script>
+
+
+
+ 
 
 </body>
 </html>
