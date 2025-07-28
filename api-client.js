@@ -1,3 +1,4 @@
+
 // CTE AI Agent API 客戶端
 class CTEApiClient {
     constructor() {
@@ -35,7 +36,31 @@ class CTEApiClient {
         }
         return status;
     }
-}
+
+    // AI 程式碼生成功能 (移到這裡，在類別內部)
+    async generateCode(description, language = 'javascript', type = 'function') {
+        try {
+            const response = await fetch(`${this.baseUrl}/ai-code-generator`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ description, language, type })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('AI 生成程式碼成功:', result);
+            return result;
+        } catch (error) {
+            console.error('AI 生成程式碼失敗:', error);
+            return { success: false, error: error.message };
+        }
+    }
+} // 類別結束
 
 // 創建全域 API 實例
 const cteAPI = new CTEApiClient();
@@ -79,29 +104,5 @@ function updateDashboard(status) {
             <p style="margin: 5px 0;">${status.ai.inferenceSpeed.toFixed(1)} FPS</p>
             <p style="margin: 5px 0;">${status.network.latency} ms</p>
         `;
-    }
-}
-
-// AI 程式碼生成功能
-async generateCode(description, language = 'javascript', type = 'function') {
-    try {
-        const response = await fetch(`${this.baseUrl}/ai-code-generator`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ description, language, type })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('AI 生成程式碼成功:', result);
-        return result;
-    } catch (error) {
-        console.error('AI 生成程式碼失敗:', error);
-        return { success: false, error: error.message };
     }
 }
