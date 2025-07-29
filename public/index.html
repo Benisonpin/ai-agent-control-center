@@ -923,6 +923,90 @@
         <p>架構層級: <span id="total-layers">4</span>層</p>
         <p>當前版本: <span id="current-version">v2.1.0</span></p>
     </div>
+
+<!-- 編譯部署控制面板 2025-0729  -->
+<div class="card" style="margin-top: 20px;">
+    <h2>🔧 編譯部署控制</h2>
+    
+    <div class="build-controls">
+        <h3>RTOS 編譯</h3>
+        <button onclick="executeAction('compile_rtos')" class="control-btn">
+            編譯 RTOS
+        </button>
+        <div id="rtos-status" class="status-display"></div>
+    </div>
+    
+    <div class="build-controls">
+        <h3>RTL 合成</h3>
+        <button onclick="executeAction('synthesize_rtl')" class="control-btn">
+            合成 RTL
+        </button>
+        <div id="rtl-status" class="status-display"></div>
+    </div>
+    
+    <div class="build-controls">
+        <h3>FPGA 部署</h3>
+        <button onclick="executeAction('deploy_fpga')" class="control-btn">
+            部署到 FPGA
+        </button>
+        <div id="fpga-status" class="status-display"></div>
+    </div>
+    
+    <!-- 執行日誌 -->
+    <div class="execution-log" style="margin-top: 20px;">
+        <h3>執行日誌</h3>
+        <pre id="build-log" style="background: #0d1117; padding: 15px; height: 200px; overflow-y: auto;">
+準備就緒...
+        </pre>
+    </div>
+</div>
+
+<script>
+// 執行編譯/部署動作
+async function executeAction(action) {
+    const logElement = document.getElementById('build-log');
+    logElement.textContent += `\n[${new Date().toLocaleTimeString()}] 執行 ${action}...\n`;
+    
+    // 更新按鈕狀態
+    const btn = event.target;
+    btn.disabled = true;
+    btn.textContent = '執行中...';
+    
+    try {
+        const response = await fetch('/.netlify/functions/build-deploy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action })
+        });
+        
+        const result = await response.json();
+        logElement.textContent += `${result.message}\n`;
+        
+        // 模擬執行進度
+        setTimeout(() => {
+            logElement.textContent += `[${new Date().toLocaleTimeString()}] ${action} 完成！\n`;
+            btn.disabled = false;
+            btn.textContent = getActionText(action);
+        }, 3000);
+        
+    } catch (error) {
+        logElement.textContent += `錯誤: ${error.message}\n`;
+        btn.disabled = false;
+        btn.textContent = getActionText(action);
+    }
+}
+
+function getActionText(action) {
+    const texts = {
+        'compile_rtos': '編譯 RTOS',
+        'synthesize_rtl': '合成 RTL',
+        'deploy_fpga': '部署到 FPGA'
+    };
+    return texts[action] || action;
+}
+</script>
+
+ 
     
     <!-- 四層架構展示 -->
     <div class="ota-layers" style="margin-top: 20px;">
