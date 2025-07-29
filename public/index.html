@@ -872,9 +872,6 @@
 </div>
 
         
-
-
-        
     </div>   
 
    
@@ -884,6 +881,128 @@
 
    <!-- 載入 API 客戶端 -->
 <script src="api-client.js"></script>
+
+
+
+<!-- OTA 模塊化架構監控 2025-0729 add-->
+<div class="card" style="margin-top: 20px;">
+    <h2>📡 OTA 模塊化四層架構</h2>
+    
+    <!-- 架構概覽 -->
+    <div class="ota-overview">
+        <h3>系統概覽</h3>
+        <p>總模塊數: <span id="total-modules">23</span>個</p>
+        <p>架構層級: <span id="total-layers">4</span>層</p>
+        <p>當前版本: <span id="current-version">v2.1.0</span></p>
+    </div>
+    
+    <!-- 四層架構展示 -->
+    <div class="ota-layers" style="margin-top: 20px;">
+        <div class="layer-tabs">
+            <button onclick="showLayer('layer1')" class="active">基礎架構</button>
+            <button onclick="showLayer('layer2')">知識蒸餾</button>
+            <button onclick="showLayer('layer3')">動態載入</button>
+            <button onclick="showLayer('layer4')">雲端分發</button>
+        </div>
+        
+        <div id="layer-content">
+            <!-- 動態載入層級內容 -->
+        </div>
+    </div>
+    
+    <!-- OTA 執行路徑 -->
+    <div class="ota-execution-path" style="margin-top: 20px;">
+        <h3>🚀 OTA 執行路徑</h3>
+        <div id="execution-timeline">
+            <!-- 動態顯示執行進度 -->
+        </div>
+    </div>
+</div>
+
+<script>
+// 載入 OTA 架構資料
+async function loadOTAArchitecture() {
+    const otaData = await cteAPI.getOTAArchitecture();
+    if (otaData) {
+        // 更新概覽
+        document.getElementById('total-modules').textContent = otaData.overview.total_modules;
+        document.getElementById('total-layers').textContent = otaData.overview.total_layers;
+        document.getElementById('current-version').textContent = otaData.overview.current_version;
+        
+        // 顯示第一層
+        showLayer('layer1');
+    }
+}
+
+// 顯示特定層級
+async function showLayer(layerId) {
+    const response = await cteAPI.getOTAArchitecture(layerId);
+    const layer = response.layer;
+    
+    let html = `<h4>${layer.name} (${layer.module_count}個模塊)</h4>`;
+    
+    // 根據層級結構顯示模塊
+    if (layer.modules.hardware_abstraction) {
+        // 第一層特殊處理
+        html += '<h5>硬體抽象</h5><div class="module-grid">';
+        layer.modules.hardware_abstraction.forEach(module => {
+            html += createModuleCard(module);
+        });
+        html += '</div><h5>軟體框架</h5><div class="module-grid">';
+        layer.modules.software_framework.forEach(module => {
+            html += createModuleCard(module);
+        });
+        html += '</div>';
+    } else {
+        // 其他層級
+        html += '<div class="module-grid">';
+        layer.modules.forEach(module => {
+            html += createModuleCard(module);
+        });
+        html += '</div>';
+    }
+    
+    document.getElementById('layer-content').innerHTML = html;
+}
+
+// 創建模塊卡片
+function createModuleCard(module) {
+    return `
+        <div class="module-card" style="border: 1px solid #333; padding: 10px; margin: 5px; border-radius: 8px;">
+            <h5>${module.name}</h5>
+            <p>狀態: <span class="status-${module.status}">${module.status}</span></p>
+            ${module.class ? `<p>類別: ${module.class}</p>` : ''}
+            ${module.progress ? `<p>進度: ${module.progress}%</p>` : ''}
+        </div>
+    `;
+}
+
+// 在 api-client.js 中加入新方法
+async getOTAArchitecture(layer = null, module = null) {
+    try {
+        const response = await fetch(`${this.baseUrl}/ota-architecture`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ layer, module })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('獲取 OTA 架構失敗:', error);
+        return null;
+    }
+}
+
+ 
+
+
+ 
 <script>
     // 頁面載入後測試 API
     window.addEventListener('load', async () => {
