@@ -9,6 +9,51 @@
 <style> 
   /* ========== 在這裡添加新的 CSS ========== 2025-0729*/
 
+.control-btn {
+    padding: 12px 24px;
+    background: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+}
+
+.control-btn:hover {
+    background: #1976D2;
+}
+
+.control-btn:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.status-display {
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 5px;
+}
+
+.phase-progress {
+    margin: 10px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #4CAF50;
+    transition: width 0.5s ease;
+}
+ 
 
  .layer-tabs button {
     padding: 10px 20px;
