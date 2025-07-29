@@ -7,7 +7,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTE AI Agent Control Center</title>
 <style> 
-  /* ========== 在這裡添加新的 CSS ========== */
+  /* ========== 在這裡添加新的 CSS ========== 2025-0729*/
+
+
+ .layer-tabs button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #333;
+    color: white;
+    cursor: pointer;
+}
+
+.layer-tabs button.active {
+    background: #2196F3;
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.status-running { color: #4CAF50; }
+.status-ready { color: #2196F3; }
+.status-training { color: #FF9800; }
+.status-standby { color: #9E9E9E; }
+
+ 
     
 /* 場景識別樣式 */
 .scene-modes {
