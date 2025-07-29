@@ -134,3 +134,47 @@ function updateDashboard(status) {
         `;
     }
 }
+
+// 在 CTEApiClient 類別中加入 2025-0729
+async executeBuildAction(action, target) {
+    try {
+        const response = await fetch(`${this.baseUrl}/build-deploy`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action, target })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('執行建置動作失敗:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+// 檔案檢視
+async viewFile(filename, path) {
+    try {
+        const response = await fetch(`${this.baseUrl}/file-viewer`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ filename, path })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('檢視檔案失敗:', error);
+        return { success: false, error: error.message };
+    }
+}
