@@ -917,6 +917,72 @@
     </div>
 </div>
 
+<!-- Cloud Shell 專案瀏覽器 -->
+<div class="card" style="margin-top: 20px;">
+    <h2>📂 AI ISP Agent Pro 專案結構</h2>
+    <div class="project-browser">
+        <div class="project-summary">
+            <h3>專案統計</h3>
+            <div id="project-stats">載入中...</div>
+        </div>
+        
+        <div class="module-status" style="margin-top: 20px;">
+            <h3>核心模組狀態</h3>
+            <div id="module-list">
+                <!-- 動態載入模組列表 -->
+            </div>
+        </div>
+        
+        <div class="file-tree" style="margin-top: 20px;">
+            <h3>檔案結構</h3>
+            <div id="file-tree-view">
+                <!-- 動態載入檔案樹 -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 載入 Cloud Shell 專案資料
+async function loadCloudShellProject() {
+    const projectData = await cteAPI.getCloudShellProject();
+    if (projectData) {
+        // 顯示專案統計
+        const stats = projectData.summary;
+        document.getElementById('project-stats').innerHTML = `
+            <p>總檔案數: ${stats.total_files}</p>
+            <p>總目錄數: ${stats.total_dirs}</p>
+            <p>專案大小: ${stats.size_mb} MB</p>
+            <p>Python 檔案: ${projectData.languages.python.count}</p>
+            <p>C/C++ 檔案: ${projectData.languages.c.count + projectData.languages.headers.count}</p>
+            <p>Verilog 檔案: ${projectData.languages.verilog.count}</p>
+        `;
+        
+        // 顯示模組狀態
+        displayModules(projectData.key_modules);
+    }
+}
+
+function displayModules(modules) {
+    let html = '<h4>RTOS 任務</h4><ul>';
+    modules.rtos_tasks.forEach(task => {
+        html += `<li>${task.file} - ${task.status}</li>`;
+    });
+    html += '</ul><h4>RTL 模組</h4><ul>';
+    modules.rtl_modules.forEach(rtl => {
+        html += `<li>${rtl.file} - ${rtl.status}</li>`;
+    });
+    html += '</ul>';
+    document.getElementById('module-list').innerHTML = html;
+}
+
+// 頁面載入時執行
+window.addEventListener('load', () => {
+    loadCloudShellProject();
+});
+</script>
+ 
+
 <script>
 async function generateAICode() {
     const description = document.getElementById('codeDescription').value;
@@ -935,7 +1001,6 @@ async function generateAICode() {
     }
 }
 </script>
-
 
 
  
