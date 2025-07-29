@@ -898,6 +898,46 @@
         // 立即更新一次
         updateSystemStatus();
     });
+
+// 在 window.addEventListener('load', async () => { ... }) 內部加入：
+
+// 即時監控 - 每5秒更新一次
+setInterval(async () => {
+    // 更新系統狀態
+    await updateSystemStatus();
+    
+    // 更新 Cloud Shell 專案模組狀態
+    const modules = await cteAPI.getCloudShellProject('get_modules');
+    if (modules) {
+        displayModules(modules.modules);
+    }
+    
+    // 更新 OTA 架構狀態
+    const otaData = await cteAPI.getOTAArchitecture();
+    if (otaData) {
+        updateOTAStatus(otaData);
+    }
+}, 5000);
+
+// 新增更新 OTA 狀態的函數
+function updateOTAStatus(data) {
+    // 更新執行路徑進度
+    const timeline = document.getElementById('execution-timeline');
+    if (timeline && data.execution_path) {
+        let progressHtml = '';
+        Object.values(data.execution_path).forEach(phase => {
+            progressHtml += `<div class="phase-progress">
+                <h4>${phase.name} (${phase.duration})</h4>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${Math.random() * 100}%"></div>
+                </div>
+            </div>`;
+        });
+        timeline.innerHTML = progressHtml;
+    }
+}
+
+ 
 </script>
 
 
@@ -981,6 +1021,9 @@ window.addEventListener('load', () => {
     loadCloudShellProject();
 });
 </script>
+
+
+
  
 
 <script>
@@ -1001,9 +1044,6 @@ async function generateAICode() {
     }
 }
 </script>
-
-
- 
 
 </body>
 </html>
