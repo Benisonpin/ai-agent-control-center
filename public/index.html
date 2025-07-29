@@ -1029,6 +1029,32 @@ async getOTAArchitecture(layer = null, module = null) {
 
  
 
+<!-- ========== 在這裡插入檔案檢視器 2025-0729========== -->
+<!-- 檔案檢視器 -->
+<div class="card" style="margin-top: 20px; display: none;" id="file-viewer">
+    <h2>📄 檔案檢視器</h2>
+    <div class="file-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <span id="current-filename" style="font-size: 16px; color: #8899a6;">選擇檔案...</span>
+        <button onclick="closeFileViewer()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            關閉
+        </button>
+    </div>
+    <pre id="file-content" style="background: #0d1117; padding: 20px; overflow: auto; max-height: 500px; border-radius: 8px; border: 1px solid #30363d;">
+        <code id="code-display" style="color: #e6edf3; font-family: 'Consolas', 'Monaco', monospace;">
+            // 檔案內容將顯示在這裡
+        </code>
+    </pre>
+</div>
+
+<!-- ========== 然後是編譯部署控制面板 ========== -->
+<!-- 編譯部署控制面板 -->
+<div class="card" style="margin-top: 20px;">
+    <h2>🔧 編譯部署控制</h2>
+    ...
+</div>
+
+
+ 
 
  
 <script>
@@ -1192,5 +1218,65 @@ async function generateAICode() {
 }
 </script>
 
+
+<!-- 在所有卡片之後，</body> 標籤之前的 <script> 區域加入檔案檢視的 JavaScript  2025-0729 -->
+<script>
+// 現有的 JavaScript 程式碼...
+
+// ========== 加入檔案檢視功能 ==========
+
+
+<!-- 檔案檢視器 -->
+<div class="card" style="margin-top: 20px; display: none;" id="file-viewer">
+    <h2>📄 檔案檢視器</h2>
+    <div class="file-header">
+        <span id="current-filename">選擇檔案...</span>
+        <button onclick="closeFileViewer()">關閉</button>
+    </div>
+    <pre id="file-content" style="background: #1a1a1a; padding: 20px; overflow: auto; max-height: 500px;">
+        <code id="code-display"></code>
+    </pre>
+</div>
+
+ 
+// 檔案檢視功能
+async function viewFile(filename) {
+    const response = await fetch('/.netlify/functions/file-viewer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename })
+    });
+    
+    const data = await response.json();
+    document.getElementById('current-filename').textContent = filename;
+    document.getElementById('code-display').textContent = data.content;
+    document.getElementById('file-viewer').style.display = 'block';
+    
+    // 捲動到檔案檢視器
+    document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeFileViewer() {
+    document.getElementById('file-viewer').style.display = 'none';
+}
+
+function displayModules(modules) {
+    let html = '<h4>RTOS 任務</h4><ul>';
+    modules.rtos_tasks.forEach(task => {
+        html += `<li>
+            <a href="#" onclick="viewFile('${task.file}'); return false;" style="color: #2196F3;">
+                ${task.file}
+            </a> - ${task.status}
+        </li>`;
+    });
+    // ... 其餘程式碼
+}
+
+
+ 
+</script>
+
+
+ 
 </body>
 </html>
