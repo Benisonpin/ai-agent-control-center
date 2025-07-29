@@ -60,6 +60,34 @@ class CTEApiClient {
             return { success: false, error: error.message };
         }
     }
+
+
+// Cloud Shell 專案瀏覽
+async getCloudShellProject(action = null) {
+    try {
+        const response = await fetch(`${this.baseUrl}/cloud-shell-browser`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('Cloud Shell 專案資料:', result);
+        return result;
+    } catch (error) {
+        console.error('獲取 Cloud Shell 資料失敗:', error);
+        return null;
+    }
+}
+
+
+    
 } // 類別結束
 
 // 創建全域 API 實例
