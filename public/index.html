@@ -9,6 +9,35 @@
 <style> 
   /* ========== 在這裡添加新的 CSS ========== 2025-0729*/
 
+.layer-tab-btn {
+    padding: 10px 20px;
+    margin: 0 5px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid #333;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s;
+}
+
+.layer-tab-btn:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+.layer-tab-btn.active {
+    background: #2196F3;
+    border-color: #2196F3;
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+
+ 
 .control-btn {
     padding: 12px 24px;
     background: #2196F3;
@@ -744,6 +773,8 @@
     </div>
 </div>
 
+
+     
 <!-- 物件追蹤 Section -->
 <div id="object-tracking" class="section hidden">
     <h2>📍 物件追蹤</h2>
@@ -956,7 +987,19 @@
 <script src="api-client.js"></script>
 
 
+<div class="layer-tabs" style="margin-bottom: 20px;">
+    <button onclick="showLayer('layer1')" class="layer-tab-btn active">基礎架構</button>
+    <button onclick="showLayer('layer2')" class="layer-tab-btn">知識蒸餾</button>
+    <button onclick="showLayer('layer3')" class="layer-tab-btn">動態載入</button>
+    <button onclick="showLayer('layer4')" class="layer-tab-btn">雲端分發</button>
+</div>
 
+<div id="layer-content">
+    <!-- 層級內容會顯示在這裡 -->
+</div>
+ 
+
+ 
 <!-- OTA 模塊化架構監控 2025-0729 add-->
 <div class="card" style="margin-top: 20px;">
     <h2>📡 OTA 模塊化四層架構</h2>
@@ -1304,15 +1347,28 @@ async function loadCloudShellProject() {
         displayModules(projectData.key_modules);
     }
 }
-
 function displayModules(modules) {
-    let html = '<h4>RTOS 任務</h4><ul>';
+    let html = '<h4>RTOS 任務</h4><ul style="list-style: none; padding: 0;">';
     modules.rtos_tasks.forEach(task => {
-        html += `<li>${task.file} - ${task.status}</li>`;
+        html += `<li style="margin: 8px 0;">
+            <a href="#" onclick="viewFile('${task.file}'); return false;" 
+               style="color: #2196F3; text-decoration: none; cursor: pointer; 
+                      border-bottom: 1px dashed #2196F3;">
+                ${task.file}
+            </a> 
+            <span style="color: #4CAF50; margin-left: 10px;">- ${task.status}</span>
+        </li>`;
     });
-    html += '</ul><h4>RTL 模組</h4><ul>';
+    html += '</ul><h4>RTL 模組</h4><ul style="list-style: none; padding: 0;">';
     modules.rtl_modules.forEach(rtl => {
-        html += `<li>${rtl.file} - ${rtl.status}</li>`;
+        html += `<li style="margin: 8px 0;">
+            <a href="#" onclick="viewFile('${rtl.file}'); return false;" 
+               style="color: #2196F3; text-decoration: none; cursor: pointer;
+                      border-bottom: 1px dashed #2196F3;">
+                ${rtl.file}
+            </a> 
+            <span style="color: #4CAF50; margin-left: 10px;">- ${rtl.status}</span>
+        </li>`;
     });
     html += '</ul>';
     document.getElementById('module-list').innerHTML = html;
@@ -1367,24 +1423,75 @@ async function generateAICode() {
     </pre>
 </div>
 
- 
-// 檔案檢視功能
+// 確保 viewFile 函數存在
 async function viewFile(filename) {
-    const response = await fetch('/.netlify/functions/file-viewer', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filename })
-    });
+    console.log('Viewing file:', filename); // 除錯用
     
-    const data = await response.json();
-    document.getElementById('current-filename').textContent = filename;
-    document.getElementById('code-display').textContent = data.content;
+    // 顯示載入中
+    if (!document.getElementById('file-viewer')) {
+        // 如果檔案檢視器不存在，創建它
+        createFileViewer();
+    }
+    
+    document.getElementById('current-filename').textContent = `載入 ${filename}...`;
     document.getElementById('file-viewer').style.display = 'block';
+    document.getElementById('code-display').textContent = '載入中...';
     
-    // 捲動到檔案檢視器
-    document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
+    try {
+        const response = await fetch('/.netlify/functions/file-viewer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename })
+        });
+        
+        if (!response.ok) {
+            throw new Error('無法載入檔案');
+        }
+        
+        const data = await response.json();
+        document.getElementById('current-filename').textContent = filename;
+        document.getElementById('code-display').textContent = data.content;
+        
+        // 捲動到檔案檢視器
+        document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
+    } catch (error) {
+        console.error('檔案載入錯誤:', error);
+        document.getElementById('code-display').textContent = `錯誤: ${error.message}`;
+    }
 }
 
+
+/ 動態創建檔案檢視器（如果不存在）
+function createFileViewer() {
+    const fileViewerHTML = `
+        <div class="card" style="margin-top: 20px; display: none;" id="file-viewer">
+            <h2>📄 檔案檢視器</h2>
+            <div class="file-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <span id="current-filename" style="font-size: 16px; color: #8899a6;">選擇檔案...</span>
+                <button onclick="closeFileViewer()" 
+                        style="padding: 8px 16px; background: #dc3545; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    關閉
+                </button>
+            </div>
+            <pre id="file-content" style="background: #0d1117; padding: 20px; 
+                                         overflow: auto; max-height: 500px; 
+                                         border-radius: 8px; border: 1px solid #30363d;">
+                <code id="code-display" style="color: #e6edf3; font-family: 'Consolas', 'Monaco', monospace;">
+                    // 檔案內容將顯示在這裡
+                </code>
+            </pre>
+        </div>
+    `;
+    
+    // 在 main-content 的最後加入
+    const mainContent = document.querySelector('.main-content');
+    if (mainContent) {
+        mainContent.insertAdjacentHTML('beforeend', fileViewerHTML);
+    }
+}
+ 
+ 
 function closeFileViewer() {
     document.getElementById('file-viewer').style.display = 'none';
 }
