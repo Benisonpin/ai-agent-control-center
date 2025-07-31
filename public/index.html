@@ -621,6 +621,17 @@
    </script>  <!-- 加上這個結束標籤！ -->
 
 
+<!-- OTA 層級按鈕 2025-0731-->
+<div class="layer-tabs" style="margin-bottom: 20px;">
+    <button onclick="showLayer('layer1')" class="layer-tab-btn active">基礎架構</button>
+    <button onclick="showLayer('layer2')" class="layer-tab-btn">知識蒸餾</button>
+    <button onclick="showLayer('layer3')" class="layer-tab-btn">動態載入</button>
+    <button onclick="showLayer('layer4')" class="layer-tab-btn">雲端分發</button>
+</div>
+<div id="layer-content">
+    <!-- 內容會顯示在這裡 -->
+</div>
+ 
     
     <div class="container">
         <div class="sidebar">
@@ -1422,44 +1433,112 @@ async function generateAICode() {
         <code id="code-display"></code>
     </pre>
 </div>
-
-// 確保 viewFile 函數存在
-async function viewFile(filename) {
-    console.log('Viewing file:', filename); // 除錯用
+<script>
+// ========== 檔案檢視功能 ==========
+function viewFile(filename) {
+    console.log('檢視檔案:', filename);
     
-    // 顯示載入中
+    // 創建檔案檢視器（如果不存在）
     if (!document.getElementById('file-viewer')) {
-        // 如果檔案檢視器不存在，創建它
-        createFileViewer();
+        const fileViewerHTML = `
+            <div class="card" style="margin-top: 20px; display: none;" id="file-viewer">
+                <h2>📄 檔案檢視器</h2>
+                <div class="file-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span id="current-filename" style="font-size: 16px; color: #8899a6;">選擇檔案...</span>
+                    <button onclick="closeFileViewer()" 
+                            style="padding: 8px 16px; background: #dc3545; color: white; 
+                                   border: none; border-radius: 5px; cursor: pointer;">
+                        關閉
+                    </button>
+                </div>
+                <pre id="file-content" style="background: #0d1117; padding: 20px; 
+                                             overflow: auto; max-height: 500px; 
+                                             border-radius: 8px; border: 1px solid #30363d;">
+                    <code id="code-display" style="color: #e6edf3; font-family: 'Consolas', 'Monaco', monospace;">
+                        // 檔案內容將顯示在這裡
+                    </code>
+                </pre>
+            </div>
+        `;
+        
+        // 找到主要內容區域並加入檔案檢視器
+        const mainContent = document.querySelector('.main-content') || document.body;
+        mainContent.insertAdjacentHTML('beforeend', fileViewerHTML);
     }
     
-    document.getElementById('current-filename').textContent = `載入 ${filename}...`;
+    // 顯示檔案檢視器
     document.getElementById('file-viewer').style.display = 'block';
-    document.getElementById('code-display').textContent = '載入中...';
+    document.getElementById('current-filename').textContent = filename;
     
-    try {
-        const response = await fetch('/.netlify/functions/file-viewer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ filename })
-        });
-        
-        if (!response.ok) {
-            throw new Error('無法載入檔案');
-        }
-        
-        const data = await response.json();
-        document.getElementById('current-filename').textContent = filename;
-        document.getElementById('code-display').textContent = data.content;
-        
-        // 捲動到檔案檢視器
-        document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
-    } catch (error) {
-        console.error('檔案載入錯誤:', error);
-        document.getElementById('code-display').textContent = `錯誤: ${error.message}`;
+    // 模擬檔案內容（暫時使用，直到 API 正常運作）
+    const mockContent = {
+        'vision_task.c': `/* Vision Task - RTOS Implementation */
+#include "FreeRTOS.h"
+#include "task.h"
+#include "vision_api.h"
+
+void visionTask(void *pvParameters) {
+    VisionConfig_t config = {
+        .resolution = RESOLUTION_4K,
+        .fps = 30,
+        .pipeline = PIPELINE_AI_ISP
+    };
+    
+    while(1) {
+        // Process frame
+        processFrame(&config);
+        vTaskDelay(pdMS_TO_TICKS(33));
     }
+}`,
+        'ai_inference_task.c': `/* AI Inference Task */
+#include "FreeRTOS.h"
+#include "ai_engine.h"
+
+void aiInferenceTask(void *pvParameters) {
+    // AI 推論實作
+    for(;;) {
+        // 等待新的影像幀
+        xTaskNotifyWait(0, 0, NULL, portMAX_DELAY);
+        
+        // 執行推論
+        runInference();
+    }
+}`,
+        'tracker_task.c': `/* Object Tracker Task */
+#include "tracker.h"
+
+void trackerTask(void *pvParameters) {
+    // 物件追蹤實作
+    TrackedObject_t objects[MAX_OBJECTS];
+    
+    while(1) {
+        updateTracking(objects);
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+}`,
+        'comm_task.c': `/* Communication Task */
+#include "mavlink.h"
+
+void commTask(void *pvParameters) {
+    // MAVLink 通訊實作
+    initMAVLink();
+    
+    while(1) {
+        handleMAVLinkMessages();
+        vTaskDelay(pdMS_TO_TICKS(10));
+    }
+}`
+    };
+    
+    // 顯示內容
+    const content = mockContent[filename] || `// ${filename} 的內容\n// 開發中...`;
+    document.getElementById('code-display').textContent = content;
+    
+    // 捲動到檔案檢視器
+    document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
 }
 
+// 關閉檔案檢視器
 
 / 動態創建檔案檢視器（如果不存在）
 function createFileViewer() {
@@ -1491,11 +1570,13 @@ function createFileViewer() {
     }
 }
  
- 
+// 關閉檔案檢視器
 function closeFileViewer() {
-    document.getElementById('file-viewer').style.display = 'none';
+    const viewer = document.getElementById('file-viewer');
+    if (viewer) {
+        viewer.style.display = 'none';
+    }
 }
-
 function displayModules(modules) {
     let html = '<h4>RTOS 任務</h4><ul>';
     modules.rtos_tasks.forEach(task => {
@@ -1509,6 +1590,46 @@ function displayModules(modules) {
 }
 
 
+// ========== OTA 層級顯示功能 ==========
+function showLayer(layerId) {
+    console.log('顯示層級:', layerId);
+    
+    // 移除所有 active 類別
+    document.querySelectorAll('.layer-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // 加入 active 到當前按鈕
+    if (event && event.target) {
+        event.target.classList.add('active');
+    }
+    
+    // 顯示對應的層級內容
+    const layerContent = document.getElementById('layer-content');
+    if (layerContent) {
+        layerContent.innerHTML = `
+            <h4>載入 ${layerId} 中...</h4>
+            <p>功能開發中</p>
+        `;
+    }
+}
+
+// ========== 確保 DOM 載入完成 ==========
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('頁面載入完成');
+    
+    // 檢查所有需要的元素
+    const elements = {
+        'layer-content': document.getElementById('layer-content'),
+        'module-list': document.getElementById('module-list'),
+        'file-viewer': document.getElementById('file-viewer')
+    };
+    
+    console.log('元素檢查:', elements);
+});
+</script>
+
+ 
  
 </script>
 
