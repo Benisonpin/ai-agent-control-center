@@ -619,7 +619,15 @@
    <script>
         const CTE_API_ENDPOINT = 'https://cte-api.example.com';
    </script>  <!-- 加上這個結束標籤！ -->
+<!-- OTA 層級標籤 -->
+<div id="layer-content">
+    <!-- 層級內容會顯示在這裡 -->
+</div>
 
+<!-- 確保有 main-content 容器 -->
+<div class="main-content">
+    <!-- 所有的卡片都在這裡 -->
+</div>
 
 <!-- OTA 層級按鈕 2025-0731-->
 <div class="layer-tabs" style="margin-bottom: 20px;">
@@ -1418,7 +1426,59 @@ async function generateAICode() {
 <!-- 在所有卡片之後，</body> 標籤之前的 <script> 區域加入檔案檢視的 JavaScript  2025-0729 -->
 <script>
 // 現有的 JavaScript 程式碼...
+<!-- 在 </body> 之前加入 -->
+<script>
+// ========== 修復 API 客戶端方法 ==========
+// 確保 cteAPI 物件有所有需要的方法  2025-0731
+if (typeof cteAPI !== 'undefined') {
+    // 添加缺少的方法到 cteAPI
+    cteAPI.getOTAArchitecture = async function(layer = null) {
+        try {
+            const response = await fetch(`${this.baseUrl}/ota-architecture`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ layer })
+            });
+            
+            if (!response.ok) {
+                console.error('OTA API 錯誤:', response.status);
+                return null;
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('獲取 OTA 架構失敗:', error);
+            return null;
+        }
+    };
+    
+    cteAPI.getCloudShellProject = async function(action = null) {
+        try {
+            const response = await fetch(`${this.baseUrl}/cloud-shell-browser`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action })
+            });
+            
+            if (!response.ok) {
+                console.error('Cloud Shell API 錯誤:', response.status);
+                return null;
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('獲取 Cloud Shell 資料失敗:', error);
+            return null;
+        }
+    };
+}
 
+
+ 
 // ========== 加入檔案檢視功能 ==========
 
 
@@ -1439,7 +1499,8 @@ function viewFile(filename) {
     console.log('檢視檔案:', filename);
     
     // 創建檔案檢視器（如果不存在）
-    if (!document.getElementById('file-viewer')) {
+ let fileViewer = document.getElementById('file-viewer');
+    if (!fileViewer) {
         const fileViewerHTML = `
             <div class="card" style="margin-top: 20px; display: none;" id="file-viewer">
                 <h2>📄 檔案檢視器</h2>
@@ -1462,14 +1523,18 @@ function viewFile(filename) {
         `;
         
         // 找到主要內容區域並加入檔案檢視器
-        const mainContent = document.querySelector('.main-content') || document.body;
-        mainContent.insertAdjacentHTML('beforeend', fileViewerHTML);
+      const mainContent = document.querySelector('.main-content');
+        if (mainContent) {
+            mainContent.insertAdjacentHTML('beforeend', fileViewerHTML);
+            fileViewer = document.getElementById('file-viewer');
+        } 
     }
     
-    // 顯示檔案檢視器
-    document.getElementById('file-viewer').style.display = 'block';
-    document.getElementById('current-filename').textContent = filename;
-    
+   // 顯示檔案檢視器
+    if (fileViewer) {
+        fileViewer.style.display = 'block';
+        document.getElementById('current-filename').textContent = filename;
+         
     // 模擬檔案內容（暫時使用，直到 API 正常運作）
     const mockContent = {
         'vision_task.c': `/* Vision Task - RTOS Implementation */
@@ -1528,15 +1593,53 @@ void commTask(void *pvParameters) {
         vTaskDelay(pdMS_TO_TICKS(10));
     }
 }`
-    };
-    
-    // 顯示內容
-    const content = mockContent[filename] || `// ${filename} 的內容\n// 開發中...`;
-    document.getElementById('code-display').textContent = content;
-    
-    // 捲動到檔案檢視器
-    document.getElementById('file-viewer').scrollIntoView({ behavior: 'smooth' });
+    'ai_accelerator_top.v': `// AI Accelerator Top Module
+module ai_accelerator_top #(
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 16
+)(
+    input wire clk,
+    input wire rst_n,
+    input wire [DATA_WIDTH-1:0] data_in,
+    output reg [DATA_WIDTH-1:0] data_out
+);
+    // NPU implementation
+endmodule`,
+            'isp_pipeline.v': `// ISP Pipeline Module
+module isp_pipeline #(
+    parameter PIXEL_WIDTH = 10
+)(
+    input wire clk,
+    input wire rst_n,
+    input wire [PIXEL_WIDTH-1:0] raw_data,
+    output wire [23:0] rgb_data
+);
+    // ISP stages
+endmodule`,
+            'memory_controller.v': `// Memory Controller
+module memory_controller #(
+    parameter ADDR_WIDTH = 32,
+    parameter DATA_WIDTH = 256
+)(
+    input wire clk,
+    input wire rst_n
+);
+    // DDR4 controller
+endmodule`
+        };
+        
+        // 顯示內容
+        const content = mockContent[filename] || `// ${filename} 的內容\n// 開發中...`;
+        const codeDisplay = document.getElementById('code-display');
+        if (codeDisplay) {
+            codeDisplay.textContent = content;
+        }
+        
+        // 捲動到檔案檢視器
+        fileViewer.scrollIntoView({ behavior: 'smooth' });
+    }
 }
+
 
 // 關閉檔案檢視器
 
@@ -1607,12 +1710,65 @@ function showLayer(layerId) {
     // 顯示對應的層級內容
     const layerContent = document.getElementById('layer-content');
     if (layerContent) {
-        layerContent.innerHTML = `
-            <h4>載入 ${layerId} 中...</h4>
-            <p>功能開發中</p>
-        `;
+ // 模擬層級內容
+        const layerData = {
+            'layer1': {
+                name: '基礎架構模塊',
+                modules: ['CPU管理', 'NPU管理', '記憶體管理', '網路介面']
+            },
+            'layer2': {
+                name: '知識蒸餾模塊',
+                modules: ['教師模型管理', '學生模型生成', '蒸餾訓練', '性能驗證']
+            },
+            'layer3': {
+                name: '動態載入模塊',
+                modules: ['快取管理', '熱插拔控制', '記憶體分配', '相依性解析']
+            },
+            'layer4': {
+                name: '雲端分發模塊',
+                modules: ['模型倉庫', 'CDN分發', '用戶定向', '更新調度']
+            }
+        };
+        
+        const layer = layerData[layerId];
+        if (layer) {
+            let html = `<h4>${layer.name}</h4><div class="module-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">`;
+            layer.modules.forEach(module => {
+                html += `
+                    <div style="border: 1px solid #333; padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.05);">
+                        <h5 style="margin: 0; color: #2196F3;">${module}</h5>
+                        <p style="margin: 10px 0 0 0; color: #4CAF50;">運行中</p>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            layerContent.innerHTML = html;
+        }
     }
 }
+
+// ========== 初始化函數 ==========
+function initializeAllFeatures() {
+    console.log('初始化所有功能...');
+    
+    // 設定預設層級
+    const layerContent = document.getElementById('layer-content');
+    if (layerContent && !layerContent.innerHTML.trim()) {
+        showLayer('layer1');
+    }
+}
+
+// 頁面載入完成後初始化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeAllFeatures);
+} else {
+    initializeAllFeatures();
+}
+
+// ========== 全域錯誤處理 ==========
+window.addEventListener('error', function(event) {
+    console.error('全域錯誤:', event.error);
+});
 
 // ========== 確保 DOM 載入完成 ==========
 document.addEventListener('DOMContentLoaded', function() {
