@@ -611,52 +611,61 @@ body {
         function showLayer(layerId) {
             console.log('顯示層級:', layerId);
             
-            // 移除所有 active 類別
-            document.querySelectorAll('.layer-tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // 加入 active 到當前按鈕
-            if (event && event.target) {
-                event.target.classList.add('active');
-            }
-            
-            // 顯示對應的層級內容
-            const layerContent = document.getElementById('layer-content-main');
-            if (layerContent) {
-                const layerData = {
-                    'layer1': {
-                        name: '基礎架構模塊',
-                        modules: ['CPU管理', 'NPU管理', '記憶體管理', '網路介面']
-                    },
-                    'layer2': {
-                        name: '知識蒸餾模塊',
-                        modules: ['教師模型管理', '學生模型生成', '蒸餾訓練', '性能驗證']
-                    },
-                    'layer3': {
-                        name: '動態載入模塊',
-                        modules: ['快取管理', '熱插拔控制', '記憶體分配', '相依性解析']
-                    },
-                    'layer4': {
-                        name: '雲端分發模塊',
-                        modules: ['模型倉庫', 'CDN分發', '用戶定向', '更新調度']
+            try {
+                // 移除所有 active 類別
+                document.querySelectorAll('.layer-tab-btn').forEach(btn => {
+                    if (btn && btn.classList) {
+                        btn.classList.remove('active');
                     }
-                };
+                });
                 
-                const layer = layerData[layerId];
-                if (layer) {
-                    let html = `<h4>${layer.name}</h4><div class="module-grid">`;
-                    layer.modules.forEach(module => {
-                        html += `
-                            <div style="border: 1px solid #333; padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.05);">
-                                <h5 style="margin: 0; color: #2196F3;">${module}</h5>
-                                <p style="margin: 10px 0 0 0; color: #4CAF50;">運行中</p>
-                            </div>
-                        `;
-                    });
-                    html += '</div>';
-                    layerContent.innerHTML = html;
+                // 加入 active 到當前按鈕 - 修復事件處理
+                const currentButton = document.querySelector(`button[onclick="showLayer('${layerId}')"]`);
+                if (currentButton && currentButton.classList) {
+                    currentButton.classList.add('active');
                 }
+                
+                // 顯示對應的層級內容
+                const layerContent = document.getElementById('layer-content-main');
+                if (layerContent) {
+                    const layerData = {
+                        'layer1': {
+                            name: '基礎架構模塊',
+                            modules: ['CPU管理', 'NPU管理', '記憶體管理', '網路介面']
+                        },
+                        'layer2': {
+                            name: '知識蒸餾模塊',
+                            modules: ['教師模型管理', '學生模型生成', '蒸餾訓練', '性能驗證']
+                        },
+                        'layer3': {
+                            name: '動態載入模塊',
+                            modules: ['快取管理', '熱插拔控制', '記憶體分配', '相依性解析']
+                        },
+                        'layer4': {
+                            name: '雲端分發模塊',
+                            modules: ['模型倉庫', 'CDN分發', '用戶定向', '更新調度']
+                        }
+                    };
+                    
+                    const layer = layerData[layerId];
+                    if (layer) {
+                        let html = `<h4>${layer.name}</h4><div class="module-grid">`;
+                        layer.modules.forEach(module => {
+                            html += `
+                                <div style="border: 1px solid #333; padding: 15px; border-radius: 8px; background: rgba(255,255,255,0.05);">
+                                    <h5 style="margin: 0; color: #2196F3;">${module}</h5>
+                                    <p style="margin: 10px 0 0 0; color: #4CAF50;">運行中</p>
+                                </div>
+                            `;
+                        });
+                        html += '</div>';
+                        layerContent.innerHTML = html;
+                    }
+                } else {
+                    console.warn('layer-content-main 元素未找到');
+                }
+            } catch (error) {
+                console.error('showLayer 錯誤:', error);
             }
         }
 
@@ -696,14 +705,45 @@ body {
         function viewFile(filename) {
             console.log('檢視檔案:', filename);
             
-            const fileViewer = document.getElementById('file-viewer-main');
-            if (fileViewer) {
-                fileViewer.style.display = 'block';
-                document.getElementById('current-filename-main').textContent = filename;
+            try {
+                let fileViewer = document.getElementById('file-viewer-main');
                 
-                // 模擬檔案內容
-                const mockContent = {
-                    'vision_task.c': `/* Vision Task - RTOS Implementation */
+                // 如果檔案檢視器不存在，動態創建
+                if (!fileViewer) {
+                    const mainContent = document.querySelector('.main-content');
+                    if (mainContent) {
+                        const viewerHTML = `
+                            <div class="card" style="margin-top: 20px; display: none;" id="file-viewer-main">
+                                <h2>📄 檔案檢視器</h2>
+                                <div class="file-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                    <span id="current-filename-main" style="font-size: 16px; color: #8899a6;">選擇檔案...</span>
+                                    <button onclick="closeFileViewer()" style="padding: 8px 16px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        關閉
+                                    </button>
+                                </div>
+                                <pre id="file-content-main" style="background: #0d1117; padding: 20px; overflow: auto; max-height: 500px; border-radius: 8px; border: 1px solid #30363d;">
+                                    <code id="code-display-main" style="color: #e6edf3; font-family: 'Consolas', 'Monaco', monospace;">
+                                        // 檔案內容將顯示在這裡
+                                    </code>
+                                </pre>
+                            </div>
+                        `;
+                        mainContent.insertAdjacentHTML('beforeend', viewerHTML);
+                        fileViewer = document.getElementById('file-viewer-main');
+                    }
+                }
+                
+                if (fileViewer) {
+                    fileViewer.style.display = 'block';
+                    
+                    const filenameElement = document.getElementById('current-filename-main');
+                    if (filenameElement) {
+                        filenameElement.textContent = filename;
+                    }
+                    
+                    // 模擬檔案內容
+                    const mockContent = {
+                        'vision_task.c': `/* Vision Task - RTOS Implementation */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "vision_api.h"
@@ -721,7 +761,7 @@ void visionTask(void *pvParameters) {
         vTaskDelay(pdMS_TO_TICKS(33));
     }
 }`,
-                    'ai_inference_task.c': `/* AI Inference Task */
+                        'ai_inference_task.c': `/* AI Inference Task */
 #include "FreeRTOS.h"
 #include "ai_engine.h"
 
@@ -735,7 +775,7 @@ void aiInferenceTask(void *pvParameters) {
         runInference();
     }
 }`,
-                    'ai_accelerator_top.v': `// AI Accelerator Top Module
+                        'ai_accelerator_top.v': `// AI Accelerator Top Module
 module ai_accelerator_top #(
     parameter DATA_WIDTH = 32,
     parameter ADDR_WIDTH = 16
@@ -747,22 +787,30 @@ module ai_accelerator_top #(
 );
     // NPU implementation
 endmodule`
-                };
-                
-                const content = mockContent[filename] || `// ${filename} 的內容\n// 開發中...`;
-                const codeDisplay = document.getElementById('code-display-main');
-                if (codeDisplay) {
-                    codeDisplay.textContent = content;
+                    };
+                    
+                    const content = mockContent[filename] || `// ${filename} 的內容\n// 開發中...`;
+                    const codeDisplay = document.getElementById('code-display-main');
+                    if (codeDisplay) {
+                        codeDisplay.textContent = content;
+                    }
+                    
+                    // 平滑捲動到檔案檢視器
+                    fileViewer.scrollIntoView({ behavior: 'smooth' });
                 }
-                
-                fileViewer.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('viewFile 錯誤:', error);
             }
         }
 
         function closeFileViewer() {
-            const viewer = document.getElementById('file-viewer-main');
-            if (viewer) {
-                viewer.style.display = 'none';
+            try {
+                const viewer = document.getElementById('file-viewer-main');
+                if (viewer) {
+                    viewer.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('closeFileViewer 錯誤:', error);
             }
         }
 
@@ -816,25 +864,56 @@ endmodule`
         window.addEventListener('load', async () => {
             console.log('頁面載入完成，開始初始化...');
             
-            // 測試 API 連接
-            await cteAPI.testConnection();
+            try {
+                // 測試 API 連接
+                await cteAPI.testConnection();
+                
+                // 載入專案資料
+                await loadCloudShellProject();
+                
+                // 設定預設層級 - 延遲執行確保 DOM 就緒
+                setTimeout(() => {
+                    showLayer('layer1');
+                }, 100);
+                
+                // 開始定期更新狀態
+                setInterval(updateSystemStatus, 5000);
+                updateSystemStatus();
+                
+                console.log('初始化完成！');
+            } catch (error) {
+                console.error('初始化錯誤:', error);
+            }
+        });
+
+        // ========== DOM 就緒處理 ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM 內容載入完成');
             
-            // 載入專案資料
-            await loadCloudShellProject();
+            // 確保所有需要的元素都存在
+            const requiredElements = [
+                'layer-content-main',
+                'module-list-main', 
+                'project-stats'
+            ];
             
-            // 設定預設層級
-            showLayer('layer1');
-            
-            // 開始定期更新狀態
-            setInterval(updateSystemStatus, 5000);
-            updateSystemStatus();
-            
-            console.log('初始化完成！');
+            requiredElements.forEach(id => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`警告: 找不到必需的元素 ${id}`);
+                }
+            });
         });
 
         // ========== 錯誤處理 ==========
         window.addEventListener('error', function(event) {
             console.error('全域錯誤:', event.error);
+            // 可以在這裡添加錯誤回報機制
+        });
+        
+        // 處理未捕獲的 Promise 錯誤
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('未處理的 Promise 錯誤:', event.reason);
         });
     </script>
 </body>
