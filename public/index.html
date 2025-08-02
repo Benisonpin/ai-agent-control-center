@@ -294,6 +294,10 @@ body {
     display: none;
 }
 
+.content-section {
+    width: 100%;
+}
+
 @media (max-width: 768px) {
     .sidebar { display: none; }
     .stats-grid { grid-template-columns: 1fr; }
@@ -326,25 +330,25 @@ body {
             </div>
 
             <div class="menu">
-                <div class="menu-item active">
+                <div class="menu-item active" onclick="showSection('overview')">
                     <span>📊 系統總覽</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('scene-recognition')">
                     <span>🎯 場景識別</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('object-tracking')">
                     <span>🚀 物件追蹤</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('system-architecture')">
                     <span>⚙️ 系統架構</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('memory-optimization')">
                     <span>💾 記憶體優化</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('hdr-control')">
                     <span>🎨 HDR 控制</span>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" onclick="showSection('performance-analysis')">
                     <span>📈 效能分析</span>
                 </div>
             </div>
@@ -363,121 +367,237 @@ body {
                 <!-- 主要層級內容 -->
             </div>
 
-            <h2 style="font-size: 28px; margin-bottom: 30px;">系統總覽</h2>
+            <!-- 系統總覽頁面 -->
+            <div id="overview-section" class="content-section">
+                <h2 style="font-size: 28px; margin-bottom: 30px;">系統總覽</h2>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">處理能力</div>
-                    <div class="stat-value">4K</div>
-                    <div style="color: #8899a6; font-size: 14px;">@32.5fps</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">系統延遲</div>
-                    <div class="stat-value">28</div>
-                    <div style="color: #8899a6; font-size: 14px;">ms</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">AI 推論</div>
-                    <div class="stat-value">45</div>
-                    <div style="color: #8899a6; font-size: 14px;">ms</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">功耗</div>
-                    <div class="stat-value">3.5</div>
-                    <div style="color: #8899a6; font-size: 14px;">W</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="ota-section">
-                    <div class="ota-header">
-                        <h3 style="font-size: 18px; font-weight: 600;">🔄 OTA AI 模型更新</h3>
-                        <span class="ota-badge">3 個更新可用</span>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">處理能力</div>
+                        <div class="stat-value">4K</div>
+                        <div style="color: #8899a6; font-size: 14px;">@32.5fps</div>
                     </div>
-                    
-                    <div class="model-list">
-                        <div class="model-item">
-                            <div>
-                                <h4 style="font-size: 16px; margin-bottom: 4px;">場景檢測器 v2.1.0</h4>
-                                <p style="color: #8899a6; font-size: 14px;">新增霧天和水下場景識別，準確率提升3%</p>
-                            </div>
-                            <button class="update-button" onclick="updateModel('scene_detector')">更新</button>
+                    <div class="stat-card">
+                        <div class="stat-label">系統延遲</div>
+                        <div class="stat-value">28</div>
+                        <div style="color: #8899a6; font-size: 14px;">ms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">AI 推論</div>
+                        <div class="stat-value">45</div>
+                        <div style="color: #8899a6; font-size: 14px;">ms</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">功耗</div>
+                        <div class="stat-value">3.5</div>
+                        <div style="color: #8899a6; font-size: 14px;">W</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="ota-section">
+                        <div class="ota-header">
+                            <h3 style="font-size: 18px; font-weight: 600;">🔄 OTA AI 模型更新</h3>
+                            <span class="ota-badge">3 個更新可用</span>
                         </div>
                         
-                        <div class="model-item">
-                            <div>
-                                <h4 style="font-size: 16px; margin-bottom: 4px;">物體追蹤器 v1.1.0</h4>
-                                <p style="color: #8899a6; font-size: 14px;">優化多目標追蹤性能，支援最多20個目標</p>
+                        <div class="model-list">
+                            <div class="model-item">
+                                <div>
+                                    <h4 style="font-size: 16px; margin-bottom: 4px;">場景檢測器 v2.1.0</h4>
+                                    <p style="color: #8899a6; font-size: 14px;">新增霧天和水下場景識別，準確率提升3%</p>
+                                </div>
+                                <button class="update-button" onclick="updateModel('scene_detector')">更新</button>
                             </div>
-                            <button class="update-button" onclick="updateModel('object_tracker')">更新</button>
+                            
+                            <div class="model-item">
+                                <div>
+                                    <h4 style="font-size: 16px; margin-bottom: 4px;">物體追蹤器 v1.1.0</h4>
+                                    <p style="color: #8899a6; font-size: 14px;">優化多目標追蹤性能，支援最多20個目標</p>
+                                </div>
+                                <button class="update-button" onclick="updateModel('object_tracker')">更新</button>
+                            </div>
+                            
+                            <div class="model-item">
+                                <div>
+                                    <h4 style="font-size: 16px; margin-bottom: 4px;">夜視模式 v1.3.0</h4>
+                                    <p style="color: #8899a6; font-size: 14px;">低光環境性能提升30%，降噪算法優化</p>
+                                </div>
+                                <button class="update-button" onclick="updateModel('night_mode')">更新</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="status-info" style="margin-top: 20px; padding: 20px; background: #0d1117; border-radius: 8px;">
+                        <h3 style="margin-bottom: 10px;">📊 系統狀態</h3>
+                        <div id="status-content">載入中...</div>
+                    </div>
+                </div>
+
+                <!-- Cloud Shell 專案瀏覽器 -->
+                <div class="card">
+                    <h2>📂 AI ISP Agent Pro 專案結構</h2>
+                    <div class="project-browser">
+                        <div class="project-summary">
+                            <h3>專案統計</h3>
+                            <div id="project-stats">載入中...</div>
                         </div>
                         
-                        <div class="model-item">
-                            <div>
-                                <h4 style="font-size: 16px; margin-bottom: 4px;">夜視模式 v1.3.0</h4>
-                                <p style="color: #8899a6; font-size: 14px;">低光環境性能提升30%，降噪算法優化</p>
+                        <div class="module-status" style="margin-top: 20px;">
+                            <h3>核心模組狀態</h3>
+                            <div id="module-list-main">
+                                <!-- 動態載入模組列表 -->
                             </div>
-                            <button class="update-button" onclick="updateModel('night_mode')">更新</button>
                         </div>
                     </div>
                 </div>
 
-                <div id="status-info" style="margin-top: 20px; padding: 20px; background: #0d1117; border-radius: 8px;">
-                    <h3 style="margin-bottom: 10px;">📊 系統狀態</h3>
-                    <div id="status-content">載入中...</div>
-                </div>
-            </div>
-
-            <!-- Cloud Shell 專案瀏覽器 -->
-            <div class="card">
-                <h2>📂 AI ISP Agent Pro 專案結構</h2>
-                <div class="project-browser">
-                    <div class="project-summary">
-                        <h3>專案統計</h3>
-                        <div id="project-stats">載入中...</div>
+                <!-- 編譯部署控制面板 -->
+                <div class="card">
+                    <h2>🔧 編譯部署控制</h2>
+                    
+                    <div class="build-controls">
+                        <h3>RTOS 編譯</h3>
+                        <button onclick="executeAction('compile_rtos')" class="control-btn">
+                            編譯 RTOS
+                        </button>
+                        <div id="rtos-status" class="status-display"></div>
                     </div>
                     
-                    <div class="module-status" style="margin-top: 20px;">
-                        <h3>核心模組狀態</h3>
-                        <div id="module-list-main">
-                            <!-- 動態載入模組列表 -->
+                    <div class="build-controls">
+                        <h3>RTL 合成</h3>
+                        <button onclick="executeAction('synthesize_rtl')" class="control-btn">
+                            合成 RTL
+                        </button>
+                        <div id="rtl-status" class="status-display"></div>
+                    </div>
+                    
+                    <div class="build-controls">
+                        <h3>FPGA 部署</h3>
+                        <button onclick="executeAction('deploy_fpga')" class="control-btn">
+                            部署到 FPGA
+                        </button>
+                        <div id="fpga-status" class="status-display"></div>
+                    </div>
+                    
+                    <!-- 執行日誌 -->
+                    <div class="execution-log" style="margin-top: 20px;">
+                        <h3>執行日誌</h3>
+                        <pre id="build-log" style="background: #0d1117; padding: 15px; height: 200px; overflow-y: auto;">準備就緒...</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 場景識別頁面 -->
+            <div id="scene-recognition-section" class="content-section hidden">
+                <h2>🎯 場景識別</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>當前場景</h3>
+                        <p class="stat-value">室內辦公室</p>
+                        <p class="stat-label">置信度: 94%</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>光線條件</h3>
+                        <p class="stat-value">日光燈</p>
+                        <p class="stat-label">色溫: 4000K</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>場景切換</h3>
+                        <p class="stat-value">12</p>
+                        <p class="stat-label">今日次數</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>識別準確率</h3>
+                        <p class="stat-value">96.5%</p>
+                        <p class="stat-label">最近7天</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>場景模式</h3>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <button class="control-btn" style="background: #4CAF50;">自動</button>
+                        <button class="control-btn">室內</button>
+                        <button class="control-btn">戶外</button>
+                        <button class="control-btn">夜間</button>
+                        <button class="control-btn">運動</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 物件追蹤頁面 -->
+            <div id="object-tracking-section" class="content-section hidden">
+                <h2>🚀 物件追蹤</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>追蹤中物件</h3>
+                        <p class="stat-value">3</p>
+                        <p class="stat-label">目前活躍</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>追蹤精度</h3>
+                        <p class="stat-value">±2px</p>
+                        <p class="stat-label">平均誤差</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>處理速度</h3>
+                        <p class="stat-value">18ms</p>
+                        <p class="stat-label">每幀延遲</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>丟失率</h3>
+                        <p class="stat-value">0.8%</p>
+                        <p class="stat-label">最近1小時</p>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>追蹤物件列表</h3>
+                    <div style="margin-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); margin: 5px 0; border-radius: 5px;">
+                            <span>ID: 001</span>
+                            <span>人臉</span>
+                            <span style="color: #4CAF50;">追蹤中</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); margin: 5px 0; border-radius: 5px;">
+                            <span>ID: 002</span>
+                            <span>車輛</span>
+                            <span style="color: #4CAF50;">追蹤中</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.05); margin: 5px 0; border-radius: 5px;">
+                            <span>ID: 003</span>
+                            <span>行人</span>
+                            <span style="color: #4CAF50;">追蹤中</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 編譯部署控制面板 -->
-            <div class="card">
-                <h2>🔧 編譯部署控制</h2>
-                
-                <div class="build-controls">
-                    <h3>RTOS 編譯</h3>
-                    <button onclick="executeAction('compile_rtos')" class="control-btn">
-                        編譯 RTOS
-                    </button>
-                    <div id="rtos-status" class="status-display"></div>
+            <!-- 其他頁面使用類似結構... -->
+            <div id="system-architecture-section" class="content-section hidden">
+                <h2>⚙️ 系統架構</h2>
+                <div class="card">
+                    <p>系統架構詳細資訊...</p>
                 </div>
-                
-                <div class="build-controls">
-                    <h3>RTL 合成</h3>
-                    <button onclick="executeAction('synthesize_rtl')" class="control-btn">
-                        合成 RTL
-                    </button>
-                    <div id="rtl-status" class="status-display"></div>
+            </div>
+
+            <div id="memory-optimization-section" class="content-section hidden">
+                <h2>💾 記憶體優化</h2>
+                <div class="card">
+                    <p>記憶體優化工具...</p>
                 </div>
-                
-                <div class="build-controls">
-                    <h3>FPGA 部署</h3>
-                    <button onclick="executeAction('deploy_fpga')" class="control-btn">
-                        部署到 FPGA
-                    </button>
-                    <div id="fpga-status" class="status-display"></div>
+            </div>
+
+            <div id="hdr-control-section" class="content-section hidden">
+                <h2>🎨 HDR 控制</h2>
+                <div class="card">
+                    <p>HDR 控制面板...</p>
                 </div>
-                
-                <!-- 執行日誌 -->
-                <div class="execution-log" style="margin-top: 20px;">
-                    <h3>執行日誌</h3>
-                    <pre id="build-log" style="background: #0d1117; padding: 15px; height: 200px; overflow-y: auto;">準備就緒...</pre>
+            </div>
+
+            <div id="performance-analysis-section" class="content-section hidden">
+                <h2>📈 效能分析</h2>
+                <div class="card">
+                    <p>效能分析圖表...</p>
                 </div>
             </div>
         </div>
@@ -607,7 +727,52 @@ body {
             }
         }
 
-        // ========== OTA 層級顯示 ==========
+        // ========== 頁面切換功能 ==========
+        function showSection(sectionName) {
+            console.log('切換到頁面:', sectionName);
+            
+            try {
+                // 隱藏所有內容頁面
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+                
+                // 移除所有選單項的 active 狀態
+                document.querySelectorAll('.menu-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 顯示對應的頁面
+                const targetSection = document.getElementById(sectionName + '-section');
+                if (targetSection) {
+                    targetSection.classList.remove('hidden');
+                } else {
+                    // 如果是 overview，顯示預設頁面
+                    const overviewSection = document.getElementById('overview-section');
+                    if (overviewSection) {
+                        overviewSection.classList.remove('hidden');
+                    }
+                }
+                
+                // 設定對應選單項為 active
+                const menuItems = document.querySelectorAll('.menu-item');
+                menuItems.forEach(item => {
+                    const text = item.textContent.trim();
+                    if ((sectionName === 'overview' && text.includes('系統總覽')) ||
+                        (sectionName === 'scene-recognition' && text.includes('場景識別')) ||
+                        (sectionName === 'object-tracking' && text.includes('物件追蹤')) ||
+                        (sectionName === 'system-architecture' && text.includes('系統架構')) ||
+                        (sectionName === 'memory-optimization' && text.includes('記憶體優化')) ||
+                        (sectionName === 'hdr-control' && text.includes('HDR 控制')) ||
+                        (sectionName === 'performance-analysis' && text.includes('效能分析'))) {
+                        item.classList.add('active');
+                    }
+                });
+                
+            } catch (error) {
+                console.error('頁面切換錯誤:', error);
+            }
+        }
         function showLayer(layerId) {
             console.log('顯示層級:', layerId);
             
