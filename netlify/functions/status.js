@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
     cpu_usage: 35 + (Math.random() * 10 - 5),
     memory_usage: 62 + (Math.random() * 10 - 5),
     npu_usage: 78 + (Math.random() * 10 - 5),
-    bandwidth: 1.1,
+    bandwidth: 1.1 + (Math.random() * 0.2 - 0.1),
     timestamp: new Date().toISOString()
   };
 
@@ -17,6 +17,9 @@ exports.handler = async (event, context) => {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*'
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify({
+      status: 'success',
+      data: data
+    })
   };
 };
