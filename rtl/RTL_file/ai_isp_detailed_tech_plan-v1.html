@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ISP晶片深度技術規劃</title>
+    <style>
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f7fa;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 50px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a472a;
+            text-align: center;
+            margin-bottom: 50px;
+            font-size: 36px;
+            border-bottom: 4px solid #1a472a;
+            padding-bottom: 20px;
+        }
+        h2 {
+            color: #2c5530;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            font-size: 28px;
+            border-left: 6px solid #4a7c59;
+            padding-left: 20px;
+        }
+        h3 {
+            color: #3d6e42;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .tech-highlight {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .spec-table th {
+            background-color: #2c5530;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        .spec-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .spec-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .architecture-box {
+            background-color: #f0f4f8;
+            border: 3px solid #4a7c59;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        .flow-diagram {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .flow-step {
+            background-color: #ffffff;
+            border: 2px solid #4a7c59;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px;
+            min-width: 200px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+        .arrow {
+            font-size: 30px;
+            color: #4a7c59;
+            margin: 0 20px;
+        }
+        .milestone-card {
+            background-color: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 35px;
+            background-color: #e9ecef;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50, #45a049);
+            text-align: center;
+            line-height: 35px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.5s ease;
+        }
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        .tech-card {
+            background-color: #fafafa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        .tech-card:hover {
+            border-color: #4a7c59;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .metric-label {
+            font-weight: 600;
+            color: #555;
+        }
+        .metric-value {
+            color: #4caf50;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .success-box {
+            background-color: #d4edda;
+            border-left: 5px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        ul, ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+        li {
+            margin: 10px 0;
+        }
+        @media print {
+            body { background-color: white; }
+            .container { box-shadow: none; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI ISP晶片模組深度技術開發規劃</h1>
+        
+        <div class="tech-highlight">
+            <h3>核心創新：AI蒸餾技術</h3>
+            <p>本計畫採用創新的<span class="highlight">知識蒸餾（Knowledge Distillation）</span>技術，實現97.5%的模型壓縮率，在TSMC 28nm HPC+製程上達到2 TOPS算力，端到端延遲<60ms的業界領先性能。</p>
+        </div>
+
+        <h2>一、關鍵技術架構</h2>
+        
+        <div class="architecture-box">
+            <h3>AI ISP晶片系統架構</h3>
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <h4>Camera Interface</h4>
+                    <p>MIPI CSI-2<br>4-lane<br>RAW數據輸入</p>
+                </div>
+                <span class="arrow">→</span>
+                <div class="flow-step">
+                    <h4>ISP Pipeline</h4>
+                    <p>零緩衝串流<br>HDR處理<br>降噪引擎</p>
+                </div>
+                <span class="arrow">→</span>
+                <div class="flow-step">
+                    <h4>AI NPU</h4>
+                    <p>2 TOPS<br>INT8/INT4<br>多任務處理</p>
+                </div>
+                <span class="arrow">→</span>
+                <div class="flow-step">
+                    <h4>Output</h4>
+                    <p>1080p@60fps<br>目標檢測<br>場景分析</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>二、AI蒸餾技術實現</h2>
+        
+        <div class="tech-grid">
+            <div class="tech-card">
+                <h3>1. Teacher模型設計</h3>
+                <ul>
+                    <li><strong>骨幹網路：</strong>ConvNeXt-Base（88M參數）</li>
+                    <li><strong>預訓練數據集：</strong>
+                        <ul>
+                            <li>ImageNet-1K（128萬張）</li>
+                            <li>COCO 2017（11.8萬張）</li>
+                            <li>VisDrone-2021（26萬幀）</li>
+                        </ul>
+                    </li>
+                    <li><strong>多任務頭：</strong>
+                        <ul>
+                            <li>HDR重建（3重曝光融合）</li>
+                            <li>場景分類（15類無人機場景）</li>
+                            <li>ISP參數預測（12個參數）</li>
+                            <li>物體檢測（YOLOv8頭）</li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="performance-metric">
+                    <span class="metric-label">Teacher mAP：</span>
+                    <span class="metric-value">>85%</span>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <h3>2. Student模型輕量化</h3>
+                <ul>
+                    <li><strong>骨幹網路：</strong>MobileNetV3-Small優化版</li>
+                    <li><strong>模型大小：</strong><5MB（97.5%壓縮）</li>
+                    <li><strong>關鍵技術：</strong>
+                        <ul>
+                            <li>漸進式蒸餾（3階段）</li>
+                            <li>結構化剪枝（90%稀疏度）</li>
+                            <li>INT8/INT4混合量化</li>
+                            <li>串流卷積優化</li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="performance-metric">
+                    <span class="metric-label">Student mAP：</span>
+                    <span class="metric-value">>78%（92%保持率）</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>三、開發方式與流程</h2>
+        
+        <h3>3.1 三階段蒸餾策略</h3>
+        
+        <table class="spec-table">
+            <thead>
+                <tr>
+                    <th>階段</th>
+                    <th>時長</th>
+                    <th>訓練重點</th>
+                    <th>損失權重</th>
+                    <th>溫度參數</th>
+                    <th>目標</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>特徵對齊</strong></td>
+                    <td>4個月</td>
+                    <td>中間層特徵匹配</td>
+                    <td>Feature: 0.7<br>Output: 0.2<br>Task: 0.1</td>
+                    <td>T=5.0</td>
+                    <td>學習特徵表示</td>
+                </tr>
+                <tr>
+                    <td><strong>知識轉移</strong></td>
+                    <td>3個月</td>
+                    <td>軟標籤蒸餾</td>
+                    <td>Feature: 0.5<br>Output: 0.3<br>Task: 0.2</td>
+                    <td>T=3.0</td>
+                    <td>遷移知識</td>
+                </tr>
+                <tr>
+                    <td><strong>性能優化</strong></td>
+                    <td>4個月</td>
+                    <td>任務特定優化</td>
+                    <td>Feature: 0.3<br>Output: 0.4<br>Task: 0.3</td>
+                    <td>T=1.0</td>
+                    <td>提升精度</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3.2 結構化剪枝流程</h3>
+        
+        <div class="tech-highlight">
+            <h4>漸進式剪枝計劃</h4>
+            <ol>
+                <li><strong>第1輪（30%稀疏度）：</strong>剪枝非關鍵通道 + 10 epochs微調</li>
+                <li><strong>第2輪（50%稀疏度）：</strong>基於梯度重要性剪枝 + 15 epochs微調</li>
+                <li><strong>第3輪（70%稀疏度）：</strong>Taylor展開評估 + 20 epochs微調</li>
+                <li><strong>第4輪（90%稀疏度）：</strong>最終優化 + 25 epochs微調</li>
+            </ol>
+        </div>
+
+        <h2>四、技術開發進程</h2>
+        
+        <div class="milestone-card">
+            <h3>Phase 1：概念驗證（0-3個月）</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 100%;">完成</div>
+            </div>
+            <ul>
+                <li>✓ 完成系統架構設計</li>
+                <li>✓ Teacher模型初步訓練（ImageNet預訓練）</li>
+                <li>✓ 關鍵演算法MATLAB/Python驗證</li>
+                <li>✓ 可行性分析報告</li>
+            </ul>
+        </div>
+
+        <div class="milestone-card">
+            <h3>Phase 2：原型開發（3-6個月）</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 75%;">進行中</div>
+            </div>
+            <ul>
+                <li>✓ FPGA原型實現（Xilinx Zynq UltraScale+）</li>
+                <li>✓ AI加速器RTL完成（2 TOPS驗證）</li>
+                <li>○ ISP核心模組整合</li>
+                <li>○ 效能測試報告</li>
+            </ul>
+        </div>
+
+        <div class="milestone-card">
+            <h3>Phase 3：系統整合（6-9個月）</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 25%;">規劃中</div>
+            </div>
+            <ul>
+                <li>○ 完整RTL實現（時序收斂@400MHz）</li>
+                <li>○ 軟體SDK開發（C++/Python API）</li>
+                <li>○ 系統級驗證（覆蓋率>95%）</li>
+                <li>○ DRC/LVS通過</li>
+            </ul>
+        </div>
+
+        <div class="milestone-card">
+            <h3>Phase 4：晶片實現（9-12個月）</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%;">待執行</div>
+            </div>
+            <ul>
+                <li>○ 後端設計完成（P&R、時序優化）</li>
+                <li>○ MPW流片（TSMC 28nm HPC+）</li>
+                <li>○ 晶片測試與驗證</li>
+                <li>○ 量產準備文件</li>
+            </ul>
+        </div>
+
+        <h2>五、階段性規格目標</h2>
+        
+        <div class="tech-grid">
+            <div class="tech-card">
+                <h3>第一代MVP（12個月）</h3>
+                <table class="spec-table">
+                    <tr>
+                        <td class="metric-label">製程技術</td>
+                        <td class="metric-value">TSMC 28nm HPC+</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">晶片面積</td>
+                        <td class="metric-value">49mm² (7×7mm)</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">解析度</td>
+                        <td class="metric-value">1080p@60fps</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">AI算力</td>
+                        <td class="metric-value">2 TOPS (INT8)</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">功耗</td>
+                        <td class="metric-value"><2.5W</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">延遲</td>
+                        <td class="metric-value"><60ms</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">模型大小</td>
+                        <td class="metric-value"><5MB</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">成本目標</td>
+                        <td class="metric-value">$100-120 USD</td>
+                    </tr>
+                </table>
+                <div class="success-box">
+                    <strong>支援功能：</strong>
+                    <ul>
+                        <li>基礎HDR（3重曝光）</li>
+                        <li>2D時空域降噪（SNR >35dB）</li>
+                        <li>電子防手震（補償±3度）</li>
+                        <li>10類目標檢測（VisDrone）</li>
+                        <li>15種場景識別</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="tech-card">
+                <h3>第二代Enhanced（18個月）</h3>
+                <table class="spec-table">
+                    <tr>
+                        <td class="metric-label">製程技術</td>
+                        <td class="metric-value">TSMC 22nm ULP</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">晶片面積</td>
+                        <td class="metric-value">36mm² (6×6mm)</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">解析度</td>
+                        <td class="metric-value">4K@30fps</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">AI算力</td>
+                        <td class="metric-value">4 TOPS (INT8/INT4)</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">功耗</td>
+                        <td class="metric-value"><1.5W</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">延遲</td>
+                        <td class="metric-value"><40ms</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">模型大小</td>
+                        <td class="metric-value"><3MB</td>
+                    </tr>
+                    <tr>
+                        <td class="metric-label">成本目標</td>
+                        <td class="metric-value">$80-100 USD</td>
+                    </tr>
+                </table>
+                <div class="success-box">
+                    <strong>新增功能：</strong>
+                    <ul>
+                        <li>進階HDR（5重曝光，120dB動態範圍）</li>
+                        <li>3D時空域降噪（SNR >40dB）</li>
+                        <li>6軸防手震（補償±5度）</li>
+                        <li>多目標追蹤（20+目標同時）</li>
+                        <li>場景語義分割</li>
+                        <li>夜視增強（0.1 lux）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2>六、關鍵技術指標</h2>
+        
+        <table class="spec-table">
+            <thead>
+                <tr>
+                    <th>技術指標</th>
+                    <th>業界標準</th>
+                    <th>我們的目標</th>
+                    <th>技術優勢</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>模型壓縮率</strong></td>
+                    <td>80-90%</td>
+                    <td><span class="highlight">97.5%</span></td>
+                    <td>AI蒸餾技術</td>
+                </tr>
+                <tr>
+                    <td><strong>端到端延遲</strong></td>
+                    <td>100-150ms</td>
+                    <td><span class="highlight"><60ms</span></td>
+                    <td>零緩衝架構</td>
+                </tr>
+                <tr>
+                    <td><strong>功耗效率</strong></td>
+                    <td>0.5-1 TOPS/W</td>
+                    <td><span class="highlight">0.8 TOPS/W</span></td>
+                    <td>28nm優化</td>
+                </tr>
+                <tr>
+                    <td><strong>檢測精度</strong></td>
+                    <td>mAP 70-75%</td>
+                    <td><span class="highlight">mAP >78%</span></td>
+                    <td>知識蒸餾</td>
+                </tr>
+                <tr>
+                    <td><strong>動態範圍</strong></td>
+                    <td>80-100dB</td>
+                    <td><span class="highlight">120dB+</span></td>
+                    <td>AI HDR融合</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>七、風險管理與對策</h2>
+        
+        <div class="warning-box">
+            <h3>技術風險與緩解措施</h3>
+            <ol>
+                <li><strong>AI模型壓縮精度損失：</strong>
+                    <ul>
+                        <li>主要對策：採用混合精度（關鍵層保持INT8）</li>
+                        <li>備用方案：開發自適應量化技術</li>
+                    </ul>
+                </li>
+                <li><strong>28nm製程功耗挑戰：</strong>
+                    <ul>
+                        <li>主要對策：多級DVFS + 智慧電源管理</li>
+                        <li>備用方案：演算法優化降低運算量</li>
+                    </ul>
+                </li>
+                <li><strong>HDR運動鬼影問題：</strong>
+                    <ul>
+                        <li>主要對策：AI輔助運動檢測與補償</li>
+                        <li>備用方案：快速單幀HDR演算法</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <h2>八、競爭優勢總結</h2>
+        
+        <div class="success-box">
+            <h3>核心競爭力</h3>
+            <ul>
+                <li><strong>技術創新：</strong>針對無人機ISP應用優化的AI蒸餾方案，實現97.5%模型壓縮率</li>
+                <li><strong>系統優化：</strong>零緩衝串流架構達成60ms業界最低延遲</li>
+                <li><strong>成本優勢：</strong>成熟28nm製程降低成本40%</li>
+                <li><strong>專業聚焦：</strong>專為無人機場景優化，非通用方案改裝</li>
+                <li><strong>快速部署：</strong>完整SDK支援，2天完成系統整合</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 50px; text-align: center; color: #666;">
+            <p><strong>計畫負責人：</strong>賓振呈 | <strong>聯絡方式：</strong>benison.pin@ctegroup.com.tw | 0935-198-875</p>
+            <p>CTE Group - 創新影像處理技術引領者</p>
+        </div>
+    </div>
+</body>
+</html>

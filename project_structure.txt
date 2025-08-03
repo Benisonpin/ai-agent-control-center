@@ -1,0 +1,33 @@
+.
+├── ai-isp-ums-integration
+│   ├── ai-isp-ums-integration
+│   ├── ai_models
+│   ├── benchmarks
+│   ├── build
+│   ├── camera_app
+│   ├── camera_hal3
+│   ├── docs
+│   ├── drivers
+│   ├── hal
+│   ├── isp
+│   ├── isp_algorithms
+│   ├── models
+│   ├── rtos
+│   ├── tests
+│   └── tools
+├── build
+│   ├── ai
+│   ├── app
+│   ├── hal
+│   └── isp
+├── config
+├── reference
+│   └── ISP_HDR
+├── rtl
+│   ├── integrated
+│   └── RTL_file
+├── scripts
+├── testbench
+└── work
+
+31 directories

@@ -1,0 +1,37 @@
+=== 效能分析報告 ===
+時間: 2025-07-06 06:00:38
+
+系統資源使用：
+top - 06:00:38 up 24 min,  0 user,  load average: 0.24, 0.06, 0.03
+Tasks:  44 total,   1 running,  43 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  2.4 sy,  0.0 ni, 97.6 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st 
+MiB Mem :  15998.9 total,  12783.6 free,   1838.9 used,   1650.4 buff/cache     
+MiB Swap:      0.0 total,      0.0 free,      0.0 used.  14160.0 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+      1 root      20   0    4324   2944   2944 S   0.0   0.0   0:00.04 bash
+      9 syslog    20   0  222140   3528   2304 S   0.0   0.0   0:00.01 rsyslogd
+     25 root      20   0   39024  28564  10752 S   0.0   0.2   0:00.57 python
+     26 root      20   0    6196   2432   2304 S   0.0   0.0   0:00.00 logger
+     70 root      10 -10   12020   3860   2816 S   0.0   0.0   0:00.01 sshd
+    268 root      20   0 2045756  74300  53632 S   0.0   0.5   0:00.41 dockerd
+    308 root      20   0 1875664  46464  33536 S   0.0   0.3   0:01.15 contain+
+    312 root      20   0 1231764  10480   5632 S   0.0   0.1   0:00.30 editor-+
+    313 root      20   0   16320   6144   5376 S   0.0   0.0   0:00.01 sudo
+    323 root      20   0 1226356   2432   1792 S   0.0   0.0   0:00.00 tmux-ag+
+    400 root      20   0    9196   3840   3584 S   0.0   0.0   0:00.00 runuser
+    401 benison+  20   0    4324   3200   2944 S   0.0   0.0   0:00.00 sh
+    414 benison+  20   0   11.3g  93152  43904 S   0.0   0.6   0:03.48 node
+
+專案統計：
+Verilog 檔案: 51
+C 檔案: 26
+總程式碼行數:  13119 total
+
+優化建議：
+- 最複雜的 Verilog 模組：
+/home/benison_pin/isp_ai_agent/rtl/RTL_file/isp_pipeline_top.v 60
+/home/benison_pin/isp_ai_agent/rtl/RTL_file/isp_pipeline_advance.v 35
+/home/benison_pin/isp_ai_agent/rtl/integrated/isp_pipeline_advance.v 35
+/home/benison_pin/isp_ai_agent/rtl/integrated/support_modules_complete.v 16
+/home/benison_pin/isp_ai_agent/rtl/RTL_file/DCG_Module.v 8

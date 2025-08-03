@@ -1,0 +1,76 @@
+AI ISP + UMS Test Report
+=======================
+Date: Sun Jul  6 05:44:11 AM UTC 2025
+
+1. Unit Tests
+-------------
+Testing UMS HAL Integration...
+[UMS_HAL] Opening UMS device: /dev/ums0 with flags: 0x1
+[UMS_HAL] Setting UMS params: prefetch=32, qos=15
+[UMS_HAL] Created region: size=67108864, flags=0x6
+[UMS_HAL] Created region: size=33554432, flags=0xa
+[UMS_HAL] Created region: size=16777216, flags=0x30
+[UMS_HAL] Created region: size=33554432, flags=0x46
+[UMS_HAL] AI ISP UMS initialized successfully
+UMS initialization successful!
+[UMS_HAL] AI ISP UMS cleaned up
+✓ UMS HAL test passed
+
+2. Integration Tests
+-------------------
+=== AI ISP Integration Test ===
+
+=== ISP Simulation Test ===
+Processing 10 frames (640x480)...
+  Frame 1 processed
+  Frame 2 processed
+  Frame 3 processed
+  Frame 4 processed
+  Frame 5 processed
+  Frame 6 processed
+  Frame 7 processed
+  Frame 8 processed
+  Frame 9 processed
+  Frame 10 processed
+Total time: 0.000 seconds
+FPS: 60975.61
+
+=== Zero Copy Test ===
+Copy 1MB: 0.766 ms
+
+✓ All tests passed
+✓ Basic integration test passed
+=== AI ISP Integration Test ===
+Pipeline created: 640x480
+Processing 10 frames...
+  Frame 1 processed
+  Frame 2 processed
+  Frame 3 processed
+  Frame 4 processed
+  Frame 5 processed
+  Frame 6 processed
+  Frame 7 processed
+  Frame 8 processed
+  Frame 9 processed
+  Frame 10 processed
+
+Results:
+  FPS: 61349.69
+  Total time: 0.000 seconds
+
+Test completed!
+✓ Full ISP integration test passed
+
+3. Performance Tests
+-------------------
+Memory bandwidth: 0.828 ms
+ISP throughput: 64935.06 FPS
+
+Test Summary
+------------
+Total tests run: 3
+Tests passed: 3
+Tests failed: 0
+Total time: 0 seconds
+
+Result: ALL TESTS PASSED ✓

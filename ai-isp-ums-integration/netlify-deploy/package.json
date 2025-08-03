@@ -1,0 +1,8 @@
+{
+  "name": "ai-agent-control-center",
+  "version": "2.0.0",
+  "description": "AI Agent Control Center with OTA Updates",
+  "scripts": {
+    "build": "echo 'No build required'"
+  }
+}

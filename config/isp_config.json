@@ -1,0 +1,30 @@
+{
+    "isp_pipeline": {
+        "name": "ISP AI Agent Pipeline",
+        "version": "1.0",
+        "ai_enabled": true,
+        "modules": [
+            "dpc",
+            "hdr", 
+            "demosaic",
+            "awb",
+            "ccm",
+            "ai_agent",
+            "ai_awb",
+            "ai_nr"
+        ],
+        "features": [
+            "generate",
+            "optimize", 
+            "testbench",
+            "ai_scene_detection",
+            "adaptive_processing"
+        ],
+        "ai_config": {
+            "scene_types": ["daylight", "lowlight", "portrait", "landscape", "highcontrast"],
+            "update_rate": 30,
+            "feature_count": 16,
+            "decision_cycles": 100
+        }
+    }
+}

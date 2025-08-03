@@ -1,0 +1,34 @@
+✅ PASS: compile_test.sh
+❌ FAIL: test_simple.vvp
+錯誤輸出：
+./super_ai_agent.sh: line 115: /home/benison_pin/isp_ai_agent/rtl/integrated/test_simple.vvp: cannot execute: required file not found
+---
+✅ PASS: final_integration_test.sh
+✅ PASS: test_integration
+❌ FAIL: quick_test.sh
+錯誤輸出：
+🚀 快速測試啟動...
+編譯測試程式...
+make: *** No rule to make target 'simple_test'.  Stop.
+---
+✅ PASS: integration_test
+✅ PASS: test_aisp_integration
+✅ PASS: test_integration
+✅ PASS: test_hardware_integration.sh
+✅ PASS: simple_test
+❌ FAIL: system_test.sh
+錯誤輸出：
+=== AI ISP RTOS System Test ===
+
+Building system...
+make: Makefile.rtos: No such file or directory
+make: *** No rule to make target 'Makefile.rtos'.  Stop.
+Build failed!
+---
+✅ PASS: run_full_test.sh
+✅ PASS: test_all_components
+✅ PASS: test_ums_basic
+✅ PASS: test_simple
+✅ PASS: run_all_tests.sh
+✅ PASS: test_ai_features.sh
+測試總結：通過 14，失敗 3

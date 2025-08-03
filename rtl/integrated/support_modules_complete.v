@@ -1,0 +1,480 @@
+// Complete Support Modules for AI HDR ISP Integration
+
+// =========================================
+// Sensor to AXI-Stream Converter
+// =========================================
+module sensor_to_axis #(
+    parameter DATA_WIDTH = 12
+)(
+    input  wire                     clk,
+    input  wire                     rst_n,
+    
+    // Sensor interface
+    input  wire [DATA_WIDTH-1:0]    sensor_data,
+    input  wire                     sensor_valid,
+    input  wire                     sensor_href,
+    input  wire                     sensor_vsync,
+    
+    // AXI-Stream interface
+    output reg  [DATA_WIDTH-1:0]    axis_tdata,
+    output reg                      axis_tvalid,
+    input  wire                     axis_tready,
+    output reg                      axis_tlast,
+    output reg                      axis_tuser
+);
+
+    reg vsync_d1, href_d1;
+    reg line_active;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            axis_tdata <= 0;
+            axis_tvalid <= 0;
+            axis_tlast <= 0;
+            axis_tuser <= 0;
+            vsync_d1 <= 0;
+            href_d1 <= 0;
+            line_active <= 0;
+        end else begin
+            vsync_d1 <= sensor_vsync;
+            href_d1 <= sensor_href;
+            
+            // Start of frame
+            axis_tuser <= sensor_vsync && !vsync_d1;
+            
+            // End of line
+            axis_tlast <= href_d1 && !sensor_href;
+            
+            // Data valid
+            if (sensor_valid && sensor_href) begin
+                axis_tdata <= sensor_data;
+                axis_tvalid <= 1;
+            end else if (axis_tready) begin
+                axis_tvalid <= 0;
+            end
+        end
+    end
+
+endmodule
+
+// =========================================
+// AXI-Stream to Parallel Converter
+// =========================================
+module axis_to_parallel #(
+    parameter DATA_WIDTH = 12
+)(
+    input  wire                     clk,
+    input  wire                     rst_n,
+    
+    // AXI-Stream interface
+    input  wire [DATA_WIDTH-1:0]    axis_tdata,
+    input  wire                     axis_tvalid,
+    output wire                     axis_tready,
+    input  wire                     axis_tlast,
+    input  wire                     axis_tuser,
+    
+    // Parallel interface
+    output reg  [DATA_WIDTH-1:0]    parallel_data,
+    output reg                      parallel_valid,
+    output reg                      parallel_href,
+    output reg                      parallel_vsync
+);
+
+    reg frame_active;
+    reg line_active;
+    
+    assign axis_tready = 1'b1;  // Always ready
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            parallel_data <= 0;
+            parallel_valid <= 0;
+            parallel_href <= 0;
+            parallel_vsync <= 0;
+            frame_active <= 0;
+            line_active <= 0;
+        end else begin
+            // Frame control
+            if (axis_tuser && axis_tvalid) begin
+                frame_active <= 1;
+                parallel_vsync <= 1;
+            end else if (!line_active && !axis_tvalid) begin
+                frame_active <= 0;
+                parallel_vsync <= 0;
+            end
+            
+            // Line control
+            if (frame_active && axis_tvalid && !line_active) begin
+                line_active <= 1;
+                parallel_href <= 1;
+            end else if (axis_tlast && axis_tvalid) begin
+                line_active <= 0;
+                parallel_href <= 0;
+            end
+            
+            // Data
+            parallel_data <= axis_tdata;
+            parallel_valid <= axis_tvalid;
+        end
+    end
+
+endmodule
+
+// =========================================
+// Enhanced AI Agent Core with HDR awareness
+// =========================================
+module ai_agent_core_enhanced #(
+    parameter STATS_BITS = 32,
+    parameter SCENE_TYPES = 8
+)(
+    input  wire                         clk,
+    input  wire                         rst_n,
+    input  wire                         enable,
+    
+    // Statistics inputs
+    input wire [8191:0] histogram_data_bus,
+    input  wire [31:0]                  brightness_stats,
+    input  wire [31:0]                  contrast_stats,
+    input  wire                         hdr_active,
+    input  wire [2:0]                   scene_context,
+    input  wire                         stats_valid,
+    
+    // Parameter outputs
+    output wire [1023:0] ai_params_bus,
+    output reg                          params_updated,
+    
+    // Scene detection outputs
+    output reg  [31:0]                  scene_type,
+    output reg  [31:0]                  confidence,
+    output reg  [31:0]                  quality_score,
+    output reg                          ready
+);
+
+    // Scene type definitions
+    localparam SCENE_DAYLIGHT = 0;
+    localparam SCENE_LOWLIGHT = 1;
+    localparam SCENE_PORTRAIT = 2;
+    localparam SCENE_LANDSCAPE = 3;
+    localparam SCENE_HDR = 4;
+    localparam SCENE_BACKLIT = 5;
+    localparam SCENE_NIGHT = 6;
+    localparam SCENE_MACRO = 7;
+    
+    // State machine
+    reg [2:0] state;
+    localparam IDLE = 0, ANALYZE = 1, UPDATE = 2, WAIT = 3;
+    
+    // Analysis registers
+    reg [31:0] hist_peak;
+    reg [7:0] hist_peak_bin;
+    reg [31:0] hist_spread;
+    reg [31:0] dark_pixels;
+    reg [31:0] bright_pixels;
+    
+    integer i;
+    
+    // Scene detection logic
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            state <= IDLE;
+            scene_type <= SCENE_DAYLIGHT;
+            confidence <= 0;
+            quality_score <= 0;
+            params_updated <= 0;
+            ready <= 0;
+            
+            // Default parameters
+            ai_params[0] <= 32'h0100;  // AWB R gain
+            ai_params[1] <= 32'h0100;  // AWB B gain
+            ai_params[2] <= 32'h0080;  // Exposure
+            ai_params[3] <= 32'h0020;  // Noise threshold
+            for (i = 4; i < 32; i = i + 1) begin
+                ai_params[i] <= 32'h0;
+            end
+            
+        end else if (enable) begin
+            case (state)
+                IDLE: begin
+                    if (stats_valid) begin
+                        state <= ANALYZE;
+                        ready <= 0;
+                    end
+                end
+                
+                ANALYZE: begin
+                    // Analyze histogram
+                    hist_peak = 0;
+                    dark_pixels = 0;
+                    bright_pixels = 0;
+                    
+                    for (i = 0; i < 256; i = i + 1) begin
+                        if (histogram_data[i] > hist_peak) begin
+                            hist_peak = histogram_data[i];
+                            hist_peak_bin = i;
+                        end
+                        if (i < 64) dark_pixels = dark_pixels + histogram_data[i];
+                        if (i > 192) bright_pixels = bright_pixels + histogram_data[i];
+                    end
+                    
+                    // Scene classification with HDR awareness
+                    if (hdr_active && (bright_pixels > dark_pixels * 2)) begin
+                        scene_type <= SCENE_HDR;
+                        confidence <= 32'd90;
+                    end else if (hist_peak_bin < 64) begin
+                        scene_type <= SCENE_NIGHT;
+                        confidence <= 32'd85;
+                    end else if (hist_peak_bin > 192) begin
+                        scene_type <= SCENE_DAYLIGHT;
+                        confidence <= 32'd85;
+                    end else if (dark_pixels > bright_pixels * 3) begin
+                        scene_type <= SCENE_LOWLIGHT;
+                        confidence <= 32'd80;
+                    end else if (bright_pixels > dark_pixels * 3) begin
+                        scene_type <= SCENE_BACKLIT;
+                        confidence <= 32'd75;
+                    end else begin
+                        scene_type <= SCENE_LANDSCAPE;
+                        confidence <= 32'd70;
+                    end
+                    
+                    state <= UPDATE;
+                end
+                
+                UPDATE: begin
+                    // Update parameters based on scene
+                    case (scene_type)
+                        SCENE_DAYLIGHT: begin
+                            ai_params[0] <= 32'h0100;  // Neutral WB
+                            ai_params[1] <= 32'h00E0;
+                            ai_params[2] <= 32'h0080;  // Normal exposure
+                            ai_params[3] <= 32'h0010;  // Low noise reduction
+                        end
+                        
+                        SCENE_LOWLIGHT: begin
+                            ai_params[0] <= 32'h0110;  // Warmer WB
+                            ai_params[1] <= 32'h00F0;
+                            ai_params[2] <= 32'h0100;  // Higher exposure
+                            ai_params[3] <= 32'h0040;  // High noise reduction
+                        end
+                        
+                        SCENE_HDR: begin
+                            ai_params[0] <= 32'h0100;
+                            ai_params[1] <= 32'h0100;
+                            ai_params[2] <= 32'h00A0;  // Balanced exposure
+                            ai_params[3] <= 32'h0020;  // Medium noise reduction
+                            // Special HDR tone curve
+                            ai_params[13] <= 32'h0080;  // S-curve gamma
+                        end
+                        
+                        SCENE_BACKLIT: begin
+                            ai_params[0] <= 32'h00F0;
+                            ai_params[1] <= 32'h00E0;
+                            ai_params[2] <= 32'h00C0;  // Boost shadows
+                            ai_params[3] <= 32'h0018;
+                        end
+                        
+                        default: begin
+                            // Keep current settings
+                        end
+                    endcase
+                    
+                    // Calculate quality score
+                    quality_score <= (100 - ((dark_pixels + bright_pixels) >> 10));
+                    
+                    params_updated <= 1;
+                    state <= WAIT;
+                end
+                
+                WAIT: begin
+                    params_updated <= 0;
+                    ready <= 1;
+                    state <= IDLE;
+                end
+            endcase
+        end
+    end
+
+endmodule
+
+// =========================================
+// UMS Frame Buffer Interface
+// =========================================
+module ums_frame_buffer #(
+    parameter PIXEL_WIDTH = 12,
+    parameter IMAGE_WIDTH = 4096,
+    parameter IMAGE_HEIGHT = 3072
+)(
+    input  wire                         clk,
+    input  wire                         rst_n,
+    
+    // Pixel input
+    input  wire [PIXEL_WIDTH*3-1:0]     pixel_data,
+    input  wire                         pixel_valid,
+    input  wire                         frame_start,
+    
+    // UMS interface
+    output reg  [39:0]                  ums_addr,
+    output reg  [127:0]                 ums_wdata,
+    output reg                          ums_write,
+    input  wire                         ums_ready,
+    
+    // AI read interface
+    input  wire                         ai_read_req,
+    input  wire [39:0]                  ai_read_addr
+);
+
+    // Buffer management
+    reg [39:0] write_addr;
+    reg [39:0] frame_base_addr;
+    reg [7:0] pixel_count;
+    reg [PIXEL_WIDTH*3-1:0] pixel_buffer[0:3];
+    reg buffer_valid;
+    
+    // Frame buffer bases (double buffering)
+    localparam FRAME0_BASE = 40'h8000_0000;
+    localparam FRAME1_BASE = 40'h8800_0000;
+    reg current_buffer;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            write_addr <= FRAME0_BASE;
+            frame_base_addr <= FRAME0_BASE;
+            pixel_count <= 0;
+            ums_write <= 0;
+            current_buffer <= 0;
+            buffer_valid <= 0;
+        end else begin
+            if (frame_start) begin
+                // Switch buffers
+                current_buffer <= ~current_buffer;
+                frame_base_addr <= current_buffer ? FRAME1_BASE : FRAME0_BASE;
+                write_addr <= frame_base_addr;
+                pixel_count <= 0;
+            end
+            
+            if (pixel_valid) begin
+                // Buffer pixels
+                pixel_buffer[pixel_count[1:0]] <= pixel_data;
+                pixel_count <= pixel_count + 1;
+                
+                // Write to UMS when we have 128 bits
+                if (pixel_count[1:0] == 2'b11) begin
+                    buffer_valid <= 1;
+                end
+            end
+            
+            if (buffer_valid && ums_ready && !ums_write) begin
+                ums_addr <= write_addr;
+                ums_wdata <= {pixel_buffer[3], pixel_buffer[2], 
+                             pixel_buffer[1], pixel_buffer[0]};
+                ums_write <= 1;
+                write_addr <= write_addr + 16;  // 128-bit increment
+                buffer_valid <= 0;
+            end else if (ums_write && ums_ready) begin
+                ums_write <= 0;
+            end
+        end
+    end
+
+endmodule
+
+// =========================================
+// Simple AXI4-Lite Slave
+// =========================================
+module axi4_lite_slave #(
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 12
+)(
+    input  wire                         clk,
+    input  wire                         rst_n,
+    
+    // AXI4-Lite interface
+    input  wire [ADDR_WIDTH-1:0]        s_axi_awaddr,
+    input  wire                         s_axi_awvalid,
+    output reg                          s_axi_awready,
+    input  wire [DATA_WIDTH-1:0]        s_axi_wdata,
+    input  wire                         s_axi_wvalid,
+    output reg                          s_axi_wready,
+    output reg                          s_axi_bvalid,
+    input  wire                         s_axi_bready,
+    input  wire [ADDR_WIDTH-1:0]        s_axi_araddr,
+    input  wire                         s_axi_arvalid,
+    output reg                          s_axi_arready,
+    output reg  [DATA_WIDTH-1:0]        s_axi_rdata,
+    output reg                          s_axi_rvalid,
+    input  wire                         s_axi_rready,
+    
+    // Register interface
+    output wire [7:0]                   reg_wr_addr,
+    output wire [DATA_WIDTH-1:0]        reg_wr_data,
+    output wire                         reg_wr_en,
+    output wire [7:0]                   reg_rd_addr,
+    input  wire [DATA_WIDTH-1:0]        reg_rd_data
+);
+
+    // Write channel
+    reg [ADDR_WIDTH-1:0] wr_addr_reg;
+    reg wr_addr_valid;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            s_axi_awready <= 1;
+            s_axi_wready <= 0;
+            s_axi_bvalid <= 0;
+            wr_addr_valid <= 0;
+        end else begin
+            // Address phase
+            if (s_axi_awvalid && s_axi_awready) begin
+                wr_addr_reg <= s_axi_awaddr;
+                wr_addr_valid <= 1;
+                s_axi_awready <= 0;
+                s_axi_wready <= 1;
+            end
+            
+            // Data phase
+            if (s_axi_wvalid && s_axi_wready) begin
+                s_axi_wready <= 0;
+                s_axi_bvalid <= 1;
+            end
+            
+            // Response phase
+            if (s_axi_bvalid && s_axi_bready) begin
+                s_axi_bvalid <= 0;
+                s_axi_awready <= 1;
+                wr_addr_valid <= 0;
+            end
+        end
+    end
+    
+    assign reg_wr_addr = wr_addr_reg[9:2];  // Word aligned
+    assign reg_wr_data = s_axi_wdata;
+    assign reg_wr_en = s_axi_wvalid && s_axi_wready;
+    
+    // Read channel
+    reg [ADDR_WIDTH-1:0] rd_addr_reg;
+    
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            s_axi_arready <= 1;
+            s_axi_rvalid <= 0;
+        end else begin
+            // Address phase
+            if (s_axi_arvalid && s_axi_arready) begin
+                rd_addr_reg <= s_axi_araddr;
+                s_axi_arready <= 0;
+                s_axi_rvalid <= 1;
+            end
+            
+            // Data phase
+            if (s_axi_rvalid && s_axi_rready) begin
+                s_axi_rvalid <= 0;
+                s_axi_arready <= 1;
+            end
+            
+            s_axi_rdata <= reg_rd_data;
+        end
+    end
+    
+    assign reg_rd_addr = rd_addr_reg[9:2];
+
+endmodule

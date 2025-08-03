@@ -1,0 +1,43 @@
+{
+  "scenarios": {
+    "agricultural_drone": {
+      "name": "農業無人機",
+      "required_models": [
+        "crop_health_detector",
+        "pest_identifier",
+        "irrigation_optimizer"
+      ],
+      "update_priority": "stability",
+      "special_features": {
+        "multispectral_analysis": true,
+        "weather_adaptation": true
+      }
+    },
+    "delivery_drone": {
+      "name": "物流無人機",
+      "required_models": [
+        "package_scanner",
+        "route_optimizer",
+        "landing_zone_detector"
+      ],
+      "update_priority": "efficiency",
+      "special_features": {
+        "real_time_tracking": true,
+        "battery_optimizer": true
+      }
+    },
+    "surveillance_drone": {
+      "name": "監控無人機",
+      "required_models": [
+        "person_detector",
+        "anomaly_detector",
+        "night_vision_enhancer"
+      ],
+      "update_priority": "accuracy",
+      "special_features": {
+        "privacy_filter": true,
+        "alert_system": true
+      }
+    }
+  }
+}

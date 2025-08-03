@@ -1,0 +1,20 @@
+{
+    "ai_test_scenarios": {
+        "daylight": {
+            "ae_range": [0x8000, 0xFFFF],
+            "expected_params": {
+                "black_level": 0x0040,
+                "awb_r_gain": 0x0100,
+                "awb_b_gain": 0x00E0
+            }
+        },
+        "lowlight": {
+            "ae_range": [0x0000, 0x2000],
+            "expected_params": {
+                "black_level": 0x0080,
+                "awb_r_gain": 0x0120,
+                "awb_b_gain": 0x00C0
+            }
+        }
+    }
+}

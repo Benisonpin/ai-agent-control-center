@@ -1,0 +1,32 @@
+{
+  "default": {
+    "name": "\u9810\u8a2d\u4e3b\u984c",
+    "colors": {
+      "primary": "39",
+      "secondary": "214",
+      "success": "82",
+      "warning": "226",
+      "error": "196"
+    }
+  },
+  "night": {
+    "name": "\u591c\u9593\u6a21\u5f0f",
+    "colors": {
+      "primary": "33",
+      "secondary": "99",
+      "success": "46",
+      "warning": "178",
+      "error": "160"
+    }
+  },
+  "cyberpunk": {
+    "name": "\u8cfd\u535a\u670b\u514b",
+    "colors": {
+      "primary": "201",
+      "secondary": "165",
+      "success": "118",
+      "warning": "220",
+      "error": "197"
+    }
+  }
+}

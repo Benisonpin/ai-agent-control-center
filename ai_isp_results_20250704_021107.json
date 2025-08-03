@@ -1,0 +1,87 @@
+[
+  {
+    "frame": 1,
+    "scene_id": 3,
+    "scene_name": "Landscape",
+    "scene_icon": "\ud83c\udfde\ufe0f",
+    "parameters": {
+      "black_level": 48,
+      "awb_r_gain": 240,
+      "awb_b_gain": 240,
+      "sharpness": 12,
+      "nr_strength": 2
+    },
+    "stats": {
+      "brightness": 0.30211236597720104,
+      "contrast": 0.4069465781192429
+    }
+  },
+  {
+    "frame": 2,
+    "scene_id": 0,
+    "scene_name": "Daylight",
+    "scene_icon": "\u2600\ufe0f",
+    "parameters": {
+      "black_level": 64,
+      "awb_r_gain": 256,
+      "awb_b_gain": 224,
+      "sharpness": 8,
+      "nr_strength": 4
+    },
+    "stats": {
+      "brightness": 0.8300805891948313,
+      "contrast": 0.5267339441037767
+    }
+  },
+  {
+    "frame": 3,
+    "scene_id": 2,
+    "scene_name": "Portrait",
+    "scene_icon": "\ud83d\udc64",
+    "parameters": {
+      "black_level": 64,
+      "awb_r_gain": 272,
+      "awb_b_gain": 208,
+      "sharpness": 6,
+      "nr_strength": 6
+    },
+    "stats": {
+      "brightness": 0.48857275511438847,
+      "contrast": 0.32221103214729785
+    }
+  },
+  {
+    "frame": 4,
+    "scene_id": 1,
+    "scene_name": "Lowlight",
+    "scene_icon": "\ud83c\udf19",
+    "parameters": {
+      "black_level": 128,
+      "awb_r_gain": 288,
+      "awb_b_gain": 192,
+      "sharpness": 4,
+      "nr_strength": 12
+    },
+    "stats": {
+      "brightness": 0.23813809173484535,
+      "contrast": 0.6217973270874356
+    }
+  },
+  {
+    "frame": 5,
+    "scene_id": 3,
+    "scene_name": "Landscape",
+    "scene_icon": "\ud83c\udfde\ufe0f",
+    "parameters": {
+      "black_level": 48,
+      "awb_r_gain": 240,
+      "awb_b_gain": 240,
+      "sharpness": 12,
+      "nr_strength": 2
+    },
+    "stats": {
+      "brightness": 0.6399784080530548,
+      "contrast": 0.4310228983187727
+    }
+  }
+]

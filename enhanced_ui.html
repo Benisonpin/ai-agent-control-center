@@ -1,0 +1,159 @@
+<!-- 加入到 HTML 模板的額外功能 -->
+
+<!-- 檔案編輯器 -->
+<div class="card">
+    <h2>程式碼編輯器</h2>
+    <select id="file-selector" onchange="loadFile()">
+        <option value="">選擇檔案...</option>
+    </select>
+    <div id="editor" style="height: 400px; border: 1px solid #ddd; margin-top: 10px;">
+        <textarea id="code-editor" style="width: 100%; height: 100%; font-family: monospace;"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="saveFile()">💾 儲存檔案</button>
+</div>
+
+<!-- 圖表視覺化 -->
+<div class="card">
+    <h2>效能趨勢</h2>
+    <canvas id="performanceChart"></canvas>
+</div>
+
+<!-- 即時通知 -->
+<div id="notification" style="position: fixed; top: 20px; right: 20px; 
+     background: #10b981; color: white; padding: 1rem; border-radius: 4px; 
+     display: none; z-index: 1000;">
+    <span id="notification-text"></span>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// 檔案編輯器功能
+function loadFileList() {
+    fetch('/api/files')
+        .then(response => response.json())
+        .then(data => {
+            const selector = document.getElementById('file-selector');
+            selector.innerHTML = '<option value="">選擇檔案...</option>';
+            data.files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file;
+                option.textContent = file;
+                selector.appendChild(option);
+            });
+        });
+}
+
+function loadFile() {
+    const filepath = document.getElementById('file-selector').value;
+    if (!filepath) return;
+    
+    fetch('/api/file/' + filepath)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('code-editor').value = data.content;
+        });
+}
+
+function saveFile() {
+    const filepath = document.getElementById('file-selector').value;
+    const content = document.getElementById('code-editor').value;
+    
+    if (!filepath) {
+        alert('請先選擇檔案');
+        return;
+    }
+    
+    fetch('/api/file/' + filepath, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({content: content})
+    })
+    .then(response => response.json())
+    .then(data => {
+        showNotification(data.message);
+    });
+}
+
+// 通知功能
+function showNotification(message, type = 'success') {
+    const notification = document.getElementById('notification');
+    const text = document.getElementById('notification-text');
+    
+    text.textContent = message;
+    notification.style.background = type === 'success' ? '#10b981' : '#ef4444';
+    notification.style.display = 'block';
+    
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 3000);
+}
+
+// 圖表功能
+let performanceChart;
+
+function initChart() {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '編譯成功',
+                data: [],
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }, {
+                label: '測試通過',
+                data: [],
+                borderColor: 'rgb(54, 162, 235)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    updateChart();
+}
+
+function updateChart() {
+    fetch('/api/history/7')
+        .then(response => response.json())
+        .then(data => {
+            const labels = data.history.map(h => h.date);
+            const compiles = data.history.map(h => h.compiles);
+            const tests = data.history.map(h => h.tests);
+            
+            performanceChart.data.labels = labels;
+            performanceChart.data.datasets[0].data = compiles;
+            performanceChart.data.datasets[1].data = tests;
+            performanceChart.update();
+        });
+}
+
+// 鍵盤快捷鍵
+document.addEventListener('keydown', function(e) {
+    // Ctrl+S 儲存
+    if (e.ctrlKey && e.key === 's') {
+        e.preventDefault();
+        saveFile();
+    }
+    // Ctrl+R 重新整理
+    if (e.ctrlKey && e.key === 'r') {
+        e.preventDefault();
+        refreshAll();
+    }
+});
+
+// 初始化
+document.addEventListener('DOMContentLoaded', function() {
+    loadFileList();
+    initChart();
+});
+</script>

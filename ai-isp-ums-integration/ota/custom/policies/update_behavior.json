@@ -1,0 +1,82 @@
+{
+  "update_behaviors": {
+    "conservative": {
+      "name": "保守模式",
+      "description": "最大程度確保穩定性",
+      "settings": {
+        "auto_update": false,
+        "require_manual_approval": true,
+        "test_duration_before_deploy": "72 hours",
+        "rollback_on_any_error": true,
+        "backup_before_update": true,
+        "verify_twice": true,
+        "allowed_update_window": "02:00-05:00",
+        "max_retry": 1
+      },
+      "conditions": {
+        "battery_minimum": 80,
+        "stable_connection_minutes": 10,
+        "no_active_mission": true,
+        "weather_check": true
+      }
+    },
+    "balanced": {
+      "name": "平衡模式",
+      "description": "兼顧穩定性和即時性",
+      "settings": {
+        "auto_update": true,
+        "require_manual_approval": false,
+        "test_duration_before_deploy": "24 hours",
+        "rollback_on_critical_error": true,
+        "backup_before_update": true,
+        "verify_once": true,
+        "allowed_update_window": "00:00-06:00",
+        "max_retry": 3
+      },
+      "conditions": {
+        "battery_minimum": 50,
+        "stable_connection_minutes": 5,
+        "no_active_mission": true,
+        "weather_check": false
+      }
+    },
+    "aggressive": {
+      "name": "積極模式",
+      "description": "最快獲得新功能",
+      "settings": {
+        "auto_update": true,
+        "require_manual_approval": false,
+        "test_duration_before_deploy": "0 hours",
+        "rollback_on_critical_error": true,
+        "backup_before_update": false,
+        "verify_once": true,
+        "allowed_update_window": "anytime",
+        "max_retry": 5,
+        "parallel_download": true,
+        "install_beta": true
+      },
+      "conditions": {
+        "battery_minimum": 30,
+        "stable_connection_minutes": 1,
+        "no_active_mission": false,
+        "weather_check": false
+      }
+    },
+    "scheduled": {
+      "name": "排程模式",
+      "description": "按照預定計劃更新",
+      "settings": {
+        "auto_update": true,
+        "require_manual_approval": false,
+        "schedule": {
+          "weekly": ["Monday", "Thursday"],
+          "time": "03:00",
+          "timezone": "Asia/Taipei"
+        },
+        "batch_update": true,
+        "staggered_deployment": true,
+        "notification_hours_before": 24
+      }
+    }
+  }
+}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>AI ISP Agent 監控儀表板</title>
+    <script src="api_client.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #1a1a1a; 
+            color: #fff;
+            padding: 20px;
+        }
+        .metric-card {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px;
+            display: inline-block;
+        }
+        .metric-value {
+            font-size: 2em;
+            color: #4CAF50;
+        }
+        #verilog-output {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            padding: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI ISP Agent 監控儀表板</h1>
+    
+    <div id="metrics">
+        <div class="metric-card">
+            <h3>FPS</h3>
+            <div class="metric-value" id="fps">--</div>
+        </div>
+        <div class="metric-card">
+            <h3>延遲</h3>
+            <div class="metric-value" id="latency">-- ms</div>
+        </div>
+        <div class="metric-card">
+            <h3>準確率</h3>
+            <div class="metric-value" id="accuracy">--%</div>
+        </div>
+    </div>
+    
+    <h2>Verilog 模組生成器</h2>
+    <select id="module-type">
+        <option value="filter">濾波器</option>
+        <option value="color_converter">色彩轉換器</option>
+        <option value="denoise">降噪模組</option>
+    </select>
+    <button onclick="generateModule()">生成模組</button>
+    
+    <div id="verilog-output"></div>
+    
+    <script>
+        const client = new AIISPAgentClient();
+        
+        // 更新效能指標
+        async function updateMetrics() {
+            const metrics = await client.getPerformanceMetrics();
+            document.getElementById('fps').textContent = metrics.fps.toFixed(1);
+            document.getElementById('latency').textContent = metrics.latency_ms + ' ms';
+            document.getElementById('accuracy').textContent = metrics.accuracy_percent.toFixed(1) + '%';
+        }
+        
+        // 生成模組
+        async function generateModule() {
+            const moduleType = document.getElementById('module-type').value;
+            const result = await client.generateVerilog(moduleType, {
+                width: 1920,
+                height: 1080,
+                bit_depth: 8
+            });
+            
+            document.getElementById('verilog-output').textContent = result.verilog_code;
+        }
+        
+        // 定期更新
+        setInterval(updateMetrics, 2000);
+        updateMetrics();
+    </script>
+</body>
+</html>

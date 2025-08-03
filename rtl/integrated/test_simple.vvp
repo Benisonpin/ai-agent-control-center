@@ -1,0 +1,33 @@
+#! /usr/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/system.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_sys.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/vhdl_textio.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/v2005_math.vpi";
+:vpi_module "/usr/lib/x86_64-linux-gnu/ivl/va_math.vpi";
+S_0x5befecd3b5a0 .scope module, "test_simple" "test_simple" 2 1;
+ .timescale 0 0;
+v0x5befecd3d400_0 .var "clk", 0 0;
+    .scope S_0x5befecd3b5a0;
+T_0 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x5befecd3d400_0, 0, 1;
+    %delay 100, 0;
+    %vpi_call 2 5 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+    .scope S_0x5befecd3b5a0;
+T_1 ;
+    %delay 5, 0;
+    %load/vec4 v0x5befecd3d400_0;
+    %inv;
+    %store/vec4 v0x5befecd3d400_0, 0, 1;
+    %jmp T_1;
+    .thread T_1;
+# The file index is used to find the file name in the following table.
+:file_names 3;
+    "N/A";
+    "<interactive>";
+    "test_simple.v";

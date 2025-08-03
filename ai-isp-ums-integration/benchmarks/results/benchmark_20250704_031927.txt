@@ -1,0 +1,66 @@
+=== System Information ===
+CPU: Intel(R) Xeon(R) CPU @ 2.20GHz
+Cores: 4
+Memory: 15Gi
+Kernel: 6.6.87+
+
+=== Test Results ===
+
+--- UMS HAL Test ---
+Testing UMS HAL Integration...
+[UMS_HAL] Opening UMS device: /dev/ums0 with flags: 0x1
+[UMS_HAL] Setting UMS params: prefetch=32, qos=15
+[UMS_HAL] Created region: size=67108864, flags=0x6
+[UMS_HAL] Created region: size=33554432, flags=0xa
+[UMS_HAL] Created region: size=16777216, flags=0x30
+[UMS_HAL] Created region: size=33554432, flags=0x46
+[UMS_HAL] AI ISP UMS initialized successfully
+UMS initialization successful!
+[UMS_HAL] AI ISP UMS cleaned up
+
+--- Integration Test ---
+=== AI ISP Integration Test ===
+
+=== ISP Simulation Test ===
+Processing 10 frames (640x480)...
+  Frame 1 processed
+  Frame 2 processed
+  Frame 3 processed
+  Frame 4 processed
+  Frame 5 processed
+  Frame 6 processed
+  Frame 7 processed
+  Frame 8 processed
+  Frame 9 processed
+  Frame 10 processed
+Total time: 0.000 seconds
+FPS: 21786.49
+
+=== Zero Copy Test ===
+Copy 1MB: 1.042 ms
+
+✓ All tests passed
+
+--- Full ISP Pipeline Test ---
+=== AI ISP Integration Test ===
+Pipeline created: 640x480
+Processing 10 frames...
+  Frame 1 processed
+  Frame 2 processed
+  Frame 3 processed
+  Frame 4 processed
+  Frame 5 processed
+  Frame 6 processed
+  Frame 7 processed
+  Frame 8 processed
+  Frame 9 processed
+  Frame 10 processed
+
+Results:
+  FPS: 20080.32
+  Total time: 0.000 seconds
+
+Test completed!
+
+=== Performance Summary ===
+All tests completed at: Fri Jul  4 03:19:28 AM UTC 2025

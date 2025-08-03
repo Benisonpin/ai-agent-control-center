@@ -1,0 +1,87 @@
+{
+  "subscription_plans": {
+    "starter": {
+      "name": "新手入門版",
+      "price": {
+        "monthly": 0,
+        "yearly": 0
+      },
+      "features": {
+        "models": ["basic_flight", "simple_obstacle_avoidance"],
+        "updates": "quarterly",
+        "max_devices": 1,
+        "support": "forum",
+        "cloud_storage": "1GB"
+      },
+      "limitations": {
+        "flight_time": "30 minutes/day",
+        "altitude": "120m max",
+        "features_locked": ["night_vision", "ai_tracking", "multi_drone"]
+      }
+    },
+    "hobbyist": {
+      "name": "愛好者版",
+      "price": {
+        "monthly": 19.99,
+        "yearly": 199.99
+      },
+      "features": {
+        "models": ["scene_detection", "object_tracking", "hdr_imaging"],
+        "updates": "monthly",
+        "max_devices": 3,
+        "support": "email",
+        "cloud_storage": "50GB",
+        "beta_access": true
+      },
+      "benefits": {
+        "flight_time": "unlimited",
+        "altitude": "400m max",
+        "special_modes": ["follow_me", "orbit", "waypoint"]
+      }
+    },
+    "professional": {
+      "name": "專業版",
+      "price": {
+        "monthly": 49.99,
+        "yearly": 499.99
+      },
+      "features": {
+        "models": "all_standard_models",
+        "updates": "weekly",
+        "max_devices": 10,
+        "support": "priority_24_7",
+        "cloud_storage": "500GB",
+        "api_access": true,
+        "custom_training": true
+      },
+      "pro_features": {
+        "multi_drone_sync": true,
+        "fleet_management": true,
+        "advanced_analytics": true,
+        "white_label": false
+      }
+    },
+    "enterprise": {
+      "name": "企業版",
+      "price": {
+        "monthly": "custom",
+        "yearly": "custom"
+      },
+      "features": {
+        "models": "all_plus_custom",
+        "updates": "on_demand",
+        "max_devices": "unlimited",
+        "support": "dedicated_team",
+        "cloud_storage": "unlimited",
+        "sla": "99.9%"
+      },
+      "enterprise_features": {
+        "private_cloud": true,
+        "custom_models": true,
+        "white_label": true,
+        "compliance": ["ISO27001", "GDPR", "SOC2"],
+        "training": "onsite"
+      }
+    }
+  }
+}

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP 自適應參數調整系統詳解</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .flow-diagram {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            border: 2px solid #dee2e6;
+        }
+        
+        .flow-step {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            margin: 0 10px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .flow-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+        
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin: 0 auto 10px;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .step-desc {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        
+        .arrow {
+            font-size: 24px;
+            color: #3498db;
+            margin: 0 5px;
+        }
+        
+        .parameter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .parameter-card {
+            background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .parameter-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 8px 16px rgba(52, 152, 219, 0.2);
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .exposure-icon { background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); }
+        .noise-icon { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); }
+        .color-icon { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+        .detail-icon { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+        .hdr-icon { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+        .defog-icon { background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); }
+        
+        .param-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .param-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .param-name {
+            font-weight: 500;
+            color: #34495e;
+        }
+        
+        .param-value {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .scene-analysis {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .scene-card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .scene-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .scene-desc {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .ai-model-info {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+        
+        .model-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .spec-item {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .spec-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .spec-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .feedback-loop {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+        
+        .timeline-dot {
+            width: 20px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .timeline-line {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: #bdc3c7;
+            z-index: 1;
+        }
+        
+        .timeline-item:last-child .timeline-line {
+            display: none;
+        }
+        
+        .timeline-text {
+            font-size: 12px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">ISP 自適應參數調整系統</div>
+            <div class="subtitle">AI驅動的即時場景感知與參數優化技術</div>
+        </div>
+        
+        <div class="content">
+            <!-- AI模型架構 -->
+            <div class="section">
+                <div class="section-title">🧠 AI蒸餾技術架構</div>
+                <div class="ai-model-info">
+                    <h3 style="margin: 0 0 15px 0; color: #2c3e50;">知識蒸餾模型規格</h3>
+                    <div class="model-specs">
+                        <div class="spec-item">
+                            <div class="spec-label">Teacher模型</div>
+                            <div class="spec-value">ConvNeXt-Base</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">參數量</div>
+                            <div class="spec-value">88M → 2.2M</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">Student模型</div>
+                            <div class="spec-value">MobileNetV3-Small</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">模型大小</div>
+                            <div class="spec-value">&lt;5MB</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">壓縮率</div>
+                            <div class="spec-value">97.5%</div>
+                        </div>
+                        <div class="spec-item">
+                            <div class="spec-label">性能保持</div>
+                            <div class="spec-value">92%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 處理流程 -->
+            <div class="section">
+                <div class="section-title">⚡ 即時自適應流程</div>
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-title">影像擷取</div>
+                        <div class="step-desc">MIPI CSI-2<br>4K@60fps</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-title">場景分析</div>
+                        <div class="step-desc">AI模型推理<br>&lt;1ms延遲</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-title">參數計算</div>
+                        <div class="step-desc">最優ISP參數<br>即時生成</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-title">ISP調整</div>
+                        <div class="step-desc">硬體參數<br>即時更新</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="flow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-title">影像輸出</div>
+                        <div class="step-desc">優化後影像<br>零緩衝輸出</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 場景檢測 -->
+            <div class="section">
+                <div class="section-title">🎯 場景檢測與分類</div>
+                <div class="scene-analysis">
+                    <h3 style="margin: 0 0 15px 0;">AI支援的10類場景檢測 (VisDrone數據集)</h3>
+                    <div class="scene-grid">
+                        <div class="scene-card">
+                            <div class="scene-title">🌅 逆光場景</div>
+                            <div class="scene-desc">強光背景下的主體曝光補償</div>
+                        </div>
+                        <div class="scene-card">
+                            <div class="scene-title">🌙 低光環境</div>
+                            <div class="scene-desc">0.1 lux超低照度增強</div>
+                        </div>
+                        <div class="scene-card">
+                            <div class="scene-title">🌫️ 霧霾天氣</div>
+                            <div class="scene-desc">自適應去霧和對比度提升</div>
+                        </div>
+                        <div class="scene-card">
+                            <div class="scene-title">🏃 高速運動</div>
+                            <div class="scene-desc">運動模糊抑制和追蹤優化</div>
+                        </div>
+                        <div class="scene-card">
+                            <div class="scene-title">🏢 高對比度</div>
+                            <div class="scene-desc">HDR多重曝光融合</div>
+                        </div>
+                        <div class="scene-card">
+                            <div class="scene-title">🌈 混合光源</div>
+                            <div class="scene-desc">多區域白平衡調整</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ISP參數調整 -->
+            <div class="section">
+                <div class="section-title">🔧 ISP參數自適應調整</div>
+                <div class="parameter-grid">
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon exposure-icon">E</div>
+                            曝光控制
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">自動曝光時間</span>
+                                <span class="param-value">1/60s - 1/8000s</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">ISO感光度</span>
+                                <span class="param-value">100 - 6400</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">多重曝光數量</span>
+                                <span class="param-value">3-5重</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">曝光融合權重</span>
+                                <span class="param-value">動態調整</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon noise-icon">N</div>
+                            降噪處理
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">空間降噪強度</span>
+                                <span class="param-value">0-100%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">時域降噪係數</span>
+                                <span class="param-value">動態調整</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">邊緣保護閾值</span>
+                                <span class="param-value">自適應</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">PSNR目標</span>
+                                <span class="param-value">&gt;45dB</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon color-icon">C</div>
+                            色彩管理
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">白平衡溫度</span>
+                                <span class="param-value">2800K-7000K</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">色彩飽和度</span>
+                                <span class="param-value">80%-120%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">Gamma校正</span>
+                                <span class="param-value">1.8-2.4</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">色域映射</span>
+                                <span class="param-value">sRGB/Rec.709</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon detail-icon">D</div>
+                            細節增強
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">銳化強度</span>
+                                <span class="param-value">0-200%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">邊緣增強</span>
+                                <span class="param-value">自適應</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">紋理保持</span>
+                                <span class="param-value">&gt;90%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">過銳化抑制</span>
+                                <span class="param-value">智能檢測</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon hdr-icon">H</div>
+                            HDR處理
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">動態範圍</span>
+                                <span class="param-value">120dB</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">局部色調映射</span>
+                                <span class="param-value">場景自適應</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">鬼影抑制</span>
+                                <span class="param-value">&gt;95%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">運動補償</span>
+                                <span class="param-value">30 pixel/frame</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="parameter-card">
+                        <div class="card-title">
+                            <div class="card-icon defog-icon">F</div>
+                            去霧處理
+                        </div>
+                        <ul class="param-list">
+                            <li class="param-item">
+                                <span class="param-name">霧霾檢測</span>
+                                <span class="param-value">AI自動檢測</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">去霧強度</span>
+                                <span class="param-value">0-100%</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">對比度提升</span>
+                                <span class="param-value">自適應調整</span>
+                            </li>
+                            <li class="param-item">
+                                <span class="param-name">色彩還原</span>
+                                <span class="param-value">&gt;90%</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 反饋機制 -->
+            <div class="section">
+                <div class="section-title">🔄 閉環反饋優化</div>
+                <div class="feedback-loop">
+                    <h3 style="margin: 0 0 20px 0; color: #2c3e50;">即時反饋與優化循環</h3>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-text">影像品質評估<br>(PSNR, SSIM)</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-text">AI預測誤差<br>回饋修正</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-text">參數微調<br>最佳化</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="timeline-line"></div>
+                            <div class="timeline-text">下一幀預測<br>準備調整</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin: 20px 0 0 0; color: #2c3e50;">
+                        <strong>端到端延遲 &lt;60ms | 自適應響應時間 &lt;16.7ms</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
