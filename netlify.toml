@@ -1,25 +1,39 @@
 [build]
-  functions = "netlify/functions"
   publish = "public"
+  functions = "netlify/functions"
+  command = "echo 'Building TW-LCEO-AISP-2025 Control Center...'"
 
 [build.environment]
   NODE_VERSION = "18"
-
-[context.production.environment]
-  CTE_AGENT_ENDPOINT = "https://8080-cs-fa87232c-842d-4f22-b361-98e25cbbb0ec.cs-asia-east1-jnrc.cloudshell.dev/?authuser=0"
-
-[context.deploy-preview.environment]
-  CTE_AGENT_ENDPOINT = "https://8080-cs-fa87232c-842d-4f22-b361-98e25cbbb0ec.cs-asia-east1-jnrc.cloudshell.dev/?authuser=0"
+  NPM_VERSION = "9"
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
+[[redirects]]
+  from = "/cloud-shell"
+  to = "https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=."
+  status = 302
+
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+
+[context.production]
+  environment = { NODE_ENV = "production" }
+
+[context.deploy-preview]
+  environment = { NODE_ENV = "staging" }
