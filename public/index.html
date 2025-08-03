@@ -1696,3052 +1696,415 @@
        </div>
    </div>
 
-   <script>
-       // 全域變數
-       let systemStatus = {
-           isRunning: true,
-           startTime: Date.now(),
-           currentSection: 'dashboard'
-       };
-       
-       let autoScrollLogs = true;
-       let logUpdateInterval;
-       let metricsUpdateInterval;
-       
-       // 頁面切換
-       function showSection(section) {
-           // 隱藏所有內容區域
-           document.querySelectorAll('.content-area').forEach(area => {
-               area.classList.remove('active');
-           });
-           
-           // 顯示指定區域
-           const targetSection = document.getElementById(section);
-           if (targetSection) {
-               targetSection.classList.add('active');
-               systemStatus.currentSection = section;
-           }
-           
-           // 更新導航標籤
-           document.querySelectorAll('.nav-tab').forEach(tab => {
-               tab.classList.remove('active');
-           });
-           
-           const clickedTab = event ? event.currentTarget : null;
-           if (clickedTab) {
-               clickedTab.classList.add('active');
-           }
-           
-           // 特定頁面的初始化
-           initializeSectionContent(section);
-       }
-       
-       function initializeSectionContent(section) {
-           switch(section) {
-               case 'logs':
-                   startLogUpdates();
-                   break;
-               case 'cloud-shell':
-                   updateCloudShellStatus();
-                   break;
-               case 'ai-code':
-                   updateLineNumbers('input');
-                   updateLineNumbers('output');
-                   break;
-           }
-       }
-       
-       // 圖層切換 (ISP 監控)
-       function showLayer(layerName) {
-           document.querySelectorAll('.layer-content').forEach(layer => {
-               layer.classList.remove('active');
-           });
-           
-           const targetLayer = document.getElementById(layerName + '-layer');
-           if (targetLayer) {
-               targetLayer.classList.add('active');
-           }
-           
-           document.querySelectorAll('.layer-btn').forEach(btn => {
-               btn.classList.remove('active');
-           });
-           
-           const clickedBtn = event ? event.currentTarget : null;
-           if (clickedBtn) {
-               clickedBtn.classList.add('active');
-           }
-       }
-       
-       // Cloud Shell 功能
-       function openCloudShellDirect() {
-           const cloudShellUrl = 'https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_workspace=.&cloudshell_tutorial=README.md';
-           window.open(cloudShellUrl, '_blank', 'width=1200,height=800');
-           
-           showNotification('🚀 正在開啟 Google Cloud Shell...', 'success');
-           
-           // 更新連接狀態
-           setTimeout(() => {
-               updateCloudShellStatus();
-           }, 2000);
-       }
-       
-       function executeGitCommand(command) {
-           const commandMap = {
-               'status': 'git status',
-               'add': 'git add .',
-               'commit': 'git commit -m "Auto commit from web interface"',
-               'push': 'git push origin main',
-               'pull': 'git pull origin main',
-               'log': 'git log --oneline -5'
-           };
-           
-           const fullCommand = commandMap[command] || command;
-           executeCommand(fullCommand);
-       }
-       
-       function executeCustomGitCommand() {
-           const command = document.getElementById('custom-git-command').value.trim();
-           if (command) {
-               executeCommand(command);
-               document.getElementById('custom-git-command').value = '';
-           } else {
-               showNotification('❌ 請輸入命令', 'warning');
-           }
-       }
-       
-       function executeCommand(command) {
-           const output = document.getElementById('command-output');
-           const timestamp = new Date().toLocaleTimeString();
-           
-           // 顯示執行的命令
-           output.innerHTML += `
-               <div class="terminal-line">
-                   <span class="terminal-prompt">~/ai-agent-control-center$</span> ${command}
-               </div>
-           `;
-           
-           // 模擬命令執行結果
-           setTimeout(() => {
-               const results = getCommandResult(command);
-               output.innerHTML += `<div class="terminal-line" style="color: #00ff00;">${results}</div>`;
-               output.scrollTop = output.scrollHeight;
-           }, 500 + Math.random() * 1000);
-           
-           showNotification(`⚡ 執行命令: ${command}`, 'info');
-       }
-       
-       function getCommandResult(command) {
-           const results = {
-               'git status': '在分支 main\n您的分支與遠端分支 \'origin/main\' 一致。\n\n沒有要提交的變更，工作目錄乾淨',
-               'git add .': '已添加所有變更到暫存區',
-               'git commit -m "Auto commit from web interface"': '[main abc1234] Auto commit from web interface\n 3 files changed, 127 insertions(+), 45 deletions(-)',
-               'git push origin main': 'Enumerating objects: 8, done.\nCounting objects: 100% (8/8), done.\nTo github.com:Benisonpin/ai-agent-control-center.git\n   1234567..abc1234  main -> main',
-               'git pull origin main': 'Already up to date.',
-               'git log --oneline -5': 'abc1234 Auto commit from web interface\n1234567 Add Cloud Shell integration\n7890123 Update AI code generator\n4567890 Fix ISP monitoring\n2345678 Initial commit'
-           };
-           
-           return results[command] || `命令執行完成: ${command}`;
-       }
-       
-       function syncFiles() {
-           showModal('📁 同步檔案', '正在同步專案檔案到 Cloud Shell...\n\n同步項目:\n• index.html\n• netlify/functions/\n• package.json\n• netlify.toml\n• README.md', () => {
-               showNotification('✅ 檔案同步完成！', 'success');
-           });
-       }
-       
-       function clearTerminal() {
-           document.getElementById('command-output').innerHTML = `
-               <div class="terminal-line">
-                   <span class="terminal-prompt">~/ai-agent-control-center$</span> 
-                   <span style="color: #888;">終端機已清除</span>
-               </div>
-           `;
-       }
-       
-       // AI 程式碼生成功能
-       function updateLineNumbers(type) {
-           const textarea = document.getElementById(`code-${type === 'input' ? 'input' : 'output'}`);
-           const lineNumbers = document.getElementById(`${type}-line-numbers`);
-           
-           if (!textarea || !lineNumbers) return;
-           
-           const lines = textarea.value.split('\n').length;
-           let numbers = '';
-           for (let i = 1; i <= Math.max(lines, 20); i++) {
-               numbers += i + '\n';
-           }
-           lineNumbers.textContent = numbers;
-       }
-       
-       function syncScroll(type) {
-           const textarea = document.getElementById(`code-${type === 'input' ? 'input' : 'output'}`);
-           const lineNumbers = document.getElementById(`${type}-line-numbers`);
-           
-           if (textarea && lineNumbers) {
-               lineNumbers.scrollTop = textarea.scrollTop;
-           }
-       }
-       
-       async function generateAICode() {
-           const input = document.getElementById('code-input').value.trim();
-           const language = document.getElementById('code-language').value;
-           const framework = document.getElementById('code-framework').value;
-           const provider = document.getElementById('ai-provider').value;
-           const output = document.getElementById('code-output');
-           
-           if (!input) {
-               showNotification('❌ 請輸入功能描述', 'warning');
-               return;
-           }
-           
-           output.value = '🤖 AI 正在分析需求並生成程式碼...\n\n請稍候...';
-           updateLineNumbers('output');
-           
-           try {
-               showNotification(`🚀 開始生成 ${language} 程式碼...`, 'info');
-               
-               // 模擬 AI 生成過程
-               await new Promise(resolve => setTimeout(resolve, 2000));
-               
-               const generatedCode = generateCodeTemplate(input, language, framework);
-               output.value = generatedCode;
-               updateLineNumbers('output');
-               
-               // 顯示分析結果
-               displayCodeAnalysis(input, language, framework);
-               
-               showNotification(`✅ 程式碼生成完成！使用 ${provider} ${language}`, 'success');
-               
-           } catch (error) {
-               output.value = '❌ 生成失敗，請檢查網路連接或稍後重試';
-               console.error('Code generation error:', error);
-               showNotification('❌ 程式碼生成失敗', 'error');
-           }
-       }
-       
-       function generateCodeTemplate(description, language, framework) {
-           const templates = {
-               python: {
-                   none: `# AI 生成的 Python 程式碼
-# 功能描述: ${description}
-# 生成時間: ${new Date().toLocaleString()}
+   
+    <script>
+        // 全域變數
+        let systemStatus = {
+            isRunning: true,
+            startTime: Date.now(),
+            currentSection: 'dashboard'
+        };
+        
+        let autoScrollLogs = true;
+        let logUpdateInterval;
+        let metricsUpdateInterval;
+        
+        // === 核心函數 ===
+        
+        // 頁面切換函數
+        function showSection(section) {
+            try {
+                // 隱藏所有內容區域
+                document.querySelectorAll('.content-area').forEach(area => {
+                    area.classList.remove('active');
+                });
+                
+                // 顯示指定區域
+                const targetSection = document.getElementById(section);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    systemStatus.currentSection = section;
+                }
+                
+                // 更新導航標籤
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // 添加 active 到點擊的標籤
+                if (event && event.currentTarget) {
+                    event.currentTarget.classList.add('active');
+                }
+                
+                // 特定頁面的初始化
+                initializeSectionContent(section);
+                
+            } catch (error) {
+                console.error('showSection error:', error);
+            }
+        }
+        
+        // Cloud Shell 函數
+        function openCloudShellDirect() {
+            try {
+                const cloudShellUrl = 'https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_workspace=.&cloudshell_tutorial=README.md';
+                window.open(cloudShellUrl, '_blank', 'width=1200,height=800');
+                
+                showNotification('🚀 正在開啟 Google Cloud Shell...', 'success');
+                
+                // 更新連接狀態
+                setTimeout(() => {
+                    updateCloudShellStatus();
+                }, 2000);
+            } catch (error) {
+                console.error('openCloudShellDirect error:', error);
+                showNotification('❌ 開啟 Cloud Shell 失敗', 'error');
+            }
+        }
+        
+        // 初始化特定區域內容
+        function initializeSectionContent(section) {
+            try {
+                switch(section) {
+                    case 'logs':
+                        startLogUpdates();
+                        break;
+                    case 'cloud-shell':
+                        updateCloudShellStatus();
+                        break;
+                    case 'ai-code':
+                        updateLineNumbers('input');
+                        updateLineNumbers('output');
+                        break;
+                }
+            } catch (error) {
+                console.error('initializeSectionContent error:', error);
+            }
+        }
+        
+        // 圖層切換函數
+        function showLayer(layerName) {
+            try {
+                document.querySelectorAll('.layer-content').forEach(layer => {
+                    layer.classList.remove('active');
+                });
+                
+                const targetLayer = document.getElementById(layerName + '-layer');
+                if (targetLayer) {
+                    targetLayer.classList.add('active');
+                }
+                
+                document.querySelectorAll('.layer-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                if (event && event.currentTarget) {
+                    event.currentTarget.classList.add('active');
+                }
+            } catch (error) {
+                console.error('showLayer error:', error);
+            }
+        }
+        
+        // 更新指標
+        function updateMetrics() {
+            try {
+                const metrics = {
+                    fps: 32.5 + (Math.random() * 4 - 2),
+                    latency: Math.floor(28 + (Math.random() * 10 - 5)),
+                    accuracy: 95.2 + (Math.random() * 4 - 2),
+                    power: 3.5 + (Math.random() * 0.4 - 0.2),
+                    cpu: 35 + (Math.random() * 10 - 5),
+                    memory: 62 + (Math.random() * 10 - 5),
+                    npu: 78 + (Math.random() * 10 - 5),
+                    bandwidth: 1.1 + (Math.random() * 0.2 - 0.1)
+                };
+                
+                // 更新顯示
+                updateElement('total-fps', metrics.fps.toFixed(1));
+                updateElement('total-latency', Math.floor(metrics.latency));
+                updateElement('total-accuracy', metrics.accuracy.toFixed(1));
+                updateElement('total-power', metrics.power.toFixed(1));
+                
+                updateElement('cpu-usage', Math.floor(metrics.cpu) + '%');
+                updateElement('memory-usage', Math.floor(metrics.memory) + '%');
+                updateElement('npu-usage', Math.floor(metrics.npu) + '%');
+                
+                updateProgressBar('cpu-progress', metrics.cpu);
+                updateProgressBar('memory-progress', metrics.memory);
+                updateProgressBar('npu-progress', metrics.npu);
+                
+                // 更新運行時間
+                const uptime = Math.floor((Date.now() - systemStatus.startTime) / 1000);
+                const hours = Math.floor(uptime / 3600);
+                const minutes = Math.floor((uptime % 3600) / 60);
+                updateElement('uptime', hours + 'h ' + minutes + 'm');
+                
+            } catch (error) {
+                console.error('updateMetrics error:', error);
+            }
+        }
+        
+        // 更新元素
+        function updateElement(id, value) {
+            try {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.textContent = value;
+                }
+            } catch (error) {
+                console.error('updateElement error:', error);
+            }
+        }
+        
+        // 更新進度條
+        function updateProgressBar(id, value) {
+            try {
+                const progressBar = document.getElementById(id);
+                if (progressBar) {
+                    progressBar.style.width = Math.max(0, Math.min(100, value)) + '%';
+                }
+            } catch (error) {
+                console.error('updateProgressBar error:', error);
+            }
+        }
+        
+        // 更新 Cloud Shell 狀態
+        function updateCloudShellStatus() {
+            try {
+                const connectionTime = Math.floor((Date.now() - systemStatus.startTime) / 60000);
+                updateElement('connection-time', connectionTime + ' 分鐘');
+            } catch (error) {
+                console.error('updateCloudShellStatus error:', error);
+            }
+        }
+        
+        // 通知系統
+        function showNotification(message, type = 'info') {
+            try {
+                const notification = document.createElement('div');
+                notification.className = 'notification notification-' + type;
+                notification.textContent = message;
+                
+                Object.assign(notification.style, {
+                    position: 'fixed',
+                    top: '20px',
+                    right: '20px',
+                    padding: '15px 20px',
+                    borderRadius: '12px',
+                    color: 'white',
+                    fontWeight: '500',
+                    zIndex: '9999',
+                    transform: 'translateX(400px)',
+                    transition: 'all 0.3s ease',
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)'
+                });
+                
+                const colors = {
+                    success: 'linear-gradient(135deg, #2ecc71, #27ae60)',
+                    error: 'linear-gradient(135deg, #e74c3c, #c0392b)',
+                    warning: 'linear-gradient(135deg, #f39c12, #e67e22)',
+                    info: 'linear-gradient(135deg, #3498db, #2980b9)'
+                };
+                notification.style.background = colors[type] || colors.info;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(function() {
+                    notification.style.transform = 'translateX(0)';
+                }, 100);
+                
+                setTimeout(function() {
+                    notification.style.transform = 'translateX(400px)';
+                    setTimeout(function() {
+                        if (notification.parentNode) {
+                            notification.parentNode.removeChild(notification);
+                        }
+                    }, 300);
+                }, 3000);
+                
+            } catch (error) {
+                console.error('showNotification error:', error);
+            }
+        }
+        
+        // 部署到生產環境
+        function deployToProduction() {
+            try {
+                showNotification('🚀 開始部署到生產環境...', 'info');
+                
+                setTimeout(function() {
+                    showNotification('✅ 部署完成！網站已更新', 'success');
+                }, 3000);
+            } catch (error) {
+                console.error('deployToProduction error:', error);
+                showNotification('❌ 部署失敗', 'error');
+            }
+        }
+        
+        // AI 程式碼生成功能 (簡化版)
+        function generateAICode() {
+            try {
+                const input = document.getElementById('code-input');
+                const output = document.getElementById('code-output');
+                
+                if (!input || !output) {
+                    showNotification('❌ 程式碼區域未找到', 'error');
+                    return;
+                }
+                
+                if (!input.value.trim()) {
+                    showNotification('❌ 請輸入功能描述', 'warning');
+                    return;
+                }
+                
+                output.value = '🤖 AI 正在生成程式碼，請稍候...';
+                
+                setTimeout(function() {
+                    const generatedCode = '# AI 生成的 Python 程式碼\n# 功能: ' + input.value + '\n\ndef main():\n    print("Hello from AI!")\n\nif __name__ == "__main__":\n    main()';
+                    output.value = generatedCode;
+                    showNotification('✅ 程式碼生成完成！', 'success');
+                }, 2000);
+                
+            } catch (error) {
+                console.error('generateAICode error:', error);
+                showNotification('❌ 程式碼生成失敗', 'error');
+            }
+        }
+        
+        // 更新行號
+        function updateLineNumbers(type) {
+            try {
+                const textarea = document.getElementById('code-' + (type === 'input' ? 'input' : 'output'));
+                const lineNumbers = document.getElementById(type + '-line-numbers');
+                
+                if (!textarea || !lineNumbers) return;
+                
+                const lines = textarea.value.split('\n').length;
+                let numbers = '';
+                for (let i = 1; i <= Math.max(lines, 20); i++) {
+                    numbers += i + '\n';
+                }
+                lineNumbers.textContent = numbers;
+            } catch (error) {
+                console.error('updateLineNumbers error:', error);
+            }
+        }
+        
+        // 日誌系統功能 (簡化版)
+        function startLogUpdates() {
+            try {
+                if (logUpdateInterval) {
+                    clearInterval(logUpdateInterval);
+                }
+                
+                logUpdateInterval = setInterval(function() {
+                    if (systemStatus.currentSection === 'logs') {
+                        addRandomLog();
+                    }
+                }, 3000);
+            } catch (error) {
+                console.error('startLogUpdates error:', error);
+            }
+        }
+        
+        function addRandomLog() {
+            try {
+                const logsContainer = document.getElementById('system-logs');
+                if (!logsContainer) return;
+                
+                const logMessages = [
+                    'AI 引擎處理完成一批影像',
+                    'ISP 處理器效能正常', 
+                    'Memory usage: 65%',
+                    'Network latency spike detected',
+                    'System health check passed'
+                ];
+                
+                const message = logMessages[Math.floor(Math.random() * logMessages.length)];
+                const timestamp = new Date().toLocaleString();
+                
+                const logLine = document.createElement('div');
+                logLine.className = 'terminal-line';
+                logLine.innerHTML = '<span style="color: #888;">[' + timestamp + ']</span> <span style="color: #00ff00;">[INFO]</span> ' + message;
+                
+                logsContainer.appendChild(logLine);
+                
+                while (logsContainer.children.length > 50) {
+                    logsContainer.removeChild(logsContainer.firstChild);
+                }
+                
+                if (autoScrollLogs) {
+                    logsContainer.scrollTop = logsContainer.scrollHeight;
+                }
+            } catch (error) {
+                console.error('addRandomLog error:', error);
+            }
+        }
+        
+        // 系統初始化
+        function initializeSystem() {
+            try {
+                console.log('🚀 初始化 CTE AI Agent 控制中心...');
+                
+                // 開始定期更新
+                metricsUpdateInterval = setInterval(updateMetrics, 3000);
+                
+                // 初始更新
+                updateMetrics();
+                updateCloudShellStatus();
+                
+                console.log('✅ 系統初始化完成');
+                showNotification('🎉 CTE AI Agent 控制中心已就緒', 'success');
+                
+            } catch (error) {
+                console.error('initializeSystem error:', error);
+                showNotification('❌ 系統初始化失敗', 'error');
+            }
+        }
+        
+        // 清理系統
+        function cleanupSystem() {
+            try {
+                if (metricsUpdateInterval) {
+                    clearInterval(metricsUpdateInterval);
+                }
+                
+                if (logUpdateInterval) {
+                    clearInterval(logUpdateInterval);
+                }
+                
+                console.log('🧹 系統已清理');
+            } catch (error) {
+                console.error('cleanupSystem error:', error);
+            }
+        }
+        
+        // 頁面事件監聽
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                initializeSystem();
+                
+                // 設定視窗關閉事件
+                window.addEventListener('beforeunload', function() {
+                    cleanupSystem();
+                });
+                
+            } catch (error) {
+                console.error('DOMContentLoaded error:', error);
+            }
+        });
+        
+        // 全域錯誤處理
+        window.addEventListener('error', function(event) {
+            console.error('Global error:', event.error);
+            showNotification('❌ 系統發生錯誤，功能可能受影響', 'error');
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+    </script>
 
-import numpy as np
-import cv2
-import logging
-from typing import Optional, Tuple, List
-
-class ISPProcessor:
-   """智能 ISP 影像處理器"""
-   
-   def __init__(self, config: dict = None):
-       self.config = config or self.get_default_config()
-       self.logger = self.setup_logging()
-       self.is_initialized = False
-       
-   def get_default_config(self) -> dict:
-       """獲取預設配置"""
-       return {
-           'input_resolution': (1920, 1080),
-           'output_format': 'RGB',
-           'processing_mode': 'auto',
-           'quality_level': 8
-       }
-   
-   def setup_logging(self) -> logging.Logger:
-       """設置日誌系統"""
-       logger = logging.getLogger('ISPProcessor')
-       logger.setLevel(logging.INFO)
-       handler = logging.StreamHandler()
-       formatter = logging.Formatter(
-           '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-       )
-       handler.setFormatter(formatter)
-       logger.addHandler(handler)
-       return logger
-   
-   def initialize(self) -> bool:
-       """初始化處理器"""
-       try:
-           self.logger.info("正在初始化 ISP 處理器...")
-           # TODO: 實現初始化邏輯
-           self.is_initialized = True
-           self.logger.info("ISP 處理器初始化完成")
-           return True
-       except Exception as e:
-           self.logger.error(f"初始化失敗: {str(e)}")
-           return False
-   
-   def process_frame(self, frame: np.ndarray) -> Optional[np.ndarray]:
-       """處理單幀影像"""
-       if not self.is_initialized:
-           self.logger.error("處理器未初始化")
-           return None
-           
-       try:
-           # 自動曝光調整
-           enhanced_frame = self.auto_exposure(frame)
-           
-           # 白平衡校正
-           balanced_frame = self.white_balance(enhanced_frame)
-           
-           # 降噪處理
-           denoised_frame = self.denoise(balanced_frame)
-           
-           # 銳化增強
-           sharpened_frame = self.sharpen(denoised_frame)
-           
-           return sharpened_frame
-           
-       except Exception as e:
-           self.logger.error(f"處理幀失敗: {str(e)}")
-           return None
-   
-   def auto_exposure(self, frame: np.ndarray) -> np.ndarray:
-       """自動曝光調整"""
-       # 計算直方圖
-       hist = cv2.calcHist([frame], [0], None, [256], [0, 256])
-       
-       # 計算適當的曝光值
-       mean_brightness = np.mean(frame)
-       target_brightness = 128
-       exposure_factor = target_brightness / (mean_brightness + 1e-6)
-       
-       # 應用曝光調整
-       adjusted = cv2.convertScaleAbs(frame, alpha=exposure_factor, beta=0)
-       return adjusted
-   
-   def white_balance(self, frame: np.ndarray) -> np.ndarray:
-       """白平衡校正"""
-       # Gray World 假設
-       mean_b = np.mean(frame[:, :, 0])
-       mean_g = np.mean(frame[:, :, 1])
-       mean_r = np.mean(frame[:, :, 2])
-       
-       # 計算調整係數
-       gray_value = (mean_b + mean_g + mean_r) / 3
-       
-       scale_b = gray_value / (mean_b + 1e-6)
-       scale_g = gray_value / (mean_g + 1e-6)
-       scale_r = gray_value / (mean_r + 1e-6)
-       
-       # 應用白平衡
-       balanced = frame.copy()
-       balanced[:, :, 0] = np.clip(frame[:, :, 0] * scale_b, 0, 255)
-       balanced[:, :, 1] = np.clip(frame[:, :, 1] * scale_g, 0, 255)
-       balanced[:, :, 2] = np.clip(frame[:, :, 2] * scale_r, 0, 255)
-       
-       return balanced.astype(np.uint8)
-   
-   def denoise(self, frame: np.ndarray) -> np.ndarray:
-       """降噪處理"""
-       return cv2.bilateralFilter(frame, 9, 75, 75)
-   
-   def sharpen(self, frame: np.ndarray) -> np.ndarray:
-       """銳化增強"""
-       kernel = np.array([[-1, -1, -1],
-                         [-1,  9, -1],
-                         [-1, -1, -1]])
-       return cv2.filter2D(frame, -1, kernel)
-
-# 使用範例
-if __name__ == "__main__":
-   # 創建處理器實例
-   processor = ISPProcessor()
-   
-   # 初始化
-   if processor.initialize():
-       print("✅ ISP 處理器已就緒")
-       
-       # 載入測試影像
-       test_image = cv2.imread("test_image.jpg")
-
-if test_image is not None:
-           # 處理影像
-           processed_image = processor.process_frame(test_image)
-           
-           if processed_image is not None:
-               # 儲存結果
-               cv2.imwrite("processed_output.jpg", processed_image)
-               print("✅ 影像處理完成，結果已儲存")
-           else:
-               print("❌ 影像處理失敗")
-       else:
-           print("❌ 無法載入測試影像")
-   else:
-       print("❌ ISP 處理器初始化失敗")`,
-                   fastapi: `# FastAPI ISP 控制 API
-# 功能描述: ${description}
-# 生成時間: ${new Date().toLocaleString()}
-
-from fastapi import FastAPI, HTTPException, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-import cv2
-import numpy as np
-import base64
-from typing import Optional, Dict, Any
-import asyncio
-import logging
-
-# 創建 FastAPI 應用
-app = FastAPI(
-   title="CTE ISP Control API",
-   description="智能 ISP 影像處理控制 API",
-   version="2.0.0"
-)
-
-# 添加 CORS 中間件
-app.add_middleware(
-   CORSMiddleware,
-   allow_origins=["*"],
-   allow_credentials=True,
-   allow_methods=["*"],
-   allow_headers=["*"],
-)
-
-# 全域狀態
-isp_status = {
-   "is_running": False,
-   "processing_mode": "auto",
-   "fps": 30.0,
-   "resolution": "1920x1080",
-   "quality": 8
-}
-
-@app.get("/")
-async def root():
-   """根端點"""
-   return {"message": "CTE ISP Control API", "status": "running"}
-
-@app.get("/api/status")
-async def get_status():
-   """獲取系統狀態"""
-   return {
-       "status": "success",
-       "data": {
-           "fps": 32.5 + (np.random.random() * 4 - 2),
-           "latency": int(28 + (np.random.random() * 10 - 5)),
-           "accuracy": 95.2 + (np.random.random() * 4 - 2),
-           "power": 3.5 + (np.random.random() * 0.4 - 0.2),
-           "cpu_usage": int(35 + (np.random.random() * 10 - 5)),
-           "memory_usage": int(62 + (np.random.random() * 10 - 5)),
-           "npu_usage": int(78 + (np.random.random() * 10 - 5)),
-           "bandwidth": 1.1 + (np.random.random() * 0.2 - 0.1),
-           "timestamp": "2024-01-15T14:23:45Z"
-       }
-   }
-
-@app.post("/api/isp/start")
-async def start_processing():
-   """開始 ISP 處理"""
-   try:
-       isp_status["is_running"] = True
-       return {
-           "status": "success",
-           "message": "ISP 處理已開始",
-           "data": isp_status
-       }
-   except Exception as e:
-       raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/isp/stop")
-async def stop_processing():
-   """停止 ISP 處理"""
-   try:
-       isp_status["is_running"] = False
-       return {
-           "status": "success",
-           "message": "ISP 處理已停止",
-           "data": isp_status
-       }
-   except Exception as e:
-       raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/api/isp/process")
-async def process_image(file: UploadFile = File(...)):
-   """處理上傳的影像"""
-   try:
-       # 讀取上傳的檔案
-       contents = await file.read()
-       nparr = np.frombuffer(contents, np.uint8)
-       image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-       
-       if image is None:
-           raise HTTPException(status_code=400, detail="無效的影像格式")
-       
-       # 應用 ISP 處理
-       processed_image = apply_isp_processing(image)
-       
-       # 編碼回傳
-       _, buffer = cv2.imencode('.jpg', processed_image)
-       encoded_image = base64.b64encode(buffer).decode('utf-8')
-       
-       return {
-           "status": "success",
-           "message": "影像處理完成",
-           "data": {
-               "processed_image": f"data:image/jpeg;base64,{encoded_image}",
-               "original_size": image.shape,
-               "processed_size": processed_image.shape
-           }
-       }
-       
-   except Exception as e:
-       raise HTTPException(status_code=500, detail=f"處理失敗: {str(e)}")
-
-def apply_isp_processing(image: np.ndarray) -> np.ndarray:
-   """應用 ISP 處理邏輯"""
-   # 自動曝光
-   image = auto_exposure(image)
-   
-   # 白平衡
-   image = white_balance(image)
-   
-   # 降噪
-   image = cv2.bilateralFilter(image, 9, 75, 75)
-   
-   # 銳化
-   kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
-   image = cv2.filter2D(image, -1, kernel)
-   
-   return image
-
-def auto_exposure(image: np.ndarray) -> np.ndarray:
-   """自動曝光調整"""
-   mean_brightness = np.mean(image)
-   target_brightness = 128
-   factor = target_brightness / (mean_brightness + 1e-6)
-   return cv2.convertScaleAbs(image, alpha=factor, beta=0)
-
-def white_balance(image: np.ndarray) -> np.ndarray:
-   """白平衡校正"""
-   mean_b, mean_g, mean_r = np.mean(image, axis=(0, 1))
-   gray_value = (mean_b + mean_g + mean_r) / 3
-   
-   scale_b = gray_value / (mean_b + 1e-6)
-   scale_g = gray_value / (mean_g + 1e-6) 
-   scale_r = gray_value / (mean_r + 1e-6)
-   
-   balanced = image.copy()
-   balanced[:, :, 0] = np.clip(image[:, :, 0] * scale_b, 0, 255)
-   balanced[:, :, 1] = np.clip(image[:, :, 1] * scale_g, 0, 255)
-   balanced[:, :, 2] = np.clip(image[:, :, 2] * scale_r, 0, 255)
-   
-   return balanced.astype(np.uint8)
-
-# 啟動指令
-if __name__ == "__main__":
-   import uvicorn
-   uvicorn.run(app, host="0.0.0.0", port=8000)`
-               },
-               javascript: {
-                   none: `// AI 生成的 JavaScript 程式碼
-// 功能描述: ${description}
-// 生成時間: ${new Date().toLocaleString()}
-
-class ISPController {
-   constructor(config = {}) {
-       this.config = {
-           apiEndpoint: '/api',
-           updateInterval: 1000,
-           retryAttempts: 3,
-           ...config
-       };
-       
-       this.isRunning = false;
-       this.metrics = {};
-       this.eventListeners = {};
-       
-       this.initialize();
-   }
-   
-   async initialize() {
-       console.log('🚀 初始化 ISP 控制器...');
-       
-       try {
-           await this.setupEventListeners();
-           await this.loadInitialData();
-           this.startPeriodicUpdates();
-           
-           console.log('✅ ISP 控制器初始化完成');
-           this.emit('initialized', { status: 'success' });
-           
-       } catch (error) {
-           console.error('❌ 初始化失敗:', error);
-           this.emit('error', { error: error.message });
-       }
-   }
-   
-   setupEventListeners() {
-       // DOM 事件監聽
-       document.addEventListener('DOMContentLoaded', () => {
-           this.bindUIEvents();
-       });
-       
-       // 視窗事件
-       window.addEventListener('beforeunload', () => {
-           this.cleanup();
-       });
-   }
-   
-   bindUIEvents() {
-       const startBtn = document.getElementById('start-processing');
-       const stopBtn = document.getElementById('stop-processing');
-       const resetBtn = document.getElementById('reset-system');
-       
-       if (startBtn) {
-           startBtn.addEventListener('click', () => this.startProcessing());
-       }
-       
-       if (stopBtn) {
-           stopBtn.addEventListener('click', () => this.stopProcessing());
-       }
-       
-       if (resetBtn) {
-           resetBtn.addEventListener('click', () => this.resetSystem());
-       }
-   }
-   
-   async loadInitialData() {
-       try {
-           const response = await this.fetchWithRetry('${this.config.apiEndpoint}/status');
-           this.metrics = response.data;
-           this.updateUI();
-           
-       } catch (error) {
-           console.error('載入初始數據失敗:', error);
-           throw error;
-       }
-   }
-   
-   async fetchWithRetry(url, options = {}, retries = this.config.retryAttempts) {
-       try {
-           const response = await fetch(url, {
-               headers: {
-                   'Content-Type': 'application/json',
-                   ...options.headers
-               },
-               ...options
-           });
-           
-           if (!response.ok) {
-               throw new Error(\`HTTP error! status: \${response.status}\`);
-           }
-           
-           return await response.json();
-           
-       } catch (error) {
-           if (retries > 0) {
-               console.warn(\`請求失敗，重試中... (\${retries} 次剩餘)\`);
-               await this.delay(1000);
-               return this.fetchWithRetry(url, options, retries - 1);
-           }
-           throw error;
-       }
-   }
-   
-   startPeriodicUpdates() {
-       this.updateInterval = setInterval(() => {
-           this.updateMetrics();
-       }, this.config.updateInterval);
-   }
-   
-   async updateMetrics() {
-       try {
-           const response = await this.fetchWithRetry('${this.config.apiEndpoint}/status');
-           this.metrics = response.data;
-           this.updateUI();
-           this.emit('metricsUpdated', this.metrics);
-           
-       } catch (error) {
-           console.error('更新指標失敗:', error);
-           this.emit('updateError', { error: error.message });
-       }
-   }
-   
-   updateUI() {
-       // 更新 FPS
-       this.updateElement('fps', \`\${this.metrics.fps?.toFixed(1) || '--'} FPS\`);
-       
-       // 更新延遲
-       this.updateElement('latency', \`\${this.metrics.latency || '--'} ms\`);
-       
-       // 更新準確率
-       this.updateElement('accuracy', \`\${this.metrics.accuracy?.toFixed(1) || '--'}%\`);
-       
-       // 更新功耗
-       this.updateElement('power', \`\${this.metrics.power?.toFixed(1) || '--'}W\`);
-       
-       // 更新 CPU 使用率
-       this.updateElement('cpu-usage', \`\${this.metrics.cpu_usage || '--'}%\`);
-       this.updateProgressBar('cpu-progress', this.metrics.cpu_usage || 0);
-       
-       // 更新記憶體使用率
-       this.updateElement('memory-usage', \`\${this.metrics.memory_usage || '--'}%\`);
-       this.updateProgressBar('memory-progress', this.metrics.memory_usage || 0);
-       
-       // 更新 NPU 使用率
-       this.updateElement('npu-usage', \`\${this.metrics.npu_usage || '--'}%\`);
-       this.updateProgressBar('npu-progress', this.metrics.npu_usage || 0);
-   }
-   
-   updateElement(id, value) {
-       const element = document.getElementById(id);
-       if (element) {
-           element.textContent = value;
-       }
-   }
-   
-   updateProgressBar(id, percentage) {
-       const progressBar = document.getElementById(id);
-       if (progressBar) {
-           progressBar.style.width = \`\${Math.max(0, Math.min(100, percentage))}%\`;
-       }
-   }
-   
-   async startProcessing() {
-       try {
-           console.log('▶️ 開始 ISP 處理...');
-           
-           const response = await this.fetchWithRetry('${this.config.apiEndpoint}/isp/start', {
-               method: 'POST'
-           });
-           
-           this.isRunning = true;
-           this.showNotification('✅ ISP 處理已開始', 'success');
-           this.emit('processingStarted', response);
-           
-       } catch (error) {
-           console.error('開始處理失敗:', error);
-           this.showNotification('❌ 開始處理失敗', 'error');
-           this.emit('error', { error: error.message });
-       }
-   }
-   
-   async stopProcessing() {
-       try {
-           console.log('⏹️ 停止 ISP 處理...');
-           
-           const response = await this.fetchWithRetry('${this.config.apiEndpoint}/isp/stop', {
-               method: 'POST'
-           });
-           
-           this.isRunning = false;
-           this.showNotification('⏹️ ISP 處理已停止', 'info');
-           this.emit('processingStopped', response);
-           
-       } catch (error) {
-           console.error('停止處理失敗:', error);
-           this.showNotification('❌ 停止處理失敗', 'error');
-           this.emit('error', { error: error.message });
-       }
-   }
-   
-   async resetSystem() {
-       try {
-           console.log('🔄 重置系統...');
-           
-           await this.stopProcessing();
-           await this.delay(1000);
-           
-           // 重置狀態
-           this.metrics = {};
-           this.isRunning = false;
-           
-           // 重新載入數據
-           await this.loadInitialData();
-           
-           this.showNotification('🔄 系統重置完成', 'success');
-           this.emit('systemReset', { status: 'success' });
-           
-       } catch (error) {
-           console.error('系統重置失敗:', error);
-           this.showNotification('❌ 系統重置失敗', 'error');
-           this.emit('error', { error: error.message });
-       }
-   }
-   
-   showNotification(message, type = 'info') {
-       // 創建通知元素
-       const notification = document.createElement('div');
-       notification.className = \`notification notification-\${type}\`;
-       notification.textContent = message;
-       
-       // 添加樣式
-       Object.assign(notification.style, {
-           position: 'fixed',
-           top: '20px',
-           right: '20px',
-           padding: '15px 20px',
-           borderRadius: '8px',
-           color: 'white',
-           fontWeight: '500',
-           zIndex: '9999',
-           transform: 'translateX(400px)',
-           transition: 'transform 0.3s ease'
-       });
-       
-       // 設定背景顏色
-       const colors = {
-           success: '#2ecc71',
-           error: '#e74c3c',
-           warning: '#f39c12',
-           info: '#3498db'
-       };
-       notification.style.backgroundColor = colors[type] || colors.info;
-       
-       // 添加到頁面
-       document.body.appendChild(notification);
-       
-       // 滑入動畫
-       setTimeout(() => {
-           notification.style.transform = 'translateX(0)';
-       }, 100);
-       
-       // 自動移除
-       setTimeout(() => {
-           notification.style.transform = 'translateX(400px)';
-           setTimeout(() => {
-               if (notification.parentNode) {
-                   notification.parentNode.removeChild(notification);
-               }
-           }, 300);
-       }, 3000);
-   }
-   
-   // 事件系統
-   on(event, callback) {
-       if (!this.eventListeners[event]) {
-           this.eventListeners[event] = [];
-       }
-       this.eventListeners[event].push(callback);
-   }
-   
-   emit(event, data) {
-       if (this.eventListeners[event]) {
-           this.eventListeners[event].forEach(callback => {
-               try {
-                   callback(data);
-               } catch (error) {
-                   console.error(\`事件處理器錯誤 (\${event}):\`, error);
-               }
-           });
-       }
-   }
-   
-   // 工具方法
-   delay(ms) {
-       return new Promise(resolve => setTimeout(resolve, ms));
-   }
-   
-   cleanup() {
-       if (this.updateInterval) {
-           clearInterval(this.updateInterval);
-       }
-       
-       // 清理事件監聽器
-       this.eventListeners = {};
-       
-       console.log('🧹 ISP 控制器已清理');
-   }
-}
-
-// 全域實例
-let ispController;
-
-// 初始化
-document.addEventListener('DOMContentLoaded', () => {
-   ispController = new ISPController({
-       apiEndpoint: '/.netlify/functions',
-       updateInterval: 2000
-   });
-   
-   // 監聽事件
-   ispController.on('initialized', (data) => {
-       console.log('✅ ISP 控制器就緒:', data);
-   });
-   
-   ispController.on('error', (data) => {
-       console.error('❌ ISP 控制器錯誤:', data);
-   });
-   
-   ispController.on('metricsUpdated', (metrics) => {
-       console.log('📊 指標已更新:', metrics);
-   });
-});
-
-// 匯出供其他腳本使用
-if (typeof module !== 'undefined' && module.exports) {
-   module.exports = ISPController;
-}`,
-                   react: `// React ISP 監控組件
-// 功能描述: ${description}
-// 生成時間: ${new Date().toLocaleString()}
-
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-
-const ISPMonitoringDashboard = () => {
-   // 狀態管理
-   const [metrics, setMetrics] = useState({
-       fps: 0,
-       latency: 0,
-       accuracy: 0,
-       power: 0,
-       cpu_usage: 0,
-       memory_usage: 0,
-       npu_usage: 0,
-       bandwidth: 0
-   });
-   
-   const [isProcessing, setIsProcessing] = useState(false);
-   const [connectionStatus, setConnectionStatus] = useState('disconnected');
-   const [notifications, setNotifications] = useState([]);
-   const [logs, setLogs] = useState([]);
-   
-   const intervalRef = useRef(null);
-   const notificationIdRef = useRef(0);
-   
-   // API 配置
-   const API_BASE = '/.netlify/functions';
-   const UPDATE_INTERVAL = 2000;
-   
-   // 獲取系統狀態
-   const fetchMetrics = useCallback(async () => {
-       try {
-           const response = await fetch(\`\${API_BASE}/status\`);
-           
-           if (!response.ok) {
-               throw new Error(\`HTTP error! status: \${response.status}\`);
-           }
-           
-           const data = await response.json();
-           setMetrics(data.data);
-           setConnectionStatus('connected');
-           
-       } catch (error) {
-           console.error('獲取指標失敗:', error);
-           setConnectionStatus('error');
-           addNotification('❌ 連接失敗', 'error');
-       }
-   }, []);
-   
-   // 開始處理
-   const startProcessing = useCallback(async () => {
-       try {
-           const response = await fetch(\`\${API_BASE}/isp/start\`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' }
-           });
-           
-           if (response.ok) {
-               setIsProcessing(true);
-               addNotification('✅ ISP 處理已開始', 'success');
-               addLog('ISP 處理已開始');
-           } else {
-               throw new Error('開始處理失敗');
-           }
-           
-       } catch (error) {
-           console.error('開始處理失敗:', error);
-           addNotification('❌ 開始處理失敗', 'error');
-       }
-   }, []);
-   
-   // 停止處理
-   const stopProcessing = useCallback(async () => {
-       try {
-           const response = await fetch(\`\${API_BASE}/isp/stop\`, {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' }
-           });
-           
-           if (response.ok) {
-               setIsProcessing(false);
-               addNotification('⏹️ ISP 處理已停止', 'info');
-               addLog('ISP 處理已停止');
-           } else {
-               throw new Error('停止處理失敗');
-           }
-           
-       } catch (error) {
-           console.error('停止處理失敗:', error);
-           addNotification('❌ 停止處理失敗', 'error');
-       }
-   }, []);
-   
-   // 重置系統
-   const resetSystem = useCallback(async () => {
-       try {
-           if (isProcessing) {
-               await stopProcessing();
-               await new Promise(resolve => setTimeout(resolve, 1000));
-           }
-           
-           setMetrics({
-               fps: 0, latency: 0, accuracy: 0, power: 0,
-               cpu_usage: 0, memory_usage: 0, npu_usage: 0, bandwidth: 0
-           });
-           
-           await fetchMetrics();
-           addNotification('🔄 系統重置完成', 'success');
-           addLog('系統重置完成');
-           
-       } catch (error) {
-           console.error('系統重置失敗:', error);
-           addNotification('❌ 系統重置失敗', 'error');
-       }
-   }, [isProcessing, stopProcessing, fetchMetrics]);
-   
-   // 添加通知
-   const addNotification = useCallback((message, type = 'info') => {
-       const id = notificationIdRef.current++;
-       const notification = { id, message, type, timestamp: Date.now() };
-       
-       setNotifications(prev => [...prev, notification]);
-       
-       // 3秒後自動移除
-       setTimeout(() => {
-           setNotifications(prev => prev.filter(n => n.id !== id));
-       }, 3000);
-   }, []);
-   
-   // 添加日誌
-   const addLog = useCallback((message) => {
-       const log = {
-           timestamp: new Date().toLocaleTimeString(),
-           message,
-           level: 'INFO'
-       };
-       
-       setLogs(prev => [log, ...prev].slice(0, 100)); // 保留最新100條
-   }, []);
-   
-   // 生命週期
-   useEffect(() => {
-       // 初始載入
-       fetchMetrics();
-       
-       // 開始定期更新
-       intervalRef.current = setInterval(fetchMetrics, UPDATE_INTERVAL);
-       
-       return () => {
-           if (intervalRef.current) {
-               clearInterval(intervalRef.current);
-           }
-       };
-   }, [fetchMetrics]);
-   
-   // 渲染組件
-   return (
-       <div className="isp-monitoring-dashboard">
-           {/* 通知系統 */}
-           <div className="notifications-container">
-               {notifications.map(notification => (
-                   <div 
-                       key={notification.id}
-                       className={\`notification notification-\${notification.type}\`}
-                   >
-                       {notification.message}
-                   </div>
-               ))}
-           </div>
-           
-           {/* 標題 */}
-           <header className="dashboard-header">
-               <h1>🤖 ISP 監控儀表板</h1>
-               <div className={\`connection-status status-\${connectionStatus}\`}>
-                   <span className="status-indicator"></span>
-                   {connectionStatus === 'connected' ? '已連接' : 
-                    connectionStatus === 'error' ? '連接錯誤' : '未連接'}
-               </div>
-           </header>
-           
-           {/* 控制面板 */}
-           <section className="control-panel">
-               <div className="control-buttons">
-                   <button 
-                       className="btn btn-success"
-                       onClick={startProcessing}
-                       disabled={isProcessing}
-                   >
-                       ▶️ 開始處理
-                   </button>
-                   <button 
-                       className="btn btn-danger"
-                       onClick={stopProcessing}
-                       disabled={!isProcessing}
-                   >
-                       ⏹️ 停止處理
-                   </button>
-                   <button 
-                       className="btn btn-warning"
-                       onClick={resetSystem}
-                   >
-                       🔄 重置系統
-                   </button>
-               </div>
-               
-               <div className="processing-status">
-                   <span className={\`status-badge \${isProcessing ? 'processing' : 'stopped'}\`}>
-                       {isProcessing ? '🟢 處理中' : '🔴 已停止'}
-                   </span>
-               </div>
-           </section>
-           
-           {/* 指標網格 */}
-           <section className="metrics-grid">
-               <MetricCard 
-                   title="處理幀率"
-                   value={\`\${metrics.fps?.toFixed(1) || '--'} FPS\`}
-                   icon="🎬"
-               />
-               <MetricCard 
-                   title="延遲"
-                   value={\`\${metrics.latency || '--'} ms\`}
-                   icon="⚡"
-               />
-               <MetricCard 
-                   title="準確率"
-                   value={\`\${metrics.accuracy?.toFixed(1) || '--'}%\`}
-                   icon="🎯"
-               />
-               <MetricCard 
-                   title="功耗"
-                   value={\`\${metrics.power?.toFixed(1) || '--'}W\`}
-                   icon="🔋"
-               />
-           </section>
-           
-           {/* 資源使用率 */}
-           <section className="resource-usage">
-               <div className="usage-card">
-                   <h3>💻 資源使用率</h3>
-                   
-                   <ResourceBar 
-                       label="CPU 使用率"
-                       value={metrics.cpu_usage || 0}
-                       max={100}
-                       unit="%"
-                   />
-                   
-                   <ResourceBar 
-                       label="記憶體使用"
-                       value={metrics.memory_usage || 0}
-                       max={100}
-                       unit="%"
-                   />
-                   
-                   <ResourceBar 
-                       label="NPU 使用率"
-                       value={metrics.npu_usage || 0}
-                       max={100}
-                       unit="%"
-                   />
-               </div>
-           </section>
-           
-           {/* 即時日誌 */}
-           <section className="logs-section">
-               <h3>📋 即時日誌</h3>
-               <div className="logs-container">
-                   {logs.length === 0 ? (
-                       <div className="no-logs">暫無日誌記錄</div>
-                   ) : (
-                       logs.map((log, index) => (
-                           <div key={index} className="log-entry">
-                               <span className="log-timestamp">[{log.timestamp}]</span>
-                               <span className="log-level">[{log.level}]</span>
-                               <span className="log-message">{log.message}</span>
-                           </div>
-                       ))
-                   )}
-               </div>
-           </section>
-       </div>
-   );
-};
-
-// 指標卡片組件
-const MetricCard = ({ title, value, icon }) => (
-   <div className="metric-card">
-       <div className="metric-icon">{icon}</div>
-       <div className="metric-content">
-           <div className="metric-title">{title}</div>
-           <div className="metric-value">{value}</div>
-       </div>
-   </div>
-);
-
-// 資源使用率條組件
-const ResourceBar = ({ label, value, max, unit }) => {
-   const percentage = Math.min(100, (value / max) * 100);
-   
-   return (
-       <div className="resource-bar">
-           <div className="resource-label">
-               <span>{label}</span>
-               <span className="resource-value">{value}{unit}</span>
-           </div>
-           <div className="progress-bar">
-               <div 
-                   className="progress-fill"
-                   style={{ width: \`\${percentage}%\` }}
-               />
-           </div>
-       </div>
-   );
-};
-
-export default ISPMonitoringDashboard;`
-               }
-           };
-           
-           return templates[language]?.[framework] || templates[language]?.none || templates.python.none;
-       }
-       
-       function displayCodeAnalysis(description, language, framework) {
-           const analysisResult = document.getElementById('code-analysis-result');
-           
-           const analysis = `
-               <div class="terminal-line">🔍 程式碼分析完成</div>
-               <div class="terminal-line">───────────────────────────</div>
-               <div class="terminal-line">📋 需求描述: ${description}</div>
-               <div class="terminal-line">🔧 程式語言: ${language}</div>
-               <div class="terminal-line">📦 框架: ${framework === 'none' ? '無' : framework}</div>
-               <div class="terminal-line">───────────────────────────</div>
-<div class="terminal-line" style="color: #00ff00;">✅ 程式碼品質: 優秀</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 語法檢查: 通過</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 最佳實踐: 符合</div>
-               <div class="terminal-line" style="color: #ffff00;">⚠️  效能建議: 可考慮添加快取機制</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 安全性檢查: 通過</div>
-               <div class="terminal-line">───────────────────────────</div>
-               <div class="terminal-line">📊 估計執行時間: < 50ms</div>
-               <div class="terminal-line">💾 記憶體使用: ~${Math.floor(Math.random() * 50 + 10)}MB</div>
-               <div class="terminal-line">🔧 相依套件: ${Math.floor(Math.random() * 5 + 2)} 個</div>
-           `;
-           
-           analysisResult.innerHTML = analysis;
-       }
-       
-       // 其他 AI 程式碼功能
-       function loadCodeTemplate() {
-           const templates = [
-               "創建 ISP 影像處理函數，包含自動曝光、白平衡、降噪和銳化",
-               "建立 FastAPI RESTful API，提供影像上傳和處理功能",
-               "開發 React 即時監控組件，顯示系統效能指標",
-               "實現 WebSocket 即時通訊，支援多客戶端連接",
-               "建立 Docker 容器化部署腳本，支援 CI/CD 自動部署"
-           ];
-           
-           const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-           document.getElementById('code-input').value = randomTemplate;
-           updateLineNumbers('input');
-           showNotification('📋 範本已載入', 'info');
-       }
-       
-       function saveCodePrompt() {
-           const prompt = document.getElementById('code-input').value;
-           if (!prompt.trim()) {
-               showNotification('❌ 沒有內容可儲存', 'warning');
-               return;
-           }
-           
-           // 儲存到 localStorage
-           const timestamp = new Date().toISOString();
-           const savedPrompts = JSON.parse(localStorage.getItem('savedPrompts') || '[]');
-           savedPrompts.unshift({ prompt, timestamp, id: Date.now() });
-           localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts.slice(0, 10))); // 保留最新10個
-           
-           showNotification('💾 提示已儲存', 'success');
-       }
-       
-       function clearCodeInput() {
-           document.getElementById('code-input').value = '';
-           updateLineNumbers('input');
-           showNotification('🗑️ 輸入已清除', 'info');
-       }
-       
-       function copyGeneratedCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可複製', 'warning');
-               return;
-           }
-           
-           output.select();
-           document.execCommand('copy');
-           showNotification('📋 程式碼已複製到剪貼簿', 'success');
-       }
-       
-       function deployToCloudShell() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可部署', 'warning');
-               return;
-           }
-           
-           showModal(
-               '☁️ 部署到 Cloud Shell',
-               '正在準備部署程式碼到 Google Cloud Shell...\n\n步驟:\n1. 開啟 Cloud Shell\n2. 建立新檔案\n3. 複製程式碼\n4. 執行測試\n\n確認要繼續嗎？',
-               () => {
-                   openCloudShellDirect();
-                   showNotification('🚀 已開啟 Cloud Shell，請手動複製程式碼', 'info');
-               }
-           );
-       }
-       
-       function saveToGitHub() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可儲存', 'warning');
-               return;
-           }
-           
-           showModal(
-               '💾 儲存到 GitHub',
-               '將程式碼儲存到 GitHub 儲存庫...\n\n功能:\n• 自動建立新檔案\n• 添加到 git 版本控制\n• 推送到遠端儲存庫\n\n確認要繼續嗎？',
-               () => {
-                   // 模擬儲存過程
-                   setTimeout(() => {
-                       showNotification('✅ 程式碼已儲存到 GitHub', 'success');
-                   }, 2000);
-               }
-           );
-       }
-       
-       function formatGeneratedCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可格式化', 'warning');
-               return;
-           }
-           
-           // 簡單的程式碼格式化
-           let formattedCode = output.value
-               .replace(/\{\s*\n/g, '{\n    ')
-               .replace(/\n\s*\}/g, '\n}')
-               .replace(/;\s*\n/g, ';\n');
-           
-           output.value = formattedCode;
-           updateLineNumbers('output');
-           showNotification('✨ 程式碼已格式化', 'success');
-       }
-       
-       function analyzeCode() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可分析', 'warning');
-               return;
-           }
-           
-           // 顯示分析過程
-           const analysisResult = document.getElementById('code-analysis-result');
-           analysisResult.innerHTML = '<div class="terminal-line">🔍 正在分析程式碼...</div>';
-           
-           setTimeout(() => {
-               const lines = code.split('\n').length;
-               const complexity = Math.floor(Math.random() * 10 + 1);
-               const maintainability = Math.floor(Math.random() * 30 + 70);
-               
-               analysisResult.innerHTML = `
-                   <div class="terminal-line">📊 程式碼分析報告</div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line">📏 程式碼行數: ${lines}</div>
-                   <div class="terminal-line">🔧 複雜度評分: ${complexity}/10</div>
-                   <div class="terminal-line">🛠️ 可維護性: ${maintainability}%</div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line" style="color: #00ff00;">✅ 無語法錯誤</div>
-                   <div class="terminal-line" style="color: #00ff00;">✅ 符合編碼標準</div>
-                   <div class="terminal-line" style="color: ${complexity > 7 ? '#ffff00' : '#00ff00'};">
-                       ${complexity > 7 ? '⚠️  複雜度較高，建議簡化' : '✅ 複雜度適中'}
-                   </div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line">🔍 建議: 添加更多註解和錯誤處理</div>
-               `;
-               
-               showNotification('📊 程式碼分析完成', 'success');
-           }, 1500);
-       }
-       
-       function optimizeCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可優化', 'warning');
-               return;
-           }
-           
-           showNotification('⚡ 正在優化程式碼...', 'info');
-           
-           setTimeout(() => {
-               // 簡單的優化標記
-               let optimizedCode = output.value;
-               optimizedCode = '// === AI 優化版本 ===\n' + 
-                             '// 優化點: 效能提升、記憶體優化、錯誤處理增強\n\n' + 
-                             optimizedCode;
-               
-               output.value = optimizedCode;
-               updateLineNumbers('output');
-               showNotification('⚡ 程式碼優化完成', 'success');
-           }, 2000);
-       }
-       
-       function generateTests() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可生成測試', 'warning');
-               return;
-           }
-           
-           showNotification('🧪 正在生成單元測試...', 'info');
-           
-           setTimeout(() => {
-               const language = document.getElementById('code-language').value;
-               const testCode = generateTestTemplate(language);
-               
-               // 在新模態框中顯示測試程式碼
-               showModal(
-                   '🧪 生成的單元測試',
-                   `<textarea readonly style="width: 100%; height: 300px; font-family: monospace; font-size: 12px;">${testCode}</textarea>`,
-                   () => {
-                       navigator.clipboard.writeText(testCode);
-                       showNotification('📋 測試程式碼已複製', 'success');
-                   }
-               );
-           }, 1500);
-       }
-       
-       function generateTestTemplate(language) {
-           const templates = {
-               python: `# 自動生成的單元測試
-import unittest
-import pytest
-from unittest.mock import Mock, patch
-
-class TestISPProcessor(unittest.TestCase):
-   
-   def setUp(self):
-       """測試前置設定"""
-       self.processor = ISPProcessor()
-   
-   def test_initialization(self):
-       """測試初始化"""
-       self.assertIsNotNone(self.processor)
-       self.assertFalse(self.processor.is_initialized)
-   
-   def test_auto_exposure(self):
-       """測試自動曝光功能"""
-       # 準備測試數據
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       
-       # 執行測試
-       result = self.processor.auto_exposure(test_image)
-       
-       # 驗證結果
-       self.assertIsNotNone(result)
-       self.assertEqual(result.shape, test_image.shape)
-   
-   def test_white_balance(self):
-       """測試白平衡功能"""
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       result = self.processor.white_balance(test_image)
-       
-       self.assertIsNotNone(result)
-       self.assertEqual(result.dtype, np.uint8)
-   
-   def test_process_frame_with_none_input(self):
-       """測試空輸入處理"""
-       result = self.processor.process_frame(None)
-       self.assertIsNone(result)
-   
-   @patch('cv2.bilateralFilter')
-   def test_denoise_called(self, mock_filter):
-       """測試降噪函數被正確調用"""
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       self.processor.denoise(test_image)
-       mock_filter.assert_called_once()
-
-if __name__ == '__main__':
-   unittest.main()`,
-               
-               javascript: `// 自動生成的 Jest 測試
-describe('ISPController', () => {
-   let controller;
-   
-   beforeEach(() => {
-       controller = new ISPController({
-           apiEndpoint: '/test-api',
-           updateInterval: 100
-       });
-   });
-   
-   afterEach(() => {
-       controller.cleanup();
-   });
-   
-   describe('初始化', () => {
-       test('應該正確初始化控制器', () => {
-           expect(controller).toBeDefined();
-           expect(controller.config).toBeDefined();
-           expect(controller.isRunning).toBe(false);
-       });
-   });
-   
-   describe('API 呼叫', () => {
-       test('應該能夠獲取系統狀態', async () => {
-           // Mock fetch
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({
-                       data: { fps: 30, latency: 20 }
-                   })
-               })
-           );
-           
-           await controller.updateMetrics();
-           
-           expect(fetch).toHaveBeenCalledWith('/test-api/status');
-           expect(controller.metrics.fps).toBe(30);
-       });
-       
-       test('應該處理 API 錯誤', async () => {
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: false,
-                   status: 500
-               })
-           );
-           
-           const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-           
-           await controller.updateMetrics();
-           
-           expect(consoleSpy).toHaveBeenCalled();
-           consoleSpy.mockRestore();
-       });
-   });
-   
-   describe('處理控制', () => {
-       test('應該能夠開始處理', async () => {
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({ status: 'success' })
-               })
-           );
-           
-           await controller.startProcessing();
-           
-           expect(controller.isRunning).toBe(true);
-           expect(fetch).toHaveBeenCalledWith(
-               '/test-api/isp/start',
-               expect.objectContaining({ method: 'POST' })
-           );
-       });
-       
-       test('應該能夠停止處理', async () => {
-           controller.isRunning = true;
-           
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({ status: 'success' })
-               })
-           );
-           
-           await controller.stopProcessing();
-           
-           expect(controller.isRunning).toBe(false);
-       });
-   });
-   
-   describe('事件系統', () => {
-       test('應該能夠註冊和觸發事件', () => {
-           const callback = jest.fn();
-           
-           controller.on('test-event', callback);
-           controller.emit('test-event', { test: 'data' });
-           
-           expect(callback).toHaveBeenCalledWith({ test: 'data' });
-       });
-   });
-   
-   describe('UI 更新', () => {
-       test('應該能夠更新元素內容', () => {
-           // 模擬 DOM 元素
-           document.getElementById = jest.fn((id) => ({
-               textContent: '',
-               style: {}
-           }));
-           
-           controller.updateElement('test-element', 'test value');
-           
-           expect(document.getElementById).toHaveBeenCalledWith('test-element');
-       });
-   });
-});`
-           };
-           
-           return templates[language] || templates.javascript;
-       }
-       
-       // 系統控制功能
-       function startISPProcessing() {
-           showNotification('🚀 正在開始 ISP 處理...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ ISP 處理已開始', 'success');
-               updateSystemStatus('processing', true);
-           }, 1000);
-       }
-       
-       function stopISPProcessing() {
-           showNotification('⏹️ 正在停止 ISP 處理...', 'info');
-           
-           setTimeout(() => {
-               showNotification('⏹️ ISP 處理已停止', 'info');
-               updateSystemStatus('processing', false);
-           }, 1000);
-       }
-       
-       function pauseISPProcessing() {
-           showNotification('⏸️ ISP 處理已暫停', 'warning');
-       }
-       
-       function resetISPSystem() {
-           showModal(
-               '🔄 重置系統',
-               '確定要重置 ISP 系統嗎？\n\n這將會：\n• 停止所有處理\n• 重置所有參數\n• 清除緩存數據\n\n此操作無法撤銷。',
-               () => {
-                   showNotification('🔄 正在重置系統...', 'info');
-                   setTimeout(() => {
-                       showNotification('✅ 系統重置完成', 'success');
-                       updateMetrics();
-                   }, 2000);
-               }
-           );
-       }
-       
-       function updateProcessingMode() {
-           const mode = document.getElementById('processing-mode').value;
-           showNotification(`⚙️ 處理模式已切換至: ${mode}`, 'info');
-       }
-       
-       function updateQuality(value) {
-           document.getElementById('quality-value').textContent = value;
-           showNotification(`✨ 影像品質等級設定為: ${value}`, 'info');
-       }
-       
-       // 追蹤系統功能
-       function startTracking() {
-           showNotification('🎯 開始目標追蹤', 'success');
-           updateTrackingStats();
-       }
-       
-       function stopTracking() {
-           showNotification('⏹️ 停止目標追蹤', 'info');
-       }
-       
-       function pauseTracking() {
-           showNotification('⏸️ 暫停目標追蹤', 'warning');
-       }
-       
-       function resetTracking() {
-           showNotification('🔄 重置追蹤系統', 'info');
-           updateTrackingStats();
-       }
-       
-       function updateTrackingMode(mode) {
-           showNotification(`🎯 追蹤模式: ${mode}`, 'info');
-       }
-       
-       function updateDetectionThreshold(value) {
-           document.getElementById('detection-threshold').textContent = value;
-           showNotification(`🎛️ 檢測閾值: ${value}`, 'info');
-       }
-       
-       function updateTrackingStability(value) {
-           document.getElementById('tracking-stability').textContent = value;
-           showNotification(`📊 追蹤穩定性: ${value}`, 'info');
-       }
-       
-       function updateTrackingStats() {
-           const activeTargets = Math.floor(Math.random() * 15 + 3);
-           const accuracy = (90 + Math.random() * 8).toFixed(1);
-           const speed = (10 + Math.random() * 20).toFixed(1);
-           
-           updateElement('active-targets', activeTargets);
-           updateElement('tracking-accuracy', `${accuracy}%`);
-           updateElement('avg-speed', `${speed} km/h`);
-       }
-       
-       // 效能測試功能
-       function runPerformanceTest() {
-           showNotification('🚀 開始效能測試...', 'info');
-           
-           setTimeout(() => {
-               const results = {
-                   throughput: (2.5 + Math.random() * 0.6).toFixed(1),
-                   latency: Math.floor(25 + Math.random() * 10),
-                   accuracy: (94 + Math.random() * 4).toFixed(1),
-                   efficiency: Math.floor(85 + Math.random() * 10)
-               };
-               
-               updateElement('perf-throughput', `${results.throughput}M`);
-               updateElement('perf-latency', `${results.latency}ms`);
-               updateElement('perf-accuracy', `${results.accuracy}%`);
-               updateElement('perf-efficiency', `${results.efficiency}%`);
-               
-               showNotification('✅ 效能測試完成', 'success');
-           }, 3000);
-       }
-       
-       function runStressTest() {
-           showNotification('💪 開始壓力測試...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 壓力測試完成，系統表現良好', 'success');
-           }, 5000);
-       }
-       
-       function runBenchmark() {
-           showNotification('⚡ 開始基準測試...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 基準測試完成，超越行業平均水準', 'success');
-           }, 4000);
-       }
-       
-       function generatePerformanceReport() {
-           showModal(
-               '📄 效能報告',
-               '正在生成詳細的效能分析報告...\n\n報告內容:\n• 系統效能指標\n• 資源使用分析\n• 優化建議\n• 趨勢分析\n\n報告將在完成後自動下載。',
-               () => {
-                   showNotification('📄 效能報告生成中...', 'info');
-                   setTimeout(() => {
-                       showNotification('✅ 效能報告已生成', 'success');
-                   }, 3000);
-               }
-           );
-       }
-       
-       // 部署管理功能
-       function deployToProduction() {
-           showModal(
-               '🚀 部署到生產環境',
-               '確定要部署到生產環境嗎？\n\n部署流程:\n1. 程式碼檢查\n2. 自動化測試\n3. 構建應用程式\n4. 部署到 Netlify\n5. 更新 DNS\n\n預計完成時間: 3-5 分鐘',
-               () => {
-                   simulateDeployment();
-               }
-           );
-       }
-       
-       function simulateDeployment() {
-           const steps = [
-               { step: '🔍 程式碼檢查中...', delay: 1000 },
-               { step: '🧪 執行自動化測試...', delay: 2000 },
-               { step: '🔨 構建應用程式...', delay: 1500 },
-               { step: '☁️ 部署到 Netlify...', delay: 2000 },
-               { step: '🌐 更新 DNS 設定...', delay: 1000 },
-               { step: '✅ 部署完成！', delay: 500 }
-           ];
-           
-           let currentStep = 0;
-           
-           function executeStep() {
-               if (currentStep < steps.length) {
-                   showNotification(steps[currentStep].step, 'info');
-                   
-                   setTimeout(() => {
-                       currentStep++;
-                       executeStep();
-                   }, steps[currentStep].delay);
-               } else {
-                   updateElement('last-deploy', '剛才');
-                   showNotification('🎉 部署成功！網站已更新', 'success');
-               }
-           }
-           
-           executeStep();
-       }
-       
-       function configureDomain() {
-           showModal(
-               '🌐 配置自訂網域',
-               '配置自訂網域設定...\n\n步驟:\n1. 驗證網域所有權\n2. 設定 DNS 記錄\n3. 申請 SSL 證書\n4. 更新 CDN 配置\n\n需要協助請聯繫系統管理員。',
-               () => {
-                   showNotification('🌐 網域配置已開始', 'info');
-               }
-           );
-       }
-       
-       function renewSSL() {
-           showNotification('🔒 正在更新 SSL 證書...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ SSL 證書更新完成', 'success');
-           }, 2000);
-       }
-       
-       function viewBuildLogs() {
-           showModal(
-               '📋 構建日誌',
-               `<div style="background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;">
-[2024-01-15 14:25:30] 🚀 開始構建<br>
-[2024-01-15 14:25:31] 📦 安裝相依套件<br>
-[2024-01-15 14:25:45] ✅ 相依套件安裝完成<br>
-[2024-01-15 14:25:46] 🔨 開始編譯<br>
-[2024-01-15 14:26:15] ✅ 編譯完成<br>
-[2024-01-15 14:26:16] 🧪 執行測試<br>
-[2024-01-15 14:26:25] ✅ 所有測試通過<br>
-[2024-01-15 14:26:26] 📦 打包資源<br>
-[2024-01-15 14:26:35] ✅ 資源打包完成<br>
-[2024-01-15 14:26:36] 🚀 部署到 CDN<br>
-[2024-01-15 14:26:45] ✅ 部署完成<br>
-[2024-01-15 14:26:46] 🎉 構建成功！
-</div>`
-           );
-       }
-       
-       function triggerRebuild() {
-           showNotification('🔄 正在觸發重新構建...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 重新構建已觸發', 'success');
-           }, 1000);
-       }
-       
-       // 日誌系統功能
-       function startLogUpdates() {
-           if (logUpdateInterval) {
-               clearInterval(logUpdateInterval);
-           }
-           
-           logUpdateInterval = setInterval(() => {
-               if (systemStatus.currentSection === 'logs') {
-                   addRandomLog();
-               }
-           }, 3000);
-       }
-       
-       function addRandomLog() {
-           const logLevels = ['INFO', 'WARN', 'ERROR', 'DEBUG'];
-           const logMessages = [
-               'AI 引擎處理完成一批影像',
-               'ISP 處理器效能正常',
-               'Memory usage: 65%',
-               'Network latency spike detected',
-               'Database connection established',
-               'Cache hit ratio: 87%',
-               'User authentication successful',
-               'Background task completed',
-               'System health check passed',
-               'Configuration updated'
-           ];
-           
-           const level = logLevels[Math.floor(Math.random() * logLevels.length)];
-           const message = logMessages[Math.floor(Math.random() * logMessages.length)];
-           const timestamp = new Date().toLocaleString();
-           
-           const logsContainer = document.getElementById('system-logs');
-           if (logsContainer) {
-               const levelColors = {
-                   'INFO': '#00ff00',
-                   'WARN': '#ffff00',
-                   'ERROR': '#ff0000',
-                   'DEBUG': '#888888'
-               };
-               
-               const logLine = document.createElement('div');
-               logLine.className = 'terminal-line';
-               logLine.innerHTML = `
-                   <span style="color: #888;">[${timestamp}]</span> 
-                   <span style="color: ${levelColors[level]};">[${level}]</span> 
-                   ${message}
-               `;
-               
-               logsContainer.appendChild(logLine);
-               
-               // 保持最新50條日誌
-               while (logsContainer.children.length > 50) {
-                   logsContainer.removeChild(logsContainer.firstChild);
-               }
-               
-               // 自動滾動到底部
-               if (autoScrollLogs) {
-                   logsContainer.scrollTop = logsContainer.scrollHeight;
-               }
-           }
-       }
-       
-       function filterLogs() {
-           const level = document.getElementById('log-level').value;
-           const timeRange = document.getElementById('time-range').value;
-           
-           showNotification(`🔍 篩選日誌: ${level} (${timeRange})`, 'info');
-       }
-       
-       function searchLogs() {
-           const query = document.getElementById('log-search').value;
-           if (query.trim()) {
-               showNotification(`🔍 搜尋: "${query}"`, 'info');
-           }
-       }
-       
-       function refreshLogs() {
-           const logsContainer = document.getElementById('system-logs');
-           if (logsContainer) {
-               logsContainer.innerHTML = `
-                   <div class="terminal-line">
-                       <span style="color: #888;">[${new Date().toLocaleString()}]</span> 
-                       <span style="color: #00ff00;">[INFO]</span> 
-                       日誌已重新整理
-                   </div>
-               `;
-           }
-           showNotification('🔄 日誌已重新整理', 'info');
-       }
-       
-       function exportLogs() {
-           showNotification('📥 正在匯出日誌...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 日誌已匯出到 logs_export.txt', 'success');
-           }, 1500);
-       }
-       
-       function clearLogs() {
-           showModal(
-               '🗑️ 清除日誌',
-               '確定要清除所有日誌嗎？\n\n此操作無法撤銷。',
-               () => {
-                   const logsContainer = document.getElementById('system-logs');
-                   if (logsContainer) {
-                       logsContainer.innerHTML = `
-<div class="terminal-line" style="color: #00ff00;">✅ 程式碼品質: 優秀</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 語法檢查: 通過</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 最佳實踐: 符合</div>
-               <div class="terminal-line" style="color: #ffff00;">⚠️  效能建議: 可考慮添加快取機制</div>
-               <div class="terminal-line" style="color: #00ff00;">✅ 安全性檢查: 通過</div>
-               <div class="terminal-line">───────────────────────────</div>
-               <div class="terminal-line">📊 估計執行時間: < 50ms</div>
-               <div class="terminal-line">💾 記憶體使用: ~${Math.floor(Math.random() * 50 + 10)}MB</div>
-               <div class="terminal-line">🔧 相依套件: ${Math.floor(Math.random() * 5 + 2)} 個</div>
-           `;
-           
-           analysisResult.innerHTML = analysis;
-       }
-       
-       // 其他 AI 程式碼功能
-       function loadCodeTemplate() {
-           const templates = [
-               "創建 ISP 影像處理函數，包含自動曝光、白平衡、降噪和銳化",
-               "建立 FastAPI RESTful API，提供影像上傳和處理功能",
-               "開發 React 即時監控組件，顯示系統效能指標",
-               "實現 WebSocket 即時通訊，支援多客戶端連接",
-               "建立 Docker 容器化部署腳本，支援 CI/CD 自動部署"
-           ];
-           
-           const randomTemplate = templates[Math.floor(Math.random() * templates.length)];
-           document.getElementById('code-input').value = randomTemplate;
-           updateLineNumbers('input');
-           showNotification('📋 範本已載入', 'info');
-       }
-       
-       function saveCodePrompt() {
-           const prompt = document.getElementById('code-input').value;
-           if (!prompt.trim()) {
-               showNotification('❌ 沒有內容可儲存', 'warning');
-               return;
-           }
-           
-           // 儲存到 localStorage
-           const timestamp = new Date().toISOString();
-           const savedPrompts = JSON.parse(localStorage.getItem('savedPrompts') || '[]');
-           savedPrompts.unshift({ prompt, timestamp, id: Date.now() });
-           localStorage.setItem('savedPrompts', JSON.stringify(savedPrompts.slice(0, 10))); // 保留最新10個
-           
-           showNotification('💾 提示已儲存', 'success');
-       }
-       
-       function clearCodeInput() {
-           document.getElementById('code-input').value = '';
-           updateLineNumbers('input');
-           showNotification('🗑️ 輸入已清除', 'info');
-       }
-       
-       function copyGeneratedCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可複製', 'warning');
-               return;
-           }
-           
-           output.select();
-           document.execCommand('copy');
-           showNotification('📋 程式碼已複製到剪貼簿', 'success');
-       }
-       
-       function deployToCloudShell() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可部署', 'warning');
-               return;
-           }
-           
-           showModal(
-               '☁️ 部署到 Cloud Shell',
-               '正在準備部署程式碼到 Google Cloud Shell...\n\n步驟:\n1. 開啟 Cloud Shell\n2. 建立新檔案\n3. 複製程式碼\n4. 執行測試\n\n確認要繼續嗎？',
-               () => {
-                   openCloudShellDirect();
-                   showNotification('🚀 已開啟 Cloud Shell，請手動複製程式碼', 'info');
-               }
-           );
-       }
-       
-       function saveToGitHub() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可儲存', 'warning');
-               return;
-           }
-           
-           showModal(
-               '💾 儲存到 GitHub',
-               '將程式碼儲存到 GitHub 儲存庫...\n\n功能:\n• 自動建立新檔案\n• 添加到 git 版本控制\n• 推送到遠端儲存庫\n\n確認要繼續嗎？',
-               () => {
-                   // 模擬儲存過程
-                   setTimeout(() => {
-                       showNotification('✅ 程式碼已儲存到 GitHub', 'success');
-                   }, 2000);
-               }
-           );
-       }
-       
-       function formatGeneratedCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可格式化', 'warning');
-               return;
-           }
-           
-           // 簡單的程式碼格式化
-           let formattedCode = output.value
-               .replace(/\{\s*\n/g, '{\n    ')
-               .replace(/\n\s*\}/g, '\n}')
-               .replace(/;\s*\n/g, ';\n');
-           
-           output.value = formattedCode;
-           updateLineNumbers('output');
-           showNotification('✨ 程式碼已格式化', 'success');
-       }
-       
-       function analyzeCode() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可分析', 'warning');
-               return;
-           }
-           
-           // 顯示分析過程
-           const analysisResult = document.getElementById('code-analysis-result');
-           analysisResult.innerHTML = '<div class="terminal-line">🔍 正在分析程式碼...</div>';
-           
-           setTimeout(() => {
-               const lines = code.split('\n').length;
-               const complexity = Math.floor(Math.random() * 10 + 1);
-               const maintainability = Math.floor(Math.random() * 30 + 70);
-               
-               analysisResult.innerHTML = `
-                   <div class="terminal-line">📊 程式碼分析報告</div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line">📏 程式碼行數: ${lines}</div>
-                   <div class="terminal-line">🔧 複雜度評分: ${complexity}/10</div>
-                   <div class="terminal-line">🛠️ 可維護性: ${maintainability}%</div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line" style="color: #00ff00;">✅ 無語法錯誤</div>
-                   <div class="terminal-line" style="color: #00ff00;">✅ 符合編碼標準</div>
-                   <div class="terminal-line" style="color: ${complexity > 7 ? '#ffff00' : '#00ff00'};">
-                       ${complexity > 7 ? '⚠️  複雜度較高，建議簡化' : '✅ 複雜度適中'}
-                   </div>
-                   <div class="terminal-line">═══════════════════════════</div>
-                   <div class="terminal-line">🔍 建議: 添加更多註解和錯誤處理</div>
-               `;
-               
-               showNotification('📊 程式碼分析完成', 'success');
-           }, 1500);
-       }
-       
-       function optimizeCode() {
-           const output = document.getElementById('code-output');
-           if (!output.value.trim()) {
-               showNotification('❌ 沒有程式碼可優化', 'warning');
-               return;
-           }
-           
-           showNotification('⚡ 正在優化程式碼...', 'info');
-           
-           setTimeout(() => {
-               // 簡單的優化標記
-               let optimizedCode = output.value;
-               optimizedCode = '// === AI 優化版本 ===\n' + 
-                             '// 優化點: 效能提升、記憶體優化、錯誤處理增強\n\n' + 
-                             optimizedCode;
-               
-               output.value = optimizedCode;
-               updateLineNumbers('output');
-               showNotification('⚡ 程式碼優化完成', 'success');
-           }, 2000);
-       }
-       
-       function generateTests() {
-           const code = document.getElementById('code-output').value;
-           if (!code.trim()) {
-               showNotification('❌ 沒有程式碼可生成測試', 'warning');
-               return;
-           }
-           
-           showNotification('🧪 正在生成單元測試...', 'info');
-           
-           setTimeout(() => {
-               const language = document.getElementById('code-language').value;
-               const testCode = generateTestTemplate(language);
-               
-               // 在新模態框中顯示測試程式碼
-               showModal(
-                   '🧪 生成的單元測試',
-                   `<textarea readonly style="width: 100%; height: 300px; font-family: monospace; font-size: 12px;">${testCode}</textarea>`,
-                   () => {
-                       navigator.clipboard.writeText(testCode);
-                       showNotification('📋 測試程式碼已複製', 'success');
-                   }
-               );
-           }, 1500);
-       }
-       
-       function generateTestTemplate(language) {
-           const templates = {
-               python: `# 自動生成的單元測試
-import unittest
-import pytest
-from unittest.mock import Mock, patch
-
-class TestISPProcessor(unittest.TestCase):
-   
-   def setUp(self):
-       """測試前置設定"""
-       self.processor = ISPProcessor()
-   
-   def test_initialization(self):
-       """測試初始化"""
-       self.assertIsNotNone(self.processor)
-       self.assertFalse(self.processor.is_initialized)
-   
-   def test_auto_exposure(self):
-       """測試自動曝光功能"""
-       # 準備測試數據
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       
-       # 執行測試
-       result = self.processor.auto_exposure(test_image)
-       
-       # 驗證結果
-       self.assertIsNotNone(result)
-       self.assertEqual(result.shape, test_image.shape)
-   
-   def test_white_balance(self):
-       """測試白平衡功能"""
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       result = self.processor.white_balance(test_image)
-       
-       self.assertIsNotNone(result)
-       self.assertEqual(result.dtype, np.uint8)
-   
-   def test_process_frame_with_none_input(self):
-       """測試空輸入處理"""
-       result = self.processor.process_frame(None)
-       self.assertIsNone(result)
-   
-   @patch('cv2.bilateralFilter')
-   def test_denoise_called(self, mock_filter):
-       """測試降噪函數被正確調用"""
-       test_image = np.random.randint(0, 255, (100, 100, 3), dtype=np.uint8)
-       self.processor.denoise(test_image)
-       mock_filter.assert_called_once()
-
-if __name__ == '__main__':
-   unittest.main()`,
-               
-               javascript: `// 自動生成的 Jest 測試
-describe('ISPController', () => {
-   let controller;
-   
-   beforeEach(() => {
-       controller = new ISPController({
-           apiEndpoint: '/test-api',
-           updateInterval: 100
-       });
-   });
-   
-   afterEach(() => {
-       controller.cleanup();
-   });
-   
-   describe('初始化', () => {
-       test('應該正確初始化控制器', () => {
-           expect(controller).toBeDefined();
-           expect(controller.config).toBeDefined();
-           expect(controller.isRunning).toBe(false);
-       });
-   });
-   
-   describe('API 呼叫', () => {
-       test('應該能夠獲取系統狀態', async () => {
-           // Mock fetch
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({
-                       data: { fps: 30, latency: 20 }
-                   })
-               })
-           );
-           
-           await controller.updateMetrics();
-           
-           expect(fetch).toHaveBeenCalledWith('/test-api/status');
-           expect(controller.metrics.fps).toBe(30);
-       });
-       
-       test('應該處理 API 錯誤', async () => {
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: false,
-                   status: 500
-               })
-           );
-           
-           const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-           
-           await controller.updateMetrics();
-           
-           expect(consoleSpy).toHaveBeenCalled();
-           consoleSpy.mockRestore();
-       });
-   });
-   
-   describe('處理控制', () => {
-       test('應該能夠開始處理', async () => {
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({ status: 'success' })
-               })
-           );
-           
-           await controller.startProcessing();
-           
-           expect(controller.isRunning).toBe(true);
-           expect(fetch).toHaveBeenCalledWith(
-               '/test-api/isp/start',
-               expect.objectContaining({ method: 'POST' })
-           );
-       });
-       
-       test('應該能夠停止處理', async () => {
-           controller.isRunning = true;
-           
-           global.fetch = jest.fn(() =>
-               Promise.resolve({
-                   ok: true,
-                   json: () => Promise.resolve({ status: 'success' })
-               })
-           );
-           
-           await controller.stopProcessing();
-           
-           expect(controller.isRunning).toBe(false);
-       });
-   });
-   
-   describe('事件系統', () => {
-       test('應該能夠註冊和觸發事件', () => {
-           const callback = jest.fn();
-           
-           controller.on('test-event', callback);
-           controller.emit('test-event', { test: 'data' });
-           
-           expect(callback).toHaveBeenCalledWith({ test: 'data' });
-       });
-   });
-   
-   describe('UI 更新', () => {
-       test('應該能夠更新元素內容', () => {
-           // 模擬 DOM 元素
-           document.getElementById = jest.fn((id) => ({
-               textContent: '',
-               style: {}
-           }));
-           
-           controller.updateElement('test-element', 'test value');
-           
-           expect(document.getElementById).toHaveBeenCalledWith('test-element');
-       });
-   });
-});`
-           };
-           
-           return templates[language] || templates.javascript;
-       }
-       
-       // 系統控制功能
-       function startISPProcessing() {
-           showNotification('🚀 正在開始 ISP 處理...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ ISP 處理已開始', 'success');
-               updateSystemStatus('processing', true);
-           }, 1000);
-       }
-       
-       function stopISPProcessing() {
-           showNotification('⏹️ 正在停止 ISP 處理...', 'info');
-           
-           setTimeout(() => {
-               showNotification('⏹️ ISP 處理已停止', 'info');
-               updateSystemStatus('processing', false);
-           }, 1000);
-       }
-       
-       function pauseISPProcessing() {
-           showNotification('⏸️ ISP 處理已暫停', 'warning');
-       }
-       
-       function resetISPSystem() {
-           showModal(
-               '🔄 重置系統',
-               '確定要重置 ISP 系統嗎？\n\n這將會：\n• 停止所有處理\n• 重置所有參數\n• 清除緩存數據\n\n此操作無法撤銷。',
-               () => {
-                   showNotification('🔄 正在重置系統...', 'info');
-                   setTimeout(() => {
-                       showNotification('✅ 系統重置完成', 'success');
-                       updateMetrics();
-                   }, 2000);
-               }
-           );
-       }
-       
-       function updateProcessingMode() {
-           const mode = document.getElementById('processing-mode').value;
-           showNotification(`⚙️ 處理模式已切換至: ${mode}`, 'info');
-       }
-       
-       function updateQuality(value) {
-           document.getElementById('quality-value').textContent = value;
-           showNotification(`✨ 影像品質等級設定為: ${value}`, 'info');
-       }
-       
-       // 追蹤系統功能
-       function startTracking() {
-           showNotification('🎯 開始目標追蹤', 'success');
-           updateTrackingStats();
-       }
-       
-       function stopTracking() {
-           showNotification('⏹️ 停止目標追蹤', 'info');
-       }
-       
-       function pauseTracking() {
-           showNotification('⏸️ 暫停目標追蹤', 'warning');
-       }
-       
-       function resetTracking() {
-           showNotification('🔄 重置追蹤系統', 'info');
-           updateTrackingStats();
-       }
-       
-       function updateTrackingMode(mode) {
-           showNotification(`🎯 追蹤模式: ${mode}`, 'info');
-       }
-       
-       function updateDetectionThreshold(value) {
-           document.getElementById('detection-threshold').textContent = value;
-           showNotification(`🎛️ 檢測閾值: ${value}`, 'info');
-       }
-       
-       function updateTrackingStability(value) {
-           document.getElementById('tracking-stability').textContent = value;
-           showNotification(`📊 追蹤穩定性: ${value}`, 'info');
-       }
-       
-       function updateTrackingStats() {
-           const activeTargets = Math.floor(Math.random() * 15 + 3);
-           const accuracy = (90 + Math.random() * 8).toFixed(1);
-           const speed = (10 + Math.random() * 20).toFixed(1);
-           
-           updateElement('active-targets', activeTargets);
-           updateElement('tracking-accuracy', `${accuracy}%`);
-           updateElement('avg-speed', `${speed} km/h`);
-       }
-       
-       // 效能測試功能
-       function runPerformanceTest() {
-           showNotification('🚀 開始效能測試...', 'info');
-           
-           setTimeout(() => {
-               const results = {
-                   throughput: (2.5 + Math.random() * 0.6).toFixed(1),
-                   latency: Math.floor(25 + Math.random() * 10),
-                   accuracy: (94 + Math.random() * 4).toFixed(1),
-                   efficiency: Math.floor(85 + Math.random() * 10)
-               };
-               
-               updateElement('perf-throughput', `${results.throughput}M`);
-               updateElement('perf-latency', `${results.latency}ms`);
-               updateElement('perf-accuracy', `${results.accuracy}%`);
-               updateElement('perf-efficiency', `${results.efficiency}%`);
-               
-               showNotification('✅ 效能測試完成', 'success');
-           }, 3000);
-       }
-       
-       function runStressTest() {
-           showNotification('💪 開始壓力測試...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 壓力測試完成，系統表現良好', 'success');
-           }, 5000);
-       }
-       
-       function runBenchmark() {
-           showNotification('⚡ 開始基準測試...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 基準測試完成，超越行業平均水準', 'success');
-           }, 4000);
-       }
-       
-       function generatePerformanceReport() {
-           showModal(
-               '📄 效能報告',
-               '正在生成詳細的效能分析報告...\n\n報告內容:\n• 系統效能指標\n• 資源使用分析\n• 優化建議\n• 趨勢分析\n\n報告將在完成後自動下載。',
-               () => {
-                   showNotification('📄 效能報告生成中...', 'info');
-                   setTimeout(() => {
-                       showNotification('✅ 效能報告已生成', 'success');
-                   }, 3000);
-               }
-           );
-       }
-       
-       // 部署管理功能
-       function deployToProduction() {
-           showModal(
-               '🚀 部署到生產環境',
-               '確定要部署到生產環境嗎？\n\n部署流程:\n1. 程式碼檢查\n2. 自動化測試\n3. 構建應用程式\n4. 部署到 Netlify\n5. 更新 DNS\n\n預計完成時間: 3-5 分鐘',
-               () => {
-                   simulateDeployment();
-               }
-           );
-       }
-       
-       function simulateDeployment() {
-           const steps = [
-               { step: '🔍 程式碼檢查中...', delay: 1000 },
-               { step: '🧪 執行自動化測試...', delay: 2000 },
-               { step: '🔨 構建應用程式...', delay: 1500 },
-               { step: '☁️ 部署到 Netlify...', delay: 2000 },
-               { step: '🌐 更新 DNS 設定...', delay: 1000 },
-               { step: '✅ 部署完成！', delay: 500 }
-           ];
-           
-           let currentStep = 0;
-           
-           function executeStep() {
-               if (currentStep < steps.length) {
-                   showNotification(steps[currentStep].step, 'info');
-                   
-                   setTimeout(() => {
-                       currentStep++;
-                       executeStep();
-                   }, steps[currentStep].delay);
-               } else {
-                   updateElement('last-deploy', '剛才');
-                   showNotification('🎉 部署成功！網站已更新', 'success');
-               }
-           }
-           
-           executeStep();
-       }
-       
-       function configureDomain() {
-           showModal(
-               '🌐 配置自訂網域',
-               '配置自訂網域設定...\n\n步驟:\n1. 驗證網域所有權\n2. 設定 DNS 記錄\n3. 申請 SSL 證書\n4. 更新 CDN 配置\n\n需要協助請聯繫系統管理員。',
-               () => {
-                   showNotification('🌐 網域配置已開始', 'info');
-               }
-           );
-       }
-       
-       function renewSSL() {
-           showNotification('🔒 正在更新 SSL 證書...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ SSL 證書更新完成', 'success');
-           }, 2000);
-       }
-       
-       function viewBuildLogs() {
-           showModal(
-               '📋 構建日誌',
-               `<div style="background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto;">
-[2024-01-15 14:25:30] 🚀 開始構建<br>
-[2024-01-15 14:25:31] 📦 安裝相依套件<br>
-[2024-01-15 14:25:45] ✅ 相依套件安裝完成<br>
-[2024-01-15 14:25:46] 🔨 開始編譯<br>
-[2024-01-15 14:26:15] ✅ 編譯完成<br>
-[2024-01-15 14:26:16] 🧪 執行測試<br>
-[2024-01-15 14:26:25] ✅ 所有測試通過<br>
-[2024-01-15 14:26:26] 📦 打包資源<br>
-[2024-01-15 14:26:35] ✅ 資源打包完成<br>
-[2024-01-15 14:26:36] 🚀 部署到 CDN<br>
-[2024-01-15 14:26:45] ✅ 部署完成<br>
-[2024-01-15 14:26:46] 🎉 構建成功！
-</div>`
-           );
-       }
-       
-       function triggerRebuild() {
-           showNotification('🔄 正在觸發重新構建...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 重新構建已觸發', 'success');
-           }, 1000);
-       }
-       
-       // 日誌系統功能
-       function startLogUpdates() {
-           if (logUpdateInterval) {
-               clearInterval(logUpdateInterval);
-           }
-           
-           logUpdateInterval = setInterval(() => {
-               if (systemStatus.currentSection === 'logs') {
-                   addRandomLog();
-               }
-           }, 3000);
-       }
-       
-       function addRandomLog() {
-           const logLevels = ['INFO', 'WARN', 'ERROR', 'DEBUG'];
-           const logMessages = [
-               'AI 引擎處理完成一批影像',
-               'ISP 處理器效能正常',
-               'Memory usage: 65%',
-               'Network latency spike detected',
-               'Database connection established',
-               'Cache hit ratio: 87%',
-               'User authentication successful',
-               'Background task completed',
-               'System health check passed',
-               'Configuration updated'
-           ];
-           
-           const level = logLevels[Math.floor(Math.random() * logLevels.length)];
-           const message = logMessages[Math.floor(Math.random() * logMessages.length)];
-           const timestamp = new Date().toLocaleString();
-           
-           const logsContainer = document.getElementById('system-logs');
-           if (logsContainer) {
-               const levelColors = {
-                   'INFO': '#00ff00',
-                   'WARN': '#ffff00',
-                   'ERROR': '#ff0000',
-                   'DEBUG': '#888888'
-               };
-               
-               const logLine = document.createElement('div');
-               logLine.className = 'terminal-line';
-               logLine.innerHTML = `
-                   <span style="color: #888;">[${timestamp}]</span> 
-                   <span style="color: ${levelColors[level]};">[${level}]</span> 
-                   ${message}
-               `;
-               
-               logsContainer.appendChild(logLine);
-               
-               // 保持最新50條日誌
-               while (logsContainer.children.length > 50) {
-                   logsContainer.removeChild(logsContainer.firstChild);
-               }
-               
-               // 自動滾動到底部
-               if (autoScrollLogs) {
-                   logsContainer.scrollTop = logsContainer.scrollHeight;
-               }
-           }
-       }
-       
-       function filterLogs() {
-           const level = document.getElementById('log-level').value;
-           const timeRange = document.getElementById('time-range').value;
-           
-           showNotification(`🔍 篩選日誌: ${level} (${timeRange})`, 'info');
-       }
-       
-       function searchLogs() {
-           const query = document.getElementById('log-search').value;
-           if (query.trim()) {
-               showNotification(`🔍 搜尋: "${query}"`, 'info');
-           }
-       }
-       
-       function refreshLogs() {
-           const logsContainer = document.getElementById('system-logs');
-           if (logsContainer) {
-               logsContainer.innerHTML = `
-                   <div class="terminal-line">
-                       <span style="color: #888;">[${new Date().toLocaleString()}]</span> 
-                       <span style="color: #00ff00;">[INFO]</span> 
-                       日誌已重新整理
-                   </div>
-               `;
-           }
-           showNotification('🔄 日誌已重新整理', 'info');
-       }
-       
-       function exportLogs() {
-           showNotification('📥 正在匯出日誌...', 'info');
-           
-           setTimeout(() => {
-               showNotification('✅ 日誌已匯出到 logs_export.txt', 'success');
-           }, 1500);
-       }
-       
-       function clearLogs() {
-           showModal(
-               '🗑️ 清除日誌',
-               '確定要清除所有日誌嗎？\n\n此操作無法撤銷。',
-               () => {
-                   const logsContainer = document.getElementById('system-logs');
-                   if (logsContainer) {
-                       logsContainer.innerHTML = `
-                           <div class="terminal-line">
-
-<span style="color: #888;">[${new Date().toLocaleString()}]</span> 
-                               <span style="color: #00ff00;">[INFO]</span> 
-                               日誌已清除
-                           </div>
-                       `;
-                   }
-                   showNotification('🗑️ 所有日誌已清除', 'info');
-               }
-           );
-       }
-       
-       function clearErrorLogs() {
-           showNotification('❌ 錯誤日誌已清除', 'info');
-       }
-       
-       function toggleAutoScroll() {
-           autoScrollLogs = document.getElementById('auto-scroll').checked;
-           showNotification(`📜 自動滾動: ${autoScrollLogs ? '已啟用' : '已停用'}`, 'info');
-       }
-       
-       // 設定功能
-       function updatePrecision(value) {
-           document.getElementById('precision-value').textContent = value;
-           showNotification(`🎯 精度等級設定為: ${value}`, 'info');
-       }
-       
-       function saveSettings() {
-           showNotification('💾 正在儲存設定...', 'info');
-           
-           // 收集所有設定
-           const settings = {
-               inference_mode: document.getElementById('inference-mode').value,
-               precision: document.getElementById('precision-slider').value,
-               timestamp: new Date().toISOString()
-           };
-           
-           // 儲存到 localStorage
-           localStorage.setItem('ispSettings', JSON.stringify(settings));
-           
-           setTimeout(() => {
-               showNotification('✅ 設定已儲存', 'success');
-           }, 1000);
-       }
-       
-       function loadSettings() {
-           try {
-               const settings = JSON.parse(localStorage.getItem('ispSettings') || '{}');
-               
-               if (settings.inference_mode) {
-                   document.getElementById('inference-mode').value = settings.inference_mode;
-               }
-               
-               if (settings.precision) {
-                   const slider = document.getElementById('precision-slider');
-                   slider.value = settings.precision;
-                   updatePrecision(settings.precision);
-               }
-               
-               showNotification('📁 設定已載入', 'success');
-               
-           } catch (error) {
-               showNotification('❌ 載入設定失敗', 'error');
-           }
-       }
-       
-       function exportSettings() {
-           try {
-               const settings = localStorage.getItem('ispSettings') || '{}';
-               const blob = new Blob([settings], { type: 'application/json' });
-               const url = URL.createObjectURL(blob);
-               
-               const a = document.createElement('a');
-               a.href = url;
-               a.download = `isp_settings_${new Date().toISOString().split('T')[0]}.json`;
-               document.body.appendChild(a);
-               a.click();
-               document.body.removeChild(a);
-               URL.revokeObjectURL(url);
-               
-               showNotification('📤 設定已匯出', 'success');
-               
-           } catch (error) {
-               showNotification('❌ 匯出設定失敗', 'error');
-           }
-       }
-       
-       function importSettings() {
-           const input = document.createElement('input');
-           input.type = 'file';
-           input.accept = '.json';
-           
-           input.onchange = (event) => {
-               const file = event.target.files[0];
-               if (file) {
-                   const reader = new FileReader();
-                   reader.onload = (e) => {
-                       try {
-                           const settings = JSON.parse(e.target.result);
-                           localStorage.setItem('ispSettings', JSON.stringify(settings));
-                           loadSettings();
-                           showNotification('📥 設定已匯入', 'success');
-                       } catch (error) {
-                           showNotification('❌ 匯入設定失敗', 'error');
-                       }
-                   };
-                   reader.readAsText(file);
-               }
-           };
-           
-           input.click();
-       }
-       
-       function resetSettings() {
-           showModal(
-               '🔄 重置設定',
-               '確定要重置所有設定為預設值嗎？\n\n此操作將會：\n• 清除所有自訂設定\n• 恢復預設參數\n• 重新載入預設配置\n\n此操作無法撤銷。',
-               () => {
-                   localStorage.removeItem('ispSettings');
-                   
-                   // 重置 UI 元素
-                   document.getElementById('inference-mode').value = 'balanced';
-                   document.getElementById('precision-slider').value = 8;
-                   updatePrecision(8);
-                   
-                   showNotification('🔄 設定已重置為預設值', 'info');
-               }
-           );
-       }
-       
-       // 通用功能
-       function updateSystemStatus(type, status) {
-           // 更新系統狀態顯示
-           console.log(`System ${type}: ${status}`);
-       }
-       
-       function updateMetrics() {
-           // 模擬數據更新
-           const metrics = {
-               fps: 32.5 + (Math.random() * 4 - 2),
-               latency: Math.floor(28 + (Math.random() * 10 - 5)),
-               accuracy: 95.2 + (Math.random() * 4 - 2),
-               power: 3.5 + (Math.random() * 0.4 - 0.2),
-               cpu: 35 + (Math.random() * 10 - 5),
-               memory: 62 + (Math.random() * 10 - 5),
-               npu: 78 + (Math.random() * 10 - 5),
-               bandwidth: 1.1 + (Math.random() * 0.2 - 0.1)
-           };
-           
-           // 更新顯示
-           updateElement('total-fps', metrics.fps.toFixed(1));
-           updateElement('total-latency', Math.floor(metrics.latency));
-           updateElement('total-accuracy', metrics.accuracy.toFixed(1));
-           updateElement('total-power', metrics.power.toFixed(1));
-           
-           updateElement('cpu-usage', `${Math.floor(metrics.cpu)}%`);
-           updateElement('memory-usage', `${Math.floor(metrics.memory)}%`);
-           updateElement('npu-usage', `${Math.floor(metrics.npu)}%`);
-           
-           updateProgressBar('cpu-progress', metrics.cpu);
-           updateProgressBar('memory-progress', metrics.memory);
-           updateProgressBar('npu-progress', metrics.npu);
-           
-           // 更新運行時間
-           const uptime = Math.floor((Date.now() - systemStatus.startTime) / 1000);
-           const hours = Math.floor(uptime / 3600);
-           const minutes = Math.floor((uptime % 3600) / 60);
-           updateElement('uptime', `${hours}h ${minutes}m`);
-       }
-       
-       function updateCloudShellStatus() {
-           const connectionTime = Math.floor((Date.now() - systemStatus.startTime) / 60000);
-           updateElement('connection-time', `${connectionTime} 分鐘`);
-       }
-       
-       function updateProgressBar(id, value) {
-           const progressBar = document.getElementById(id);
-           if (progressBar) {
-               progressBar.style.width = `${Math.max(0, Math.min(100, value))}%`;
-           }
-       }
-       
-       function updateElement(id, value) {
-           const element = document.getElementById(id);
-           if (element) {
-               element.textContent = value;
-           }
-       }
-       
-       function handleEnterKey(event, callback) {
-           if (event.key === 'Enter') {
-               callback();
-           }
-       }
-       
-       function viewFileStructure() {
-           showModal(
-               '📁 檔案結構檢視器',
-               `<div style="background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 5px; font-family: monospace; font-size: 12px;">
-📂 ai-agent-control-center/<br>
-├── 📄 index.html (完整整合版)<br>
-├── 📂 netlify/<br>
-│   └── 📂 functions/<br>
-│       ├── 📄 status.js (系統狀態 API)<br>
-│       ├── 📄 scenes.js (場景識別 API)<br>
-│       ├── 📄 ai-code-generator.js (AI 程式碼生成)<br>
-│       ├── 📄 cloud-shell.js (Cloud Shell 整合)<br>
-│       └── 📄 analytics.js (使用分析)<br>
-├── 📄 netlify.toml (部署配置)<br>
-├── 📄 package.json (專案配置)<br>
-├── 📄 README.md (專案說明)<br>
-└── 📄 .gitignore (Git 忽略檔案)
-</div>`,
-               () => {
-                   showNotification('📁 檔案結構已查看', 'info');
-               }
-           );
-       }
-       
-       // 模態框功能
-       function showModal(title, content, onConfirm = null) {
-           const modal = document.getElementById('modal');
-           const modalTitle = document.getElementById('modal-title');
-           const modalBody = document.getElementById('modal-body');
-           
-           modalTitle.textContent = title;
-           
-           if (typeof content === 'string') {
-               modalBody.innerHTML = content.replace(/\n/g, '<br>');
-           } else {
-               modalBody.innerHTML = content;
-           }
-           
-           modal.classList.add('active');
-           
-           // 設定確認回調
-           window.currentModalConfirm = onConfirm;
-       }
-       
-       function closeModal() {
-           const modal = document.getElementById('modal');
-           modal.classList.remove('active');
-           window.currentModalConfirm = null;
-       }
-       
-       function confirmModal() {
-           if (window.currentModalConfirm) {
-               window.currentModalConfirm();
-           }
-           closeModal();
-       }
-       
-       // 通知系統
-       function showNotification(message, type = 'info') {
-           // 創建通知元素
-           const notification = document.createElement('div');
-           notification.className = `notification notification-${type}`;
-           notification.textContent = message;
-           
-           // 添加樣式
-           Object.assign(notification.style, {
-               position: 'fixed',
-               top: '20px',
-               right: '20px',
-               padding: '15px 20px',
-               borderRadius: '12px',
-               color: 'white',
-               fontWeight: '500',
-               zIndex: '9999',
-               transform: 'translateX(400px)',
-               transition: 'all 0.3s ease',
-               boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
-               backdropFilter: 'blur(10px)',
-               border: '1px solid rgba(255, 255, 255, 0.2)'
-           });
-           
-           // 設定背景顏色
-           const colors = {
-               success: 'linear-gradient(135deg, #2ecc71, #27ae60)',
-               error: 'linear-gradient(135deg, #e74c3c, #c0392b)',
-               warning: 'linear-gradient(135deg, #f39c12, #e67e22)',
-               info: 'linear-gradient(135deg, #3498db, #2980b9)'
-           };
-           notification.style.background = colors[type] || colors.info;
-           
-           // 添加到頁面
-           document.body.appendChild(notification);
-           
-           // 滑入動畫
-           setTimeout(() => {
-               notification.style.transform = 'translateX(0)';
-           }, 100);
-           
-           // 自動移除
-           setTimeout(() => {
-               notification.style.transform = 'translateX(400px)';
-               setTimeout(() => {
-                   if (notification.parentNode) {
-                       notification.parentNode.removeChild(notification);
-                   }
-               }, 300);
-           }, 3000);
-       }
-       
-       // 初始化系統
-       function initializeSystem() {
-           console.log('🚀 初始化 CTE AI Agent 控制中心...');
-           
-           // 載入儲存的設定
-           loadSettings();
-           
-           // 開始定期更新
-           metricsUpdateInterval = setInterval(updateMetrics, 3000);
-           
-           // 初始更新
-           updateMetrics();
-           updateCloudShellStatus();
-           
-           // 檢查 localStorage 支援
-           try {
-               localStorage.setItem('test', 'test');
-               localStorage.removeItem('test');
-           } catch (e) {
-               showNotification('⚠️ 瀏覽器不支援本地儲存', 'warning');
-           }
-           
-           console.log('✅ 系統初始化完成');
-           showNotification('🎉 CTE AI Agent 控制中心已就緒', 'success');
-       }
-       
-       // 清理系統
-       function cleanupSystem() {
-           if (metricsUpdateInterval) {
-               clearInterval(metricsUpdateInterval);
-           }
-           
-           if (logUpdateInterval) {
-               clearInterval(logUpdateInterval);
-           }
-           
-           console.log('🧹 系統已清理');
-       }
-       
-       // 頁面事件監聽
-       document.addEventListener('DOMContentLoaded', function() {
-           initializeSystem();
-           
-           // 設定鍵盤快捷鍵
-           document.addEventListener('keydown', function(event) {
-               // Ctrl + / 顯示幫助
-               if (event.ctrlKey && event.key === '/') {
-                   event.preventDefault();
-                   showModal(
-                       '⌨️ 鍵盤快捷鍵',
-                       `快捷鍵說明:<br><br>
-                       <strong>Ctrl + /</strong> - 顯示此幫助<br>
-                       <strong>Ctrl + Enter</strong> - 生成 AI 程式碼<br>
-                       <strong>Ctrl + S</strong> - 儲存設定<br>
-                       <strong>Ctrl + R</strong> - 重新整理數據<br>
-                       <strong>Esc</strong> - 關閉模態框`
-                   );
-               }
-               
-               // Ctrl + Enter 生成程式碼
-               if (event.ctrlKey && event.key === 'Enter') {
-                   event.preventDefault();
-                   if (systemStatus.currentSection === 'ai-code') {
-                       generateAICode();
-                   }
-               }
-               
-               // Ctrl + S 儲存設定
-               if (event.ctrlKey && event.key === 's') {
-                   event.preventDefault();
-                   saveSettings();
-               }
-               
-               // Ctrl + R 重新整理
-               if (event.ctrlKey && event.key === 'r') {
-                   event.preventDefault();
-                   updateMetrics();
-                   showNotification('🔄 數據已重新整理', 'info');
-               }
-               
-               // Esc 關閉模態框
-               if (event.key === 'Escape') {
-                   closeModal();
-               }
-           });
-           
-           // 設定視窗關閉事件
-           window.addEventListener('beforeunload', function() {
-               cleanupSystem();
-           });
-           
-           // 設定可見性變化事件
-           document.addEventListener('visibilitychange', function() {
-               if (document.visibilityState === 'visible') {
-                   updateMetrics();
-               }
-           });
-       });
-       
-       // 錯誤處理
-       window.addEventListener('error', function(event) {
-           console.error('Global error:', event.error);
-           showNotification('❌ 系統發生錯誤，請重新整理頁面', 'error');
-       });
-       
-       window.addEventListener('unhandledrejection', function(event) {
-           console.error('Unhandled promise rejection:', event.reason);
-           showNotification('❌ 網路請求失敗，請檢查連接', 'error');
-       });
-   </script>
 </body>
 </html>
