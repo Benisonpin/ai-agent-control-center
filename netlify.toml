@@ -1,6 +1,15 @@
 [build]
-  publish = "public"
   functions = "netlify/functions"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[context.production.environment]
+  CTE_AGENT_ENDPOINT = "https://8080-cs-fa87232c-842d-4f22-b361-98e25cbbb0ec.cs-asia-east1-jnrc.cloudshell.dev/?authuser=0"
+
+[context.deploy-preview.environment]
+  CTE_AGENT_ENDPOINT = "https://8080-cs-fa87232c-842d-4f22-b361-98e25cbbb0ec.cs-asia-east1-jnrc.cloudshell.dev/?authuser=0"
 
 [[redirects]]
   from = "/api/*"
@@ -12,3 +21,5 @@
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
