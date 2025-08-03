@@ -1,0 +1,33 @@
+{
+  "project": {
+    "name": "TW-LCEO-AISP-2025",
+    "version": "2.0",
+    "description": "AI-Powered ISP with UMS Integration"
+  },
+  "cloud_shell": {
+    "mode": "smart",
+    "force_clone": false,
+    "protection_enabled": true,
+    "auto_backup": true,
+    "sync_enabled": true
+  },
+  "file_structure": {
+    "main_project": "~/isp_ai_agent/",
+    "dev_tools": "~/ai-agent-dev/",
+    "github_repo": "~/cloudshell_open/ai-agent-control-center/",
+    "backup_location": "~/PROTECTED_BACKUPS/"
+  },
+  "features": {
+    "rtl_development": true,
+    "rtos_programming": true,
+    "python_tools": true,
+    "verification": true,
+    "ai_integration": true
+  },
+  "protection": {
+    "multi_backup": true,
+    "conflict_detection": true,
+    "auto_recovery": true,
+    "never_force_clone": true
+  }
+}

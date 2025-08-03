@@ -1,0 +1,489 @@
+#!/usr/bin/env python3
+
+from datetime import datetime
+from fastapi import FastAPI, HTTPException,ebSocket, WebSocketDisconnect
+from pydantic import BaseModel
+from typing import Dict, Any, List, Optional
+import uvicorn
+import requests
+import json
+import time
+import subprocess
+import asyncio
+import time
+import os
+
+app = FastAPI(title="ISP AI Agent")
+
+class ISPModuleRequest(BaseModel):
+    module_type: str
+    parameters: Dict[str, Any]
+    bit_width: int = 8
+
+class OptimizeRequest(BaseModel):
+    verilog_code: str
+    optimization_type: str = "timing"
+
+class TestbenchRequest(BaseModel):
+    module_name: str
+    module_code: str
+
+# 1. 添加新的資料模型
+class CloudShellRequest(BaseModel):
+    command: str
+    args: Optional[Dict] = None
+    timeout: Optional[int] = 300
+
+class SceneAnalysisData(BaseModel):
+    image_data: str
+    brightness: float
+    contrast: float
+    noise_level: float
+    color_temperature: float
+    dynamic_range: float
+
+class CloudConfig(BaseModel):
+    endpoint: str
+    certificates: Optional[str] = None
+
+class SuperResolutionRequest(BaseModel):
+    input_image: str
+    input_resolution: str
+    scale_factor: int = 4
+
+# 2. Cloud Shell API 端點
+@app.post("/api/cloud/shell")
+async def execute_cloud_shell(request: CloudShellRequest):
+    """
+    Cloud Shell 命令執行介面
+    整合您現有的腳本工具
+    """
+    # 基於您的專案結構定義命令映射
+    command_map = {
+        # 建構相關
+        "build": "cd ~/isp_ai_agent && ./scripts/build.sh",
+        "compile": "cd ~/isp_pipeline_verification && make compile",
+        
+        # HDR 測試
+        "test_hdr": "cd ~/ai-agent-dev && ./generate_hdr_tb.sh",
+        "hdr_basic": "cd ~/isp_pipeline_verification/tb/hdr_test_suite && python hdr_basic_test.py",
+        "hdr_stress": "cd ~/isp_pipeline_verification/tb/hdr_test_suite && python hdr_stress_test.py",
+        
+        # 效能分析
+        "performance": "cd ~/ai-agent-dev && ./performance_analysis.sh",
+        "benchmark": "cd ~/ai-agent-dev && ./benchmark_suite.sh",
+        
+        # VCD 分析
+        "vcd_analyze": "cd ~/ai-agent-dev && python analyze_vcd.py ~/isp_pipeline_verification/tb/waveforms/ums_test.vcd",
+        
+        # RTL 模擬
+        "run_sim": "cd ~/isp_pipeline_verification && make simulate",
+        "clean": "cd ~/isp_pipeline_verification && make clean",
+        
+        # 系統狀態
+        "system_status": "cd ~/ai-agent-dev && ./console.sh status",
+        "logs": "cd ~/ums_verification/logs && tail -f compile_final.log"
+    }
+    
+    start_time = time.time()
+    
+    try:
+        if request.command in command_map:
+            cmd = command_map[request.command]
+            
+            # 如果有額外參數，添加到命令中
+            if request.args:
+                for key, value in request.args.items():
+                    cmd += f" --{key}={value}"
+            
+            # 執行命令
+            result = subprocess.run(
+                cmd, 
+                shell=True, 
+                capture_output=True, 
+                text=True,
+                timeout=request.timeout,
+                cwd=os.path.expanduser("~")  # 確保在正確的目錄執行
+            )
+            
+            execution_time = time.time() - start_time
+            
+            return {
+                "success": True,
+                "command": request.command,
+                "stdout": result.stdout,
+                "stderr": result.stderr,
+                "return_code": result.returncode,
+                "execution_time_seconds": round(execution_time, 2),
+                "timestamp": datetime.now().isoformat()
+            }
+        else:
+            available_commands = list(command_map.keys())
+            return {
+                "success": False, 
+                "error": f"未知命令: {request.command}",
+                "available_commands": available_commands
+            }
+            
+    except subprocess.TimeoutExpired:
+        return {
+            "success": False, 
+            "error": f"命令執行超時 (>{request.timeout}秒)",
+            "command": request.command
+        }
+    except Exception as e:
+        return {
+            "success": False, 
+            "error": f"執行錯誤: {str(e)}",
+            "command": request.command
+        }
+
+# 3. 即時日誌串流 WebSocket
+@app.websocket("/api/logs/stream")
+async def stream_logs(websocket: WebSocket):
+    """
+    即時日誌串流 - 監控系統各層狀態
+    """
+    await websocket.accept()
+    
+    try:
+        while True:
+            # 收集系統日誌
+            logs = []
+            current_time = datetime.now().isoformat()
+            
+            # 檢查各個系統組件狀態
+            try:
+                # RTOS 狀態模擬 (您可以替換為實際的狀態檢查)
+                rtos_status = check_rtos_status()
+                logs.append({
+                    "source": "RTOS",
+                    "level": "INFO",
+                    "message": f"任務狀態: 飛控(P31), AI推論(P29), 影像擷取(P28)",
+                    "details": rtos_status,
+                    "timestamp": current_time
+                })
+                
+                # HAL 層狀態
+                hal_status = check_hal_status()
+                logs.append({
+                    "source": "HAL",
+                    "level": "INFO", 
+                    "message": f"HAL狀態: Camera({hal_status.get('camera', 'unknown')}), UMS({hal_status.get('ums', 'unknown')})",
+                    "timestamp": current_time
+                })
+                
+                # 效能指標
+                perf = get_performance_metrics()
+                logs.append({
+                    "source": "PERFORMANCE",
+                    "level": "INFO",
+                    "message": f"效能: {perf.get('fps', 'N/A')}fps, 延遲{perf.get('latency', 'N/A')}ms, 功耗{perf.get('power', 'N/A')}W",
+                    "timestamp": current_time
+                })
+                
+                # UMS 記憶體狀態
+                ums_status = check_ums_memory()
+                logs.append({
+                    "source": "UMS",
+                    "level": "INFO",
+                    "message": f"記憶體: 碎片率{ums_status.get('fragmentation', 'N/A')}%, 預取準確率{ums_status.get('prefetch_accuracy', 'N/A')}%",
+                    "timestamp": current_time
+                })
+                
+            except Exception as e:
+                logs.append({
+                    "source": "SYSTEM",
+                    "level": "ERROR",
+                    "message": f"狀態檢查錯誤: {str(e)}",
+                    "timestamp": current_time
+                })
+            
+            # 發送日誌到客戶端
+            await websocket.send_json({
+                "logs": logs,
+                "system_health": calculate_system_health(logs)
+            })
+            
+            await asyncio.sleep(2)  # 每2秒更新一次
+            
+    except WebSocketDisconnect:
+        print("WebSocket 連接已斷開")
+    except Exception as e:
+        print(f"WebSocket 錯誤: {e}")
+
+# 4. 系統狀態檢查輔助函數
+def check_rtos_status() -> Dict:
+    """檢查 RTOS 任務狀態"""
+    try:
+        # 這裡您可以添加實際的 RTOS 狀態檢查邏輯
+        # 目前返回模擬數據
+        return {
+            "flight_control": "running",
+            "ai_inference": "running", 
+            "image_capture": "running",
+            "object_tracking": "running",
+            "system_monitor": "running",
+            "logging": "running",
+            "cpu_usage": "65%",
+            "memory_usage": "45%"
+        }
+    except:
+        return {"status": "error", "message": "無法獲取RTOS狀態"}
+
+def check_hal_status() -> Dict:
+    """檢查 HAL 層狀態"""
+    try:
+        # 檢查關鍵 HAL 檔案是否存在
+        hal_files = [
+            "~/isp_ai_agent/src/hal/camera_hal3_interface.h",
+            "~/isp_ai_agent/src/hal/ums_hal_integration.h"
+        ]
+        
+        status = {}
+        for file_path in hal_files:
+            expanded_path = os.path.expanduser(file_path)
+            if os.path.exists(expanded_path):
+                status[os.path.basename(file_path).split('_')[0]] = "available"
+            else:
+                status[os.path.basename(file_path).split('_')[0]] = "missing"
+        
+        return status
+    except:
+        return {"camera": "unknown", "ums": "unknown", "isp": "unknown", "npu": "unknown"}
+
+def get_performance_metrics() -> Dict:
+    """獲取系統效能指標"""
+    try:
+        # 這裡可以添加實際的效能監控邏輯
+        # 基於您的系統規格返回指標
+        return {
+            "fps": "32.5",
+            "latency": "28",
+            "power": "3.5",
+            "bandwidth": "1.1GB/s",
+            "ai_inference_time": "45",
+            "thermal_status": "normal"
+        }
+    except:
+        return {"fps": "N/A", "latency": "N/A", "power": "N/A"}
+
+def check_ums_memory() -> Dict:
+    """檢查 UMS 記憶體狀態"""
+    try:
+        # 模擬 UMS 記憶體狀態
+        return {
+            "fragmentation": "4.2",  # 小於5%的目標
+            "prefetch_accuracy": "87", # 85%準確率目標
+            "zero_copy_efficiency": "95",
+            "dynamic_partitioning": "active"
+        }
+    except:
+        return {"fragmentation": "N/A", "prefetch_accuracy": "N/A"}
+
+def calculate_system_health(logs: List[Dict]) -> str:
+    """計算整體系統健康度"""
+    try:
+        error_count = sum(1 for log in logs if log.get("level") == "ERROR")
+        if error_count == 0:
+            return "healthy"
+        elif error_count <= 2:
+            return "warning" 
+        else:
+            return "critical"
+    except:
+        return "unknown"
+
+# 5. 命令行工具整合端點
+@app.get("/api/cloud/commands")
+async def list_available_commands():
+    """列出所有可用的 Cloud Shell 命令"""
+    commands = {
+        "build": {
+            "description": "建構整個專案",
+            "usage": "POST /api/cloud/shell with command='build'"
+        },
+        "test_hdr": {
+            "description": "執行 HDR 測試",
+            "usage": "POST /api/cloud/shell with command='test_hdr'"
+        },
+        "performance": {
+            "description": "運行效能分析",
+            "usage": "POST /api/cloud/shell with command='performance'"
+        },
+        "vcd_analyze": {
+            "description": "分析 VCD 波形檔案",
+            "usage": "POST /api/cloud/shell with command='vcd_analyze'"
+        },
+        "system_status": {
+            "description": "檢查系統狀態",
+            "usage": "POST /api/cloud/shell with command='system_status'"
+        }
+    }
+    
+    return {
+        "success": True,
+        "available_commands": commands,
+        "total_commands": len(commands)
+    }
+
+# 6. 快速系統診斷
+@app.get("/api/cloud/diagnosis")
+async def system_diagnosis():
+    """快速系統診斷"""
+    diagnosis = {
+        "timestamp": datetime.now().isoformat(),
+        "system_info": {},
+        "file_status": {},
+        "process_status": {},
+        "recommendations": []
+    }
+    
+    # 檢查關鍵檔案
+    key_files = [
+        "~/isp_ai_agent/src/rtos/main.c",
+        "~/isp_ai_agent/src/hal/ums_hal_integration.h", 
+        "~/ai-agent-dev/isp_agent.py",
+        "~/isp_pipeline_verification/tb/waveforms/ums_test.vcd"
+    ]
+    
+    for file_path in key_files:
+        expanded_path = os.path.expanduser(file_path)
+        diagnosis["file_status"][file_path] = os.path.exists(expanded_path)
+        
+        if not os.path.exists(expanded_path):
+            diagnosis["recommendations"].append(f"檔案缺失: {file_path}")
+    
+    # 檢查目錄結構
+    key_dirs = [
+        "~/isp_ai_agent",
+        "~/ai-agent-dev", 
+        "~/isp_pipeline_verification"
+    ]
+    
+    for dir_path in key_dirs:
+        expanded_path = os.path.expanduser(dir_path)
+        diagnosis["file_status"][f"{dir_path}/"] = os.path.isdir(expanded_path)
+    
+    # 系統健康評分
+    total_checks = len(key_files) + len(key_dirs)
+    passed_checks = sum(diagnosis["file_status"].values())
+    health_score = (passed_checks / total_checks) * 100
+    
+    diagnosis["system_info"] = {
+        "health_score": f"{health_score:.1f}%",
+        "api_completion": "79%",  # 基於您的統計
+        "rtos_completion": "100%",
+        "hal_completion": "82%"
+    }
+    
+    return diagnosis
+
+## 以下是舊程式碼 ## 2025-0708- vvv
+
+@app.get("/")
+def home():
+    return {
+        "message": "ISP AI Agent is running",
+        "modules": ["dpc", "hdr", "demosaic", "awb", "ccm"],
+        "features": ["generate", "optimize", "testbench"]
+    }
+
+@app.post("/generate/module")
+async def generate_module(request: ISPModuleRequest):
+    """生成 ISP 模組"""
+    prompt = f"""Generate Verilog code for ISP {request.module_type} module.
+Parameters: {json.dumps(request.parameters, indent=2)}
+Bit width: {request.bit_width}
+
+Requirements:
+1. Complete synthesizable Verilog
+2. Proper reset and clock handling
+3. Parameterized design
+4. Pipeline stages if needed
+5. Clear comments
+
+Generate the module:"""
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={
+                "model": "tinyllama",
+                "prompt": prompt,
+                "stream": False
+            },
+            timeout=120
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            return {
+                "module_type": request.module_type,
+                "parameters": request.parameters,
+                "verilog_code": result.get("response", "")
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/optimize")
+async def optimize_code(request: OptimizeRequest):
+    """優化 Verilog 代碼"""
+    prompt = f"""Optimize this Verilog code for {request.optimization_type}:
+
+{request.verilog_code}
+
+Provide optimized version with improvements."""
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "tinyllama", "prompt": prompt, "stream": False},
+            timeout=120
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            return {
+                "optimization_type": request.optimization_type,
+                "optimized_code": result.get("response", "")
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/generate/testbench")
+async def generate_testbench(request: TestbenchRequest):
+    """生成測試平台"""
+    prompt = f"""Generate testbench for module {request.module_name}:
+
+{request.module_code}
+
+Include test vectors and automatic checking."""
+
+    try:
+        response = requests.post(
+            "http://localhost:11434/api/generate",
+            json={"model": "tinyllama", "prompt": prompt, "stream": False},
+            timeout=120
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            return {
+                "module_name": request.module_name,
+                "testbench_code": result.get("response", "")
+            }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    print("\n" + "="*50)
+    print("ISP AI Agent")
+    print("="*50)
+    print("Modules: dpc, hdr, demosaic, awb, ccm")
+    print("API Docs: http://localhost:8000/docs")
+    print("="*50 + "\n")
+    
+    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    ## 以下是舊程式碼 ## 2025-0708- xxx
