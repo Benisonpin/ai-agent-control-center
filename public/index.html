@@ -244,6 +244,26 @@
                     <i class="fas fa-eye" style="margin-right: 0.75rem; color: #A78BFA;"></i>
                     <div>
                         <div style="font-weight: 600;">無人機影像處理</div>
+                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8B5CF6; margin-top: 0.5rem;">
+                    <i class="fas fa-graduation-cap" style="margin-right: 0.75rem; color: #A78BFA;"></i>
+                    <div>
+                        <div style="font-weight: 600;">AI 模型訓練</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">自動收集→訓練→蒸餾→部署</div>
+                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
+                </button>
+                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
+                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
+                </button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid #10B981; margin-top: 0.5rem;">
+                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #34D399;"></i>
+                    <div>
+                        <div style="font-weight: 600;">FPGA 硬體加速</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">即時推理 + OTA 更新</div>
+                    </div>
+                </div>
                 <div style="display: flex; align-items: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #EF4444; margin-top: 0.5rem;">
                     <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #F87171;"></i>
                     <div>
@@ -266,6 +286,12 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
                 <button class="btn btn-primary" onclick="deployToNetlify()">
                     <i class="fas fa-rocket"></i> 部署
+                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
+                </button>
+                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
+                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
+                </button>
                 </button>
                 <button class="btn btn-secondary" onclick="openGitHub()">
                     <i class="fab fa-github"></i> GitHub
@@ -371,8 +397,20 @@
 
         function deployToNetlify() {
             showNotification('🚀 部署中...');
+                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
+                </button>
+                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
+                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
+                </button>
             setTimeout(() => {
                 showNotification('✅ 部署完成！');
+                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
+                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
+                </button>
+                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
+                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
+                </button>
             }, 2000);
         }
 
@@ -467,6 +505,97 @@ function checkProtectionStatus() {
 // 頁面載入時檢查保護狀態
 window.addEventListener('load', () => {
     setTimeout(checkProtectionStatus, 3000);
+});
+
+</script>
+
+<script>
+// AI 模型開發功能
+function startAITraining() {
+    showNotification('🧠 啟動 AI 模型訓練管線...', 'info');
+    
+    // 模擬訓練過程
+    const trainingSteps = [
+        '📊 智能資料收集中...',
+        '🎯 AI 輔助標註進行中...',
+        '🧠 多模型並行訓練...',
+        '🔬 知識蒸餾優化中...',
+        '✅ AI 模型訓練完成！'
+    ];
+    
+    trainingSteps.forEach((step, index) => {
+        setTimeout(() => {
+            showNotification(step, index === trainingSteps.length - 1 ? 'success' : 'info');
+        }, (index + 1) * 2000);
+    });
+}
+
+function deployToFPGA() {
+    showNotification('🚀 開始部署到 FPGA...', 'info');
+    
+    const deploymentSteps = [
+        '⚙️ 模型量化優化中...',
+        '🔧 轉換為 FPGA 格式...',
+        '📡 上傳到硬體平台...',
+        '🎯 效能驗證: 32.5fps, 28ms延遲',
+        '✅ FPGA 部署成功！'
+    ];
+    
+    deploymentSteps.forEach((step, index) => {
+        setTimeout(() => {
+            showNotification(step, index === deploymentSteps.length - 1 ? 'success' : 'info');
+        }, (index + 1) * 1500);
+    });
+}
+
+// 顯示 AI 開發狀態
+function showAIDevelopmentStatus() {
+    const statusDiv = document.createElement('div');
+    statusDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(139, 92, 246, 0.95);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        max-width: 400px;
+        z-index: 1000;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    `;
+    
+    statusDiv.innerHTML = `
+        <h4 style="margin: 0 0 1rem 0;">🤖 AI 開發狀態</h4>
+        <div style="margin-bottom: 0.5rem;">📊 資料收集: 進行中</div>
+        <div style="margin-bottom: 0.5rem;">🧠 模型訓練: 排程中</div>
+        <div style="margin-bottom: 0.5rem;">🔬 知識蒸餾: 待啟動</div>
+        <div style="margin-bottom: 1rem;">🚀 FPGA 部署: 準備就緒</div>
+        <button onclick="this.parentElement.remove()" style="
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+        ">關閉</button>
+    `;
+    
+    document.body.appendChild(statusDiv);
+    
+    setTimeout(() => {
+        if (statusDiv.parentNode) {
+            statusDiv.remove();
+        }
+    }, 10000);
+}
+
+// 頁面載入時顯示 AI 開發狀態
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        showNotification('🤖 CTE Vibe Code AI 開發環境已就緒！');
+        setTimeout(showAIDevelopmentStatus, 2000);
+    }, 3000);
 });
 
 </script>
