@@ -1,11 +1,9 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
-  command = "echo 'Building TW-LCEO-AISP-2025 Control Center...'"
 
 [build.environment]
   NODE_VERSION = "18"
-  NPM_VERSION = "9"
 
 [[redirects]]
   from = "/api/*"
@@ -23,17 +21,6 @@
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[headers]]
-  for = "/api/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
 
 [context.production]
   environment = { NODE_ENV = "production" }
-
-[context.deploy-preview]
-  environment = { NODE_ENV = "staging" }
