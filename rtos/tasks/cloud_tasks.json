@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "AI: 分析專案",
+            "type": "shell",
+            "command": "./ai_agent_pro.sh",
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            }
+        },
+        {
+            "label": "AI: 執行測試",
+            "type": "shell",
+            "command": "cd ai-isp-ums-integration && if [ -f simple_test ]; then ./simple_test; else echo '請先編譯測試程式'; fi",
+            "problemMatcher": []
+        },
+        {
+            "label": "AI: 檢查程式碼",
+            "type": "shell",
+            "command": "find . -name '*.v' -o -name '*.c' | wc -l && echo '個程式檔案'",
+            "problemMatcher": []
+        }
+    ]
+}

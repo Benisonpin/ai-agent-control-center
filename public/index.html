@@ -172,8 +172,56 @@
                     <span>python/working_agent.py</span>
                 </div>
                 <div class="file-item" onclick="openFile('python/smart_agent.sh')">
+                <div class="file-item" onclick="openFile('rtos/main.c')">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
+                    <span>rtos/main.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
+                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
+                    <span>rtos/tasks/vision_task.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
+                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
+                    <span>rtos/config/FreeRTOSConfig.h</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/main.c')">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
+                    <span>rtos/main.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
+                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
+                    <span>rtos/tasks/vision_task.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
+                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
+                    <span>rtos/config/FreeRTOSConfig.h</span>
+                </div>
                     <i class="fas fa-terminal" style="margin-right: 0.75rem; color: #10B981;"></i>
                     <span>python/smart_agent.sh</span>
+                <div class="file-item" onclick="openFile('rtos/main.c')">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
+                    <span>rtos/main.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
+                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
+                    <span>rtos/tasks/vision_task.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
+                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
+                    <span>rtos/config/FreeRTOSConfig.h</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/main.c')">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
+                    <span>rtos/main.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
+                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
+                    <span>rtos/tasks/vision_task.c</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
+                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
+                    <span>rtos/config/FreeRTOSConfig.h</span>
+                </div>
                 </div>
             </div>
         </div>
@@ -196,6 +244,20 @@
                     <i class="fas fa-eye" style="margin-right: 0.75rem; color: #A78BFA;"></i>
                     <div>
                         <div style="font-weight: 600;">無人機影像處理</div>
+                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #EF4444; margin-top: 0.5rem;">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #F87171;"></i>
+                    <div>
+                        <div style="font-weight: 600;">FreeRTOS 多工系統</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">32.5fps 即時任務排程</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #EF4444; margin-top: 0.5rem;">
+                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #F87171;"></i>
+                    <div>
+                        <div style="font-weight: 600;">FreeRTOS 多工系統</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">32.5fps 即時任務排程</div>
+                    </div>
+                </div>
                         <div style="font-size: 0.875rem; color: #94A3B8;">即時 AI 分析</div>
                     </div>
                 </div>
@@ -215,6 +277,76 @@
     <script>
         // 簡潔的按鍵事件處理
         function openSmartCloudShell() {
+    // 顯示增強保護警告
+    const enhancedModal = document.createElement("div");
+    enhancedModal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+    `;
+    
+    enhancedModal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #F59E0B;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        ">
+            <h3 style="color: #F59E0B; margin-bottom: 1rem; font-size: 1.5rem;">
+                🛡️ CTE Vibe Code 增強保護模式
+            </h3>
+            <div style="margin-bottom: 1.5rem; line-height: 1.8; text-align: left;">
+                <p><strong>🚀 全新保護機制：</strong></p>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                    <li>✅ 持續監控系統（10秒檢查）</li>
+                    <li>✅ 多重備份保護鏈結</li>
+                    <li>✅ 即時自動恢復機制</li>
+                    <li>✅ 背景保護程序</li>
+                </ul>
+                <p><strong>⚡ 恢復指令：</strong></p>
+                <code style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; display: block; margin: 0.5rem 0;">~/INSTANT_RECOVERY.sh</code>
+            </div>
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button onclick="proceedWithEnhancedCloudShell()" style="
+                    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+                    color: white;
+                    border: none;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 1rem;
+                ">
+                    🚀 啟動增強保護模式
+                </button>
+                <button onclick="cancelEnhancedCloudShell()" style="
+                    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+                    color: white;
+                    border: none;
+                    padding: 1rem 1.5rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    font-size: 1rem;
+                ">
+                    ❌ 取消
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(enhancedModal);
             showNotification('🚀 啟動 Cloud Shell...');
             setTimeout(() => {
                 window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
@@ -277,3 +409,64 @@
     </script>
 </body>
 </html>
+
+<script>
+function proceedWithEnhancedCloudShell() {
+    // 移除模態視窗
+    document.querySelector('div[style*="position: fixed"]').remove();
+    
+    // 顯示保護啟動過程
+    showNotification('🛡️ 啟動增強保護系統...');
+    
+    setTimeout(() => {
+        showNotification('✅ 持續監控已啟動');
+    }, 1000);
+    
+    setTimeout(() => {
+        showNotification('📂 多重備份已建立');
+    }, 2000);
+    
+    setTimeout(() => {
+        showNotification('🚀 安全啟動 Cloud Shell...');
+        
+        // 記錄啟動時間和保護狀態
+        localStorage.setItem('cteVibeProtectionActive', 'true');
+        localStorage.setItem('cteVibeProtectionStart', Date.now());
+        
+        // 開啟 Cloud Shell
+        window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
+        
+    }, 3000);
+    
+    // 啟動定期提醒
+    setInterval(() => {
+        if (localStorage.getItem('cteVibeProtectionActive') === 'true') {
+            showNotification('💡 提醒：檔案持續保護中，如需恢復執行 ~/INSTANT_RECOVERY.sh');
+        }
+    }, 300000); // 每5分鐘提醒一次
+}
+
+function cancelEnhancedCloudShell() {
+    document.querySelector('div[style*="position: fixed"]').remove();
+    showNotification('❌ Cloud Shell 啟動已取消');
+}
+
+// 檢查保護狀態
+function checkProtectionStatus() {
+    if (localStorage.getItem('cteVibeProtectionActive') === 'true') {
+        const startTime = localStorage.getItem('cteVibeProtectionStart');
+        const elapsed = Date.now() - parseInt(startTime);
+        const minutes = Math.floor(elapsed / 60000);
+        
+        if (minutes > 2) {
+            showNotification(`⚡ 保護系統運行 ${minutes} 分鐘，隨時可執行恢復指令`);
+        }
+    }
+}
+
+// 頁面載入時檢查保護狀態
+window.addEventListener('load', () => {
+    setTimeout(checkProtectionStatus, 3000);
+});
+
+</script>

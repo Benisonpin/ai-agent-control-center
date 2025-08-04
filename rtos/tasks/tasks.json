@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "AI Agent: 分析專案",
+            "type": "shell",
+            "command": "${workspaceFolder}/.vscode/scripts/analyze.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "new",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AI Agent: 顯示說明",
+            "type": "shell",
+            "command": "echo",
+            "args": [
+                "AI ISP Agent 可用指令:\n1. 分析專案 - 顯示專案統計\n2. 執行測試 - 執行測試程式\n3. 建置系統 - 編譯專案\n4. 清理檔案 - 清除暫存檔"
+            ],
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "AI Agent: 開啟終端機",
+            "type": "shell",
+            "command": "echo '請在終端機中手動執行指令' && echo 'cd ~/isp_ai_agent'",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "focus": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
