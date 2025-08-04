@@ -1,1 +1,0 @@
-/home/benison_pin/isp_ai_agent/ai-isp-ums-integration/ai-isp-ums-integration/hal/inc/ums_hal_integration.h

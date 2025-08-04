@@ -1,1 +1,0 @@
-/home/benison_pin/isp_ai_agent/ai-isp-ums-integration/camera_hal3/include/camera_hal3_interface.h

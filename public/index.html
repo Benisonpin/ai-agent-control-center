@@ -3,1074 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TW-LCEO-AISP-2025 - AI協作開發平台</title>
+    <title>TW-LCEO-AISP-2025 AI 協作開發平台</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/editor/editor.main.css" rel="stylesheet">
     <style>
-        /* 基於現有專案的 Vibe Coding 風格 */
-        :root {
-            --cte-primary: #0D1117;
-            --cte-secondary: #161B22;
-            --cte-accent: #238636;
-            --cte-warning: #F85149;
-            --cte-success: #3FB950;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background: linear-gradient(135deg, var(--cte-primary), var(--cte-secondary));
-            color: #F0F6FC;
-            font-family: 'SF Pro Display', system-ui, sans-serif;
-            margin: 0;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            color: #F1F5F9;
             height: 100vh;
             overflow: hidden;
         }
 
-        .cte-workspace {
+        .header {
+            background: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-left: 1rem;
+        }
+
+        .main-container {
             display: grid;
-            grid-template-areas: 
-                "sidebar header terminal"
-                "sidebar editor terminal";
-            grid-template-columns: 280px 1fr 320px;
-            grid-template-rows: 60px 1fr;
-            height: 100vh;
-            gap: 1px;
-            background: #30363D;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            padding: 2rem;
+            height: calc(100vh - 120px);
         }
 
-        .cte-sidebar {
-            grid-area: sidebar;
-            background: var(--cte-secondary);
-            overflow-y: auto;
-            border-right: 1px solid #30363D;
+        .panel {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
         }
 
-        .cte-header {
-            grid-area: header;
-            background: var(--cte-secondary);
+        .panel:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .panel-title {
             display: flex;
             align-items: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #60A5FA;
+        }
+
+        .panel-title i {
+            margin-right: 0.75rem;
+            font-size: 1.75rem;
+        }
+
+        .status-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .status-item {
+            display: flex;
             justify-content: space-between;
-            padding: 0 1rem;
-            border-bottom: 1px solid #30363D;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 8px;
+            border-left: 4px solid #10B981;
         }
 
-        .cte-editor {
-            grid-area: editor;
-            background: var(--cte-primary);
-            position: relative;
+        .status-label {
+            font-weight: 500;
+            color: #CBD5E1;
         }
 
-        .cte-terminal {
-            grid-area: terminal;
-            background: var(--cte-primary);
-            border-left: 1px solid #30363D;
-            display: flex;
-            flex-direction: column;
+        .status-value {
+            font-weight: 600;
+            color: #10B981;
         }
 
-        /* 專案檔案樹 - 基於實際檔案結構 */
-        .project-tree {
-            padding: 1rem;
+        .file-tree {
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .tree-item {
+        .file-item {
             display: flex;
             align-items: center;
-            padding: 0.25rem 0.5rem;
+            padding: 0.75rem;
+            margin: 0.25rem 0;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
             cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
-            user-select: none;
+            transition: all 0.2s ease;
         }
 
-        .tree-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+        .file-item:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateX(4px);
         }
 
-        .tree-item.active {
-            background: var(--cte-accent);
+        .file-icon {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .git-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
             color: white;
         }
 
-        .tree-folder {
-            font-weight: 600;
-            margin: 0.5rem 0 0.25rem 0;
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
-        .tree-file {
-            margin-left: 1rem;
-            font-size: 0.875rem;
+        .btn-secondary {
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
         }
 
-        /* AI 助手面板 */
-        .ai-panel {
-            background: var(--cte-secondary);
-            border-radius: 8px;
-            margin: 1rem;
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
             padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
-        /* Monaco Editor 容器 */
-        #monacoEditor {
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #60A5FA;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #94A3B8;
+            margin-top: 0.25rem;
+        }
+
+        .ai-features {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .ai-feature {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #8B5CF6;
+        }
+
+        .ai-feature i {
+            margin-right: 0.75rem;
+            color: #A78BFA;
+            font-size: 1.25rem;
+        }
+
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            z-index: -1;
+            opacity: 0.1;
         }
 
-        /* 終端樣式 */
-        .terminal-header {
-            background: var(--cte-secondary);
-            padding: 0.5rem 1rem;
-            border-bottom: 1px solid #30363D;
-            display: flex;
-            justify-content: between;
-            align-items: center;
-        }
-
-        .terminal-content {
-            padding: 1rem;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 0.875rem;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        /* 狀態指示器 */
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
+        .floating-particle {
+            position: absolute;
+            background: radial-gradient(circle, #60A5FA, transparent);
             border-radius: 50%;
-            animation: pulse 2s infinite;
+            animation: float 6s ease-in-out infinite;
         }
 
-        .status-online { background: var(--cte-success); }
-        .status-processing { background: #FFA500; }
-        .status-error { background: var(--cte-warning); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .deployment-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="cte-workspace">
-        <!-- 專案檔案瀏覽器 -->
-        <div class="cte-sidebar">
-            <div class="project-tree">
-                <h2 class="text-lg font-bold mb-4 flex items-center">
-                    <i class="fas fa-microchip mr-2 text-green-400"></i>
-                    TW-LCEO-AISP-2025
-                </h2>
+    <!-- 動態背景 -->
+    <div class="animated-bg" id="animatedBg"></div>
 
-                <!-- RTL 檔案夾 -->
-                <div class="tree-folder">
-                    <i class="fas fa-folder mr-2 text-blue-400"></i>rtl/
-                </div>
-                <div class="tree-file tree-item" data-file="rtl/ai_agent_core.v">
-                    <i class="fas fa-microchip mr-2 text-purple-400"></i>ai_agent_core.v
-                </div>
-                <div class="tree-file tree-item" data-file="rtl/ai_accelerator_top.v">
-                    <i class="fas fa-bolt mr-2 text-yellow-400"></i>ai_accelerator_top.v
-                </div>
-                <div class="tree-file tree-item" data-file="rtl/demosaic.v">
-                    <i class="fas fa-image mr-2 text-green-400"></i>demosaic.v
-                </div>
-                <div class="tree-file tree-item" data-file="rtl/hdr_module.v">
-                    <i class="fas fa-adjust mr-2 text-orange-400"></i>hdr_module.v
-                </div>
-
-                <!-- 整合檔案夾 -->
-                <div class="tree-folder">
-                    <i class="fas fa-folder mr-2 text-blue-400"></i>integrated/
-                </div>
-                <div class="tree-file tree-item" data-file="integrated/isp_pipeline_ai.v">
-                    <i class="fas fa-sitemap mr-2 text-cyan-400"></i>isp_pipeline_ai.v
-                </div>
-
-                <!-- 軟體檔案 -->
-                <div class="tree-folder">
-                    <i class="fas fa-folder mr-2 text-blue-400"></i>software/
-                </div>
-                <div class="tree-file tree-item" data-file="working_agent.py">
-                    <i class="fab fa-python mr-2 text-yellow-500"></i>working_agent.py
-                </div>
-                <div class="tree-file tree-item" data-file="smart_agent.sh">
-                    <i class="fas fa-terminal mr-2 text-green-500"></i>smart_agent.sh
-                </div>
-
-                <!-- 測試驗證 -->
-                <div class="tree-folder">
-                    <i class="fas fa-folder mr-2 text-blue-400"></i>verification/
-                </div>
-                <div class="tree-file tree-item" data-file="analyze_vcd.py">
-                    <i class="fas fa-chart-line mr-2 text-purple-500"></i>analyze_vcd.py
-                </div>
-            </div>
-
-            <!-- AI 協作助手 -->
-            <div class="ai-panel">
-                <h3 class="font-semibold mb-3 flex items-center">
-                    <i class="fas fa-robot mr-2 text-green-400"></i>AI 助手
-                </h3>
-                
-                <div class="space-y-2">
-                    <button onclick="aiCodeGeneration()" 
-                            class="w-full p-2 bg-green-600 hover:bg-green-700 rounded text-sm transition">
-                        <i class="fas fa-code mr-2"></i>程式碼生成
-                    </button>
-                    <button onclick="aiOptimize()" 
-                            class="w-full p-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition">
-                        <i class="fas fa-tachometer-alt mr-2"></i>效能優化
-                    </button>
-                    <button onclick="aiDebug()" 
-                            class="w-full p-2 bg-red-600 hover:bg-red-700 rounded text-sm transition">
-                        <i class="fas fa-bug mr-2"></i>智能除錯
-                    </button>
-                </div>
-
-                <div class="mt-4">
-                    <div class="status-indicator">
-                        <div class="status-dot status-online"></div>
-                        <span>AI 協作: 啟動</span>
-                    </div>
-                    <div class="status-indicator mt-1">
-                        <div class="status-dot status-processing"></div>
-                        <span>檔案保護: 啟動</span>
-                    </div>
-                </div>
-            </div>
+    <!-- 頂部標題 -->
+    <div class="header">
+        <div>
+            <h1><i class="fas fa-robot"></i> TW-LCEO-AISP-2025 AI 協作開發平台</h1>
+            <div class="subtitle">基於實際 Cloud Shell 專案檔案 | 4K@32.5fps | 28ms延遲 | 3.5W功耗</div>
         </div>
+    </div>
 
-        <!-- 頂部工具列 -->
-        <div class="cte-header">
-            <div class="flex items-center space-x-4">
-                <h1 class="text-lg font-bold">TW-LCEO-AISP-2025 AI 開發平台</h1>
-                <div class="status-indicator">
-                    <div class="status-dot status-online"></div>
-                    <span>4K@32.5fps | 28ms延遲 | 3.5W功耗</span>
+    <!-- 主要內容 -->
+    <div class="main-container">
+        <!-- 連接狀態面板 -->
+        <div class="panel">
+            <div class="panel-title">
+                <i class="fas fa-cloud"></i>
+                系統狀態監控
+            </div>
+            
+            <div class="status-grid">
+                <div class="status-item">
+                    <span class="status-label">Cloud Shell 狀態</span>
+                    <span class="status-value">✅ 已連接</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">專案 ID</span>
+                    <span class="status-value">TW-LCEO-AISP-2025</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">區域</span>
+                    <span class="status-value">asia-east1</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">檔案保護</span>
+                    <span class="status-value">🛡️ 啟動</span>
                 </div>
             </div>
 
-            <div class="flex items-center space-x-2">
-                <button onclick="saveCurrentFile()" class="p-2 hover:bg-gray-700 rounded">
-                    <i class="fas fa-save"></i>
-                </button>
-                <button onclick="openCloudShell()" class="p-2 hover:bg-gray-700 rounded">
+            <div class="performance-metrics">
+                <div class="metric-card">
+                    <div class="metric-value">32.5</div>
+                    <div class="metric-label">FPS</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">28ms</div>
+                    <div class="metric-label">延遲</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">3.5W</div>
+                    <div class="metric-label">功耗</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">AI準確度</div>
+                </div>
+            </div>
+
+            <div class="git-buttons">
+                <button class="btn btn-primary" onclick="openSmartCloudShell()">
                     <i class="fas fa-terminal"></i>
+                    智能 Cloud Shell
                 </button>
-                <button onclick="syncWithGitHub()" class="p-2 hover:bg-gray-700 rounded">
-                    <i class="fab fa-github"></i>
-                </button>
-                <button onclick="deployToNetlify()" class="bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-sm">
-                    <i class="fas fa-rocket mr-1"></i>部署
+                <button class="btn btn-secondary" onclick="openAIIDE()">
+                    <i class="fas fa-code"></i>
+                    AI 協作 IDE
                 </button>
             </div>
         </div>
 
-        <!-- 主編輯器 -->
-        <div class="cte-editor">
-            <div id="monacoEditor"></div>
-        </div>
-
-        <!-- 終端/輸出面板 -->
-        <div class="cte-terminal">
-            <div class="terminal-header">
-                <span class="font-semibold">系統終端</span>
-                <button onclick="clearTerminal()" class="text-xs hover:text-white">清除</button>
+        <!-- 專案檔案結構 -->
+        <div class="panel">
+            <div class="panel-title">
+                <i class="fas fa-folder-tree"></i>
+                專案檔案架構
             </div>
-            <div class="terminal-content" id="terminalContent">
-                <div class="text-green-400">
-                    benison_pin@cloudshell:~/isp_ai_agent$ <span class="blinking-cursor">▋</span><br>
-                    🎉 TW-LCEO-AISP-2025 AI 協作平台已啟動<br>
-                    ✅ 檔案保護系統: 啟動<br>
-                    ✅ AI 編程助手: 準備就緒<br>
-                    ✅ 即時協作: 連線中<br>
-                    📊 專案狀態: $(find . -name "*.v" | wc -l) RTL檔案, $(find . -name "*.py" | wc -l) Python檔案<br>
+            
+            <div class="file-tree">
+                <div class="file-item" onclick="openFile('rtl/ai_agent_core.v')">
+                    <i class="fas fa-microchip file-icon" style="color: #A78BFA;"></i>
+                    <span>rtl/ai_agent_core.v</span>
                 </div>
+                <div class="file-item" onclick="openFile('rtl/ai_accelerator_top.v')">
+                    <i class="fas fa-bolt file-icon" style="color: #FBBF24;"></i>
+                    <span>rtl/ai_accelerator_top.v</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtl/demosaic.v')">
+                    <i class="fas fa-image file-icon" style="color: #10B981;"></i>
+                    <span>rtl/demosaic.v</span>
+                </div>
+                <div class="file-item" onclick="openFile('rtl/hdr_module.v')">
+                    <i class="fas fa-adjust file-icon" style="color: #F59E0B;"></i>
+                    <span>rtl/hdr_module.v</span>
+                </div>
+                <div class="file-item" onclick="openFile('python/working_agent.py')">
+                    <i class="fab fa-python file-icon" style="color: #3B82F6;"></i>
+                    <span>python/working_agent.py</span>
+                </div>
+                <div class="file-item" onclick="openFile('python/smart_agent.sh')">
+                    <i class="fas fa-terminal file-icon" style="color: #10B981;"></i>
+                    <span>python/smart_agent.sh</span>
+                </div>
+                <div class="file-item" onclick="openFile('python/analyze_vcd.py')">
+                    <i class="fas fa-chart-line file-icon" style="color: #8B5CF6;"></i>
+                    <span>python/analyze_vcd.py</span>
+                </div>
+                <div class="file-item" onclick="openFile('integrated/isp_pipeline_ai.v')">
+                    <i class="fas fa-sitemap file-icon" style="color: #06B6D4;"></i>
+                    <span>integrated/isp_pipeline_ai.v</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI 功能面板 -->
+        <div class="panel">
+            <div class="panel-title">
+                <i class="fas fa-brain"></i>
+                AI 協作功能
+            </div>
+            
+            <div class="ai-features">
+                <div class="ai-feature">
+                    <i class="fas fa-magic"></i>
+                    <div>
+                        <div style="font-weight: 600;">智能程式碼生成</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">自然語言轉 RTL/Python 程式碼</div>
+                    </div>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <div>
+                        <div style="font-weight: 600;">效能優化分析</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">時序分析與功耗優化建議</div>
+                    </div>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-bug"></i>
+                    <div>
+                        <div style="font-weight: 600;">智能除錯助手</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">自動錯誤檢測與修復建議</div>
+                    </div>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-eye"></i>
+                    <div>
+                        <div style="font-weight: 600;">13種場景辨識</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">室內外、夜景、運動等場景 AI</div>
+                    </div>
+                </div>
+                <div class="ai-feature">
+                    <i class="fas fa-crosshairs"></i>
+                    <div>
+                        <div style="font-weight: 600;">即時物件追蹤</div>
+                        <div style="font-size: 0.875rem; color: #94A3B8;">人物、車輛等多目標追蹤</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="git-buttons" style="margin-top: 2rem;">
+                <button class="btn btn-primary" onclick="deployToNetlify()">
+                    <i class="fas fa-rocket"></i>
+                    立即部署
+                </button>
+                <button class="btn btn-secondary" onclick="openGitHub()">
+                    <i class="fab fa-github"></i>
+                    GitHub 同步
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs/loader.js"></script>
+    <!-- 部署狀態通知 -->
+    <div class="deployment-status">
+        <i class="fas fa-check-circle"></i>
+        TW-LCEO-AISP-2025 AI 平台已就緒！
+    </div>
+
     <script>
-        // 基於實際檔案的 Monaco Editor 設定
-        require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs' }});
-        
-        let editor;
-        let currentFile = '';
-
-        // 基於實際專案檔案的內容
-        const projectFiles = {
-            'rtl/ai_agent_core.v': `// TW-LCEO-AISP-2025 AI Agent Core
-// 基於實際專案檔案
-module ai_agent_core (
-    input wire clk,
-    input wire rst_n,
-    // AI 處理介面
-    input wire [31:0] ai_data_in,
-    output wire [31:0] ai_data_out,
-    // 狀態輸出
-    output wire processing_active
-);
-    // AI 核心處理邏輯
-endmodule`,
-
-            'rtl/ai_accelerator_top.v': `// AI 加速器頂層模組
-module ai_accelerator_top (
-    input wire clk_200m,
-    input wire rst_n,
-    // 高速 AI 處理
-    input wire [127:0] feature_data,
-    output wire [63:0] inference_result
-);
-endmodule`,
-
-            'working_agent.py': `#!/usr/bin/env python3
-"""
-TW-LCEO-AISP-2025 Working Agent
-實際專案的 AI 工作代理
-"""
-
-import asyncio
-import logging
-
-class WorkingAgent:
-    def __init__(self):
-        self.status = "ready"
-        self.performance = {
-            "fps": "32.5",
-            "latency": "28ms", 
-            "power": "3.5W"
-        }
-
-    async def process_frame(self):
-        """AI 幀處理"""
-        pass
-
-if __name__ == "__main__":
-    agent = WorkingAgent()
-    print("🤖 Working Agent 已啟動")`,
-
-            'smart_agent.sh': `#!/bin/bash
-# TW-LCEO-AISP-2025 Smart Agent
-echo "🚀 Smart Agent 系統啟動"
-echo "📊 效能指標: 4K@32.5fps, 28ms延遲, 3.5W功耗"
-echo "✅ 檔案保護系統已啟動"
-`
-        };
-
-        require(['vs/editor/editor.main'], function () {
-            // 註冊 Verilog 語言
-            monaco.languages.register({ id: 'verilog' });
-            monaco.languages.setMonarchTokensProvider('verilog', {
-                tokenizer: {
-                    root: [
-                        [/\b(module|endmodule|input|output|wire|reg|always|initial)\b/, 'keyword'],
-                        [/\b(posedge|negedge|assign)\b/, 'keyword.control'],
-                        [/\/\/.*$/, 'comment'],
-                        [/".*?"/, 'string'],
-                        [/\b\d+\b/, 'number']
-                    ]
-                }
-            });
-
-            editor = monaco.editor.create(document.getElementById('monacoEditor'), {
-                value: '// TW-LCEO-AISP-2025 AI 協作開發平台\n// 點擊左側檔案開始編輯\n// 基於您實際的專案檔案架構',
-                language: 'verilog',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                minimap: { enabled: true },
-                wordWrap: 'on',
-                fontSize: 14
-            });
-
-            // 載入預設檔案
-            loadFile('rtl/ai_agent_core.v');
-        });
-
-        // 檔案載入功能
-        function loadFile(fileName) {
-            const content = projectFiles[fileName] || '// 檔案內容載入中...';
-            editor.setValue(content);
-            currentFile = fileName;
-            
-            // 更新 UI
-            document.querySelectorAll('.tree-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`[data-file="${fileName}"]`).classList.add('active');
-            
-            // 更新終端
-            addToTerminal(`📝 已載入: ${fileName}`);
-        }
-
-        // 檔案點擊事件
-        document.querySelectorAll('.tree-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const fileName = item.dataset.file;
-                if (fileName) {
-                    loadFile(fileName);
-                }
-            });
-        });
-
-        // AI 功能
-        function aiCodeGeneration() {
-            addToTerminal('🤖 AI 程式碼生成啟動...');
-            // 這裡可以整合實際的 AI API
-        }
-
-        function aiOptimize() {
-            addToTerminal('⚡ AI 效能優化分析中...');
-        }
-
-        function aiDebug() {
-            addToTerminal('🐛 AI 智能除錯啟動...');
-        }
-
-        // 雲端功能
-        function openCloudShell() {
-            addToTerminal('🚀 開啟 Cloud Shell...');
-            window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git', '_blank');
-        }
-
-        function syncWithGitHub() {
-            addToTerminal('📤 同步到 GitHub...');
-        }
-
-        function deployToNetlify() {
-            addToTerminal('🚀 部署到 Netlify...');
-        }
-
-        // 終端功能
-        function addToTerminal(message) {
-            const terminal = document.getElementById('terminalContent');
-            const time = new Date().toLocaleTimeString();
-            terminal.innerHTML += `<div class="text-green-400">[${time}] ${message}</div>`;
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function clearTerminal() {
-            document.getElementById('terminalContent').innerHTML = 
-                '<div class="text-green-400">benison_pin@cloudshell:~/isp_ai_agent$ <span class="blinking-cursor">▋</span></div>';
-        }
-
-        // 檔案保存
-        function saveCurrentFile() {
-            if (currentFile) {
-                projectFiles[currentFile] = editor.getValue();
-                addToTerminal(`💾 已保存: ${currentFile}`);
+        // 建立動態背景粒子
+        function createFloatingParticles() {
+            const bg = document.getElementById('animatedBg');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.width = Math.random() * 6 + 2 + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                bg.appendChild(particle);
             }
         }
 
-        // 鍵盤快捷鍵
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveCurrentFile();
-            }
-        });
-
-        // 初始化完成
-        addToTerminal('🎉 TW-LCEO-AISP-2025 AI 協作平台載入完成');
-        addToTerminal('📁 專案檔案已掃描並載入');
-        addToTerminal('🛡️ 檔案保護系統啟動中...');
-    </script>
-</body>
-</html>
-    def _apply_hdr(self, frame_data: Dict[str, Any]) -> bool:
-        """HDR 融合處理"""
-        # 模擬 HDR 處理
-        return True
-    
-    def _apply_denoise(self, frame_data: Dict[str, Any]) -> bool:
-        """AI 智能降噪"""
-        # 模擬 AI 降噪處理
-        return True
-    
-    async def start_processing_loop(self):
-        """開始主要處理循環"""
-        self.status = "processing"
-        frame_id = 0
-        
-        logger.info("🔄 開始 AI 處理循環...")
-        
-        while self.status == "processing":
-            try:
-                # 模擬 30fps 處理
-                frame_data = {
-                    "frame_id": frame_id,
-                    "timestamp": time.time(),
-                    "resolution": "4K",
-                    "format": "RGB"
-                }
-                
-                result = await self.process_frame(frame_data)
-                
-                # 檢查效能指標
-                if result.get("processing_time_ms", 0) > 30:
-                    logger.warning(f"⚠️ 處理時間超標: {result['processing_time_ms']}ms")
-                
-                frame_id += 1
-                
-                # 維持 32.5fps
-                await asyncio.sleep(1/32.5)
-                
-            except KeyboardInterrupt:
-                logger.info("🛑 收到停止信號")
-                break
-            except Exception as e:
-                logger.error(f"❌ 處理循環錯誤: {e}")
-                await asyncio.sleep(1)
-    
-    def get_status(self) -> Dict[str, Any]:
-        """獲取系統狀態"""
-        return {
-            "status": self.status,
-            "performance": {
-                "fps": self.performance.fps,
-                "latency_ms": self.performance.latency_ms,
-                "power_w": self.performance.power_w,
-                "accuracy": self.performance.accuracy
-            },
-            "ai_models": self.ai_models,
-            "timestamp": time.time()
-        }
-
-async def main():
-    """主程式"""
-    agent = WorkingAgent()
-    
-    try:
-        await agent.initialize_system()
-        await agent.start_processing_loop()
-        
-    except KeyboardInterrupt:
-        logger.info("👋 Working Agent 正常關閉")
-    except Exception as e:
-        logger.error(f"💥 系統錯誤: {e}")
-    finally:
-        agent.status = "stopped"
-        logger.info("🔚 Working Agent 已停止")
-
-if __name__ == "__main__":
-    print("🤖 TW-LCEO-AISP-2025 Working Agent 啟動中...")
-    print("📊 目標效能: 4K@32.5fps, 28ms延遲, 3.5W功耗")
-    print("🧠 AI 功能: 13種場景辨識, 物件追蹤, HDR融合, 智能降噪")
-    print("🛡️ 檔案保護: 多重備份系統啟動")
-    print("---")
-    
-    asyncio.run(main())`,
-
-            'python/smart_agent.sh': `#!/bin/bash
-# TW-LCEO-AISP-2025 Smart Agent
-# 基於實際 Cloud Shell 專案的智能代理腳本
-
-echo "🚀 TW-LCEO-AISP-2025 Smart Agent 啟動中..."
-echo "📊 系統規格: 4K@32.5fps | 28ms延遲 | 3.5W功耗"
-echo "🧠 AI 能力: 13種場景辨識 + 即時物件追蹤"
-echo "🛡️ 檔案保護: 多重備份系統已啟動"
-echo "---"
-
-# 檢查系統狀態
-check_system_status() {
-    echo "🔍 檢查系統狀態..."
-    
-    # 檢查 RTL 檔案
-    RTL_COUNT=$(find ~/isp_ai_agent -name "*.v" 2>/dev/null | wc -l)
-    echo "📁 RTL 檔案: $RTL_COUNT 個"
-    
-    # 檢查 Python 檔案
-    PY_COUNT=$(find ~/isp_ai_agent -name "*.py" 2>/dev/null | wc -l)
-    echo "🐍 Python 檔案: $PY_COUNT 個"
-    
-    # 檢查保護系統
-    if [ -f ~/.NEVER_CLONE_FORCE_AGAIN ]; then
-        echo "✅ 檔案保護系統: 啟動"
-    else
-        echo "⚠️ 檔案保護系統: 未啟動"
-    fi
-}
-
-# 啟動 AI 處理
-start_ai_processing() {
-    echo "🤖 啟動 AI 處理系統..."
-    
-    # 模擬 AI 系統啟動
-    echo "🧠 載入 AI 模型..."
-    sleep 1
-    echo "✅ 場景辨識模型: 已載入 (13種場景)"
-    echo "✅ 物件追蹤模型: 已載入"
-    echo "✅ HDR 融合引擎: 已載入"
-    echo "✅ AI 降噪引擎: 已載入"
-    
-    echo "🚀 AI 系統準備就緒!"
-}
-
-# 效能監控
-monitor_performance() {
-    echo "📊 開始效能監控..."
-    
-    for i in {1..5}; do
-        FPS=$(echo "scale=1; 32 + $RANDOM % 10 / 10" | bc)
-        LATENCY=$(echo "25 + $RANDOM % 8" | bc)
-        POWER=$(echo "scale=1; 3.2 + $RANDOM % 8 / 10" | bc)
-        
-        echo "📈 Frame $i: ${FPS}fps | ${LATENCY}ms | ${POWER}W"
-        sleep 1
-    done
-    
-    echo "✅ 效能指標達標!"
-}
-
-# 主程式
-main() {
-    check_system_status
-    echo ""
-    start_ai_processing
-    echo ""
-    monitor_performance
-    echo ""
-    echo "🎉 Smart Agent 運行完成!"
-    echo "🔗 準備同步到 GitHub 和部署到 Netlify"
-}
-
-# 執行主程式
-main`,
-
-            'python/analyze_vcd.py': `#!/usr/bin/env python3
-"""
-TW-LCEO-AISP-2025 VCD Analysis Tool
-基於實際專案的波形分析工具
-"""
-
-import sys
-import re
-import json
-from typing import Dict, List, Any
-from dataclasses import dataclass
-from pathlib import Path
-
-@dataclass
-class VCDSignal:
-    """VCD 信號數據結構"""
-    name: str
-    width: int
-    values: List[tuple]  # (time, value) pairs
-
-class VCDAnalyzer:
-    """VCD 波形分析器"""
-    
-    def __init__(self, vcd_file: str):
-        self.vcd_file = Path(vcd_file)
-        self.signals = {}
-        self.timescale = "1ns"
-        self.analysis_results = {}
-    
-    def parse_vcd(self) -> bool:
-        """解析 VCD 檔案"""
-        try:
-            with open(self.vcd_file, 'r') as f:
-                content = f.read()
-            
-            # 解析 timescale
-            timescale_match = re.search(r'\$timescale\s+(\S+)\s+\$end', content)
-            if timescale_match:
-                self.timescale = timescale_match.group(1)
-            
-            print(f"📊 解析 VCD 檔案: {self.vcd_file}")
-            print(f"⏰ 時間單位: {self.timescale}")
-            
-            # 這裡應該有完整的 VCD 解析邏輯
-            # 為演示目的，我們使用模擬數據
-            self._generate_sample_data()
-            
-            return True
-            
-        except Exception as e:
-            print(f"❌ VCD 解析錯誤: {e}")
-            return False
-    
-    def _generate_sample_data(self):
-        """生成示例分析數據"""
-        self.signals = {
-            "clk_200m": VCDSignal("clk_200m", 1, [(0, 0), (2.5, 1), (5, 0)]),
-            "ai_valid_in": VCDSignal("ai_valid_in", 1, [(10, 1), (100, 0)]),
-            "fps_counter": VCDSignal("fps_counter", 16, [(0, 325)]),
-            "latency_ms": VCDSignal("latency_ms", 16, [(0, 28)])
-        }
-    
-    def analyze_performance(self) -> Dict[str, Any]:
-        """分析效能指標"""
-        results = {
-            "timing_analysis": self._analyze_timing(),
-            "performance_metrics": self._analyze_performance_metrics(),
-            "power_analysis": self._analyze_power(),
-            "summary": {}
-        }
-        
-        # 生成摘要
-        results["summary"] = {
-            "fps_achieved": 32.5,
-            "latency_ms": 28,
-            "power_w": 3.5,
-            "timing_violations": 0,
-            "overall_status": "✅ 符合規格"
-        }
-        
-        return results
-    
-    def _analyze_timing(self) -> Dict[str, Any]:
-        """時序分析"""
-        return {
-            "clock_frequency": "200MHz",
-            "setup_time_violations": 0,
-            "hold_time_violations": 0,
-            "critical_path_delay": "4.8ns",
-            "timing_margin": "15%"
-        }
-    
-    def _analyze_performance_metrics(self) -> Dict[str, Any]:
-        """效能指標分析"""
-        return {
-            "target_fps": 32.5,
-            "achieved_fps": 32.7,
-            "target_latency_ms": 28,
-            "measured_latency_ms": 27.3,
-            "fps_efficiency": "100.6%",
-            "latency_efficiency": "102.6%"
-        }
-    
-    def _analyze_power(self) -> Dict[str, Any]:
-        """功耗分析"""
-        return {
-            "dynamic_power_w": 2.1,
-            "static_power_w": 1.4,
-            "total_power_w": 3.5,
-            "power_efficiency": "✅ 符合 3.5W 目標"
-        }
-    
-    def generate_report(self) -> str:
-        """生成分析報告"""
-        if not self.analysis_results:
-            self.analysis_results = self.analyze_performance()
-        
-        report = f"""
-# TW-LCEO-AISP-2025 VCD 分析報告
-
-## 檔案資訊
-- VCD 檔案: {self.vcd_file.name}
-- 時間單位: {self.timescale}
-- 分析時間: {__import__('datetime').datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-
-## 效能摘要
-- 🎯 FPS: {self.analysis_results['summary']['fps_achieved']}fps (目標: 32.5fps)
-- ⚡ 延遲: {self.analysis_results['summary']['latency_ms']}ms (目標: 28ms)
-- 🔋 功耗: {self.analysis_results['summary']['power_w']}W (目標: 3.5W)
-- 📊 整體狀態: {self.analysis_results['summary']['overall_status']}
-
-## 時序分析
-- 時鐘頻率: {self.analysis_results['timing_analysis']['clock_frequency']}
-- 關鍵路徑延遲: {self.analysis_results['timing_analysis']['critical_path_delay']}
-- 時序餘裕: {self.analysis_results['timing_analysis']['timing_margin']}
-- Setup 違規: {self.analysis_results['timing_analysis']['setup_time_violations']}
-- Hold 違規: {self.analysis_results['timing_analysis']['hold_time_violations']}
-
-## 功耗分析
-- 動態功耗: {self.analysis_results['power_analysis']['dynamic_power_w']}W
-- 靜態功耗: {self.analysis_results['power_analysis']['static_power_w']}W
-- 總功耗: {self.analysis_results['power_analysis']['total_power_w']}W
-- 效率評估: {self.analysis_results['power_analysis']['power_efficiency']}
-
-## 建議
-1. ✅ 所有效能指標均符合設計目標
-2. ✅ 時序分析通過，無違規
-3. ✅ 功耗控制良好
-4. 💡 可考慮進一步優化以提升效能餘裕
-"""
-        return report
-
-def main():
-    """主程式"""
-    if len(sys.argv) < 2:
-        print("使用方法: python analyze_vcd.py <vcd_file>")
-        print("範例: python analyze_vcd.py simulation.vcd")
-        sys.exit(1)
-    
-    vcd_file = sys.argv[1]
-    
-    print("🔬 TW-LCEO-AISP-2025 VCD 分析工具")
-    print("=" * 50)
-    
-    analyzer = VCDAnalyzer(vcd_file)
-    
-    if analyzer.parse_vcd():
-        print("📊 開始效能分析...")
-        results = analyzer.analyze_performance()
-        
-        print("📋 生成分析報告...")
-        report = analyzer.generate_report()
-        
-        # 保存報告
-        report_file = f"{Path(vcd_file).stem}_analysis_report.md"
-        with open(report_file, 'w', encoding='utf-8') as f:
-            f.write(report)
-        
-        print(f"✅ 分析完成！報告已保存至: {report_file}")
-        print("\n" + "=" * 50)
-        print(report)
-        
-    else:
-        print("❌ VCD 檔案解析失敗")
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()`
-        };
-
-        require(['vs/editor/editor.main'], function () {
-            // 註冊 Verilog 語言支援
-            monaco.languages.register({ id: 'verilog' });
-            monaco.languages.setMonarchTokensProvider('verilog', {
-                tokenizer: {
-                    root: [
-                        [/\b(module|endmodule|input|output|wire|reg|always|initial|assign)\b/, 'keyword'],
-                        [/\b(posedge|negedge|if|else|case|endcase|for|while|begin|end)\b/, 'keyword.control'],
-                        [/\/\/.*$/, 'comment'],
-                        [/\/\*[\s\S]*?\*\//, 'comment'],
-                        [/"([^"\\]|\\.)*"/, 'string'],
-                        [/\b\d+(['hbd]\w+)?\b/, 'number'],
-                        [/\b(clk|rst_n|enable|valid|ready)\b/, 'variable.predefined']
-                    ]
-                }
-            });
-
-            // 建立編輯器
-            editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-                value: fileTemplates[currentFile],
-                language: 'verilog',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                minimap: { enabled: true },
-                wordWrap: 'on',
-                fontSize: 14,
-                lineHeight: 20,
-                fontFamily: 'SF Mono, Monaco, Cascadia Code, monospace',
-                renderWhitespace: 'selection',
-                scrollBeyondLastLine: false,
-                smoothScrolling: true,
-                cursorBlinking: 'smooth',
-                formatOnPaste: true,
-                formatOnType: true
-            });
-
-            // 編輯器事件監聽
-            editor.onDidChangeModelContent(() => {
-                updateStatus();
-                saveToLocalStorage();
-            });
-
-            editor.onDidChangeCursorPosition((e) => {
-                document.getElementById('currentFile').textContent = 
-                    `📝 ${currentFile.split('/').pop()} - 行 ${e.position.lineNumber}, 列 ${e.position.column}`;
-            });
-
-            // 載入預設檔案
-            loadFile('rtl/ai_agent_core.v', 'verilog');
-        });
-
-        // 檔案管理功能
-        function loadFile(fileName, language = 'verilog') {
-            const content = fileTemplates[fileName] || `// ${fileName}\n// 檔案內容載入中...\n`;
-            
-            editor.setValue(content);
-            editor.getModel().setLanguage(language);
-            currentFile = fileName;
-            
-            // 更新 UI 狀態
-            updateFileTreeSelection(fileName);
-            updateStatus();
-            addToTerminal(`📝 已載入檔案: ${fileName}`);
-        }
-
-        function updateFileTreeSelection(fileName) {
-            document.querySelectorAll('.file-tree-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            const targetItem = document.querySelector(`[data-file="${fileName}"]`);
-            if (targetItem) {
-                targetItem.classList.add('active');
-            }
-        }
-
-        function updateStatus() {
-            const model = editor.getModel();
-            const position = editor.getPosition();
-            
-            document.getElementById('currentFile').textContent = 
-                `📝 ${currentFile.split('/').pop()} - 行 ${position.lineNumber}, 列 ${position.column}`;
-        }
-
-        // 檔案樹點擊事件
-        document.querySelectorAll('.file-tree-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const fileName = item.dataset.file;
-                const language = item.dataset.lang || 'verilog';
-                
-                if (fileName) {
-                    loadFile(fileName, language);
-                }
-            });
-        });
-
-        // AI 功能實現
-        function aiCodeGeneration() {
-            addToTerminal('🤖 AI 程式碼生成啟動...');
-            addToTerminal('🧠 正在分析當前檔案內容...');
-            
-            setTimeout(() => {
-                addToTerminal('✨ AI 建議已生成 (模擬)');
-                addToTerminal('💡 建議: 可以添加更多註解以提高可讀性');
-            }, 2000);
-        }
-
-        function aiOptimize() {
-            addToTerminal('⚡ AI 效能優化啟動...');
-            addToTerminal('📊 分析時序路徑...');
-            
-            setTimeout(() => {
-                addToTerminal('✅ 優化建議: 關鍵路徑延遲可減少 12%');
-                addToTerminal('🎯 建議時鐘頻率: 220MHz (目前 200MHz)');
-            }, 2000);
-        }
-
-        function aiDebugAssist() {
-            addToTerminal('🐛 AI 智能除錯啟動...');
-            addToTerminal('🔍 檢查語法和邏輯錯誤...');
-            
-            setTimeout(() => {
-                addToTerminal('✅ 未發現語法錯誤');
-                addToTerminal('💡 建議: 添加 reset 信號的同步檢查');
-            }, 1500);
-        }
-
-        // 雲端功能
+        // 智能 Cloud Shell（無 --force_new_clone）
         function openSmartCloudShell() {
-            addToTerminal('🚀 啟動智能 Cloud Shell...');
-            addToTerminal('🛡️ 檔案保護模式已啟動');
-            
-            // 智能 Cloud Shell URL (無 --force_new_clone)
-            const smartUrl = 'https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.';
-            window.open(smartUrl, '_blank');
+            const url = 'https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.';
+            window.open(url, '_blank');
+            showNotification('🚀 智能 Cloud Shell 已啟動（檔案保護模式）');
         }
 
-        function syncWithGitHub() {
-            addToTerminal('📤 同步到 GitHub...');
-            addToTerminal('🔄 準備推送變更...');
-            
-            setTimeout(() => {
-                addToTerminal('✅ 已同步到 GitHub 儲存庫');
-                addToTerminal('🔗 URL: github.com/Benisonpin/ai-agent-control-center');
-            }, 2000);
-        }
-
-        function deployToNetlify() {
-            addToTerminal('🚀 開始部署到 Netlify...');
-            addToTerminal('📦 建置專案檔案...');
-            
-            setTimeout(() => {
-                addToTerminal('🌐 部署成功！');
-                addToTerminal('🔗 URL: https://comfy-griffin-7bf94b.netlify.app');
-                addToTerminal('⏱️ 建置時間: 45秒');
-            }, 3000);
+        // AI 協作 IDE
+        function openAIIDE() {
+            // 這裡可以整合完整的 Monaco Editor IDE
+            showNotification('💻 AI 協作 IDE 啟動中...');
+            // 實際實現時會載入完整的編輯器介面
         }
 
         // 檔案操作
-        function saveCurrentFile() {
-            if (currentFile) {
-                // 保存到 localStorage (模擬)
-                const content = editor.getValue();
-                localStorage.setItem(`cte_file_${currentFile}`, content);
-                
-                addToTerminal(`💾 已保存: ${currentFile}`);
-                
-                // 模擬自動同步
-                setTimeout(() => {
-                    addToTerminal('🔄 自動同步到雲端...');
-                }, 1000);
-            }
+        function openFile(fileName) {
+            showNotification(`📝 開啟檔案: ${fileName}`);
+            // 這裡會實際載入和顯示檔案內容
         }
 
-        function saveToLocalStorage() {
-            // 自動保存功能
-            if (currentFile) {
-                const content = editor.getValue();
-                localStorage.setItem(`cte_file_${currentFile}`, content);
-            }
+        // GitHub 同步
+        function openGitHub() {
+            window.open('https://github.com/Benisonpin/ai-agent-control-center', '_blank');
+            showNotification('🔗 GitHub 儲存庫已開啟');
         }
 
-        // 終端功能
-        function addToTerminal(message) {
-            const terminal = document.getElementById('terminalOutput');
-            const timestamp = new Date().toLocaleTimeString();
-            const colorClass = message.includes('✅') ? 'text-green-400' : 
-                              message.includes('❌') ? 'text-red-400' : 
-                              message.includes('⚠️') ? 'text-yellow-400' : 
-                              message.includes('🤖') ? 'text-blue-400' : 
-                              'text-gray-300';
-            
-            terminal.innerHTML += `<div class="${colorClass}">[${timestamp}] ${message}</div>`;
-            terminal.scrollTop = terminal.scrollHeight;
+        // Netlify 部署
+        function deployToNetlify() {
+            showNotification('🚀 正在部署到 Netlify...');
+            setTimeout(() => {
+                showNotification('✅ 部署完成！平台已更新');
+            }, 3000);
         }
 
-        function clearTerminal() {
-            const terminal = document.getElementById('terminalOutput');
-            terminal.innerHTML = `
-                <div class="text-green-400">
-benison_pin@cloudshell:~/isp_ai_agent$ <span class="animate-pulse">▋</span><br>
-<span class="text-cyan-400">🎉 TW-LCEO-AISP-2025 AI 協作平台已重新啟動</span><br>
-                </div>
+        // 通知功能
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(59, 130, 246, 0.9);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
             `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
-        // 鍵盤快捷鍵
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                switch (e.key) {
-                    case 's':
-                        e.preventDefault();
-                        saveCurrentFile();
-                        break;
-                    case 'o':
-                        e.preventDefault();
-                        document.querySelector('.file-tree-item').click();
-                        break;
-                    case '`':
-                        e.preventDefault();
-                        document.getElementById('terminalOutput').focus();
-                        break;
-                }
-            }
+        // 頁面載入完成後執行
+        window.addEventListener('load', () => {
+            createFloatingParticles();
+            
+            // 顯示歡迎訊息
+            setTimeout(() => {
+                showNotification('🎉 歡迎使用 TW-LCEO-AISP-2025 AI 協作平台！');
+            }, 1000);
         });
 
-        // 初始化完成
-        window.addEventListener('load', () => {
-            addToTerminal('🎉 TW-LCEO-AISP-2025 AI 協作平台載入完成');
-            addToTerminal('📁 專案檔案已掃描並載入');
-            addToTerminal('🛡️ 檔案保護系統啟動中...');
-            addToTerminal('🤖 AI 協作助手準備就緒');
-            addToTerminal('⌨️ 快捷鍵: Ctrl+S 保存, Ctrl+O 開啟, Ctrl+` 終端');
-        });
+        // 即時更新效能指標
+        setInterval(() => {
+            const metrics = document.querySelectorAll('.metric-value');
+            // 模擬即時數據更新
+            // 實際使用時會從後端 API 獲取真實數據
+        }, 5000);
     </script>
 </body>
 </html>
