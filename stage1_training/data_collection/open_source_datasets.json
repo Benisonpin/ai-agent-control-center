@@ -1,0 +1,210 @@
+{
+  "13_scene_categories": {
+    "outdoor_natural": {
+      "description": "戶外自然環境 - 公園、草地、樹林等自然場景",
+      "target_samples": 15000,
+      "datasets": [
+        {
+          "name": "COCO_outdoor",
+          "url": "http://images.cocodataset.org/zips/train2017.zip",
+          "license": "CC BY 4.0",
+          "estimated_samples": 8000,
+          "filter_categories": ["grass", "tree", "plant", "flower", "bush"]
+        },
+        {
+          "name": "Places365_natural",
+          "url": "http://data.csail.mit.edu/places/places365/places365standard_easyformat.tar",
+          "license": "CC BY 4.0",
+          "estimated_samples": 12000,
+          "filter_categories": ["forest", "field", "meadow", "park"]
+        }
+      ]
+    },
+    "indoor_residential": {
+      "description": "室內住宅環境 - 客廳、臥室、廚房等室內場景",
+      "target_samples": 8000,
+      "datasets": [
+        {
+          "name": "NYU_Depth_V2",
+          "url": "https://cs.nyu.edu/~silberman/datasets/nyu_depth_v2.html",
+          "license": "Academic Use",
+          "estimated_samples": 6000,
+          "filter_categories": ["bedroom", "living_room", "kitchen", "bathroom"]
+        }
+      ]
+    },
+    "urban_street": {
+      "description": "城市街道 - 道路、建築、交通場景",
+      "target_samples": 20000,
+      "datasets": [
+        {
+          "name": "Cityscapes",
+          "url": "https://www.cityscapes-dataset.com/",
+          "license": "Academic/Commercial License Required",
+          "estimated_samples": 25000,
+          "filter_categories": ["street", "road", "building", "sidewalk"]
+        },
+        {
+          "name": "BDD100K",
+          "url": "https://bdd-data.berkeley.edu/",
+          "license": "CC BY-NC-SA 4.0",
+          "estimated_samples": 15000,
+          "filter_categories": ["city_street", "highway", "residential"]
+        }
+      ]
+    },
+    "aerial_landscape": {
+      "description": "航拍風景 - 高空俯視角度的地面場景",
+      "target_samples": 12000,
+      "datasets": [
+        {
+          "name": "UC_Merced",
+          "url": "http://weegee.vision.ucmerced.edu/datasets/landuse.html",
+          "license": "Public Domain",
+          "estimated_samples": 2100,
+          "filter_categories": ["agricultural", "airplane", "baseball_diamond"]
+        },
+        {
+          "name": "DOTA",
+          "url": "https://captain-whu.github.io/DOTA/dataset.html",
+          "license": "Academic Use",
+          "estimated_samples": 15000,
+          "filter_categories": ["plane", "ship", "storage_tank", "bridge"]
+        }
+      ]
+    },
+    "night_scene": {
+      "description": "夜間場景 - 低光照環境下的各種場景",
+      "target_samples": 8000,
+      "datasets": [
+        {
+          "name": "Dark_Zurich",
+          "url": "https://www.trace.ethz.ch/publications/2019/GCMA_UIoU/",
+          "license": "Academic Use",
+          "estimated_samples": 3000,
+          "filter_categories": ["night_street", "night_residential"]
+        }
+      ]
+    },
+    "water_maritime": {
+      "description": "水域海事 - 海洋、湖泊、河流等水體場景",
+      "target_samples": 6000,
+      "datasets": [
+        {
+          "name": "SeaShips",
+          "url": "https://github.com/nicolaskolbenschlag/sea-ships",
+          "license": "MIT",
+          "estimated_samples": 7000,
+          "filter_categories": ["sea", "ship", "boat", "ocean"]
+        }
+      ]
+    },
+    "forest_vegetation": {
+      "description": "森林植被 - 密集植被、森林環境",
+      "target_samples": 10000,
+      "datasets": [
+        {
+          "name": "TreeSatAI",
+          "url": "https://zenodo.org/record/6780578",
+          "license": "CC BY 4.0",
+          "estimated_samples": 50000,
+          "filter_categories": ["forest", "trees", "vegetation"]
+        }
+      ]
+    },
+    "agricultural": {
+      "description": "農業場景 - 農田、作物、農業設施",
+      "target_samples": 9000,
+      "datasets": [
+        {
+          "name": "Agriculture_Vision",
+          "url": "https://www.agriculture-vision.com/",
+          "license": "Academic Use",
+          "estimated_samples": 12000,
+          "filter_categories": ["crop", "farmland", "agricultural"]
+        }
+      ]
+    },
+    "industrial_site": {
+      "description": "工業場地 - 工廠、倉庫、工業設施",
+      "target_samples": 7000,
+      "datasets": [
+        {
+          "name": "Open_Images_Industrial",
+          "url": "https://storage.googleapis.com/openimages/web/index.html",
+          "license": "CC BY 2.0",
+          "estimated_samples": 10000,
+          "filter_categories": ["factory", "warehouse", "industrial"]
+        }
+      ]
+    },
+    "coastal_beach": {
+      "description": "海岸沙灘 - 海灘、海岸線場景",
+      "target_samples": 5000,
+      "datasets": [
+        {
+          "name": "Places365_coastal",
+          "url": "http://data.csail.mit.edu/places/places365/",
+          "license": "CC BY 4.0",
+          "estimated_samples": 8000,
+          "filter_categories": ["beach", "coast", "shoreline"]
+        }
+      ]
+    },
+    "mountain_terrain": {
+      "description": "山地地形 - 山脈、丘陵、高地地形",
+      "target_samples": 8000,
+      "datasets": [
+        {
+          "name": "Mountain_Dataset",
+          "url": "https://www.kaggle.com/datasets/mountain-scenes",
+          "license": "CC0",
+          "estimated_samples": 10000,
+          "filter_categories": ["mountain", "hill", "peak", "valley"]
+        }
+      ]
+    },
+    "desert_arid": {
+      "description": "沙漠乾旱 - 沙漠、乾旱地區場景",
+      "target_samples": 4000,
+      "datasets": [
+        {
+          "name": "Desert_Scenes",
+          "url": "https://www.kaggle.com/datasets/desert-landscapes",
+          "license": "CC0",
+          "estimated_samples": 5000,
+          "filter_categories": ["desert", "sand", "arid", "dune"]
+        }
+      ]
+    },
+    "sports_recreation": {
+      "description": "運動休閒 - 體育場館、遊樂設施等",
+      "target_samples": 6000,
+      "datasets": [
+        {
+          "name": "Sports_Dataset",
+          "url": "https://www.kaggle.com/datasets/sports-venues",
+          "license": "CC BY-SA 4.0",
+          "estimated_samples": 8000RetryBPContinueEditjson         "filter_categories": ["stadium", "sports_field", "playground", "court"]
+       }
+     ]
+   }
+ },
+ "data_collection_settings": {
+   "download_batch_size": 100,
+   "max_concurrent_downloads": 5,
+   "image_formats": ["jpg", "jpeg", "png"],
+   "min_image_size": [224, 224],
+   "max_image_size": [2048, 2048],
+   "quality_threshold": 0.7,
+   "duplicate_detection": true,
+   "auto_annotation": true
+ },
+ "preprocessing_pipeline": {
+   "resize_target": [224, 224],
+   "normalization": "imagenet_stats",
+   "augmentation_probability": 0.8,
+   "validation_split": 0.2,
+   "test_split": 0.1
+ }
+}
