@@ -1,0 +1,139 @@
+#==============================================================================
+# CTE Vibe Code Pin Constraints for Lattice LIFCL-40-9BG400C
+# Based on IMX25 camera interface and AI processing requirements
+#==============================================================================
+
+# 時鐘輸入
+ldc_set_location -site {A10} [get_ports clk_100m]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 PULLMODE=100K_PU} [get_ports clk_100m]
+
+ldc_set_location -site {B10} [get_ports clk_200m]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=100K_PU} [get_ports clk_200m]
+
+# 重置信號
+ldc_set_location -site {T6} [get_ports rst_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 PULLMODE=100K_PU} [get_ports rst_n]
+
+#==============================================================================
+# IMX25 Camera Interface
+#==============================================================================
+# 12-bit 資料匯流排
+ldc_set_location -site {P19} [get_ports {imx25_data[0]}]
+ldc_set_location -site {R19} [get_ports {imx25_data[1]}]
+ldc_set_location -site {P18} [get_ports {imx25_data[2]}]
+ldc_set_location -site {R18} [get_ports {imx25_data[3]}]
+ldc_set_location -site {T18} [get_ports {imx25_data[4]}]
+ldc_set_location -site {U18} [get_ports {imx25_data[5]}]
+ldc_set_location -site {T17} [get_ports {imx25_data[6]}]
+ldc_set_location -site {U17} [get_ports {imx25_data[7]}]
+ldc_set_location -site {V17} [get_ports {imx25_data[8]}]
+ldc_set_location -site {W17} [get_ports {imx25_data[9]}]
+ldc_set_location -site {V16} [get_ports {imx25_data[10]}]
+ldc_set_location -site {W16} [get_ports {imx25_data[11]}]
+
+# 控制信號
+ldc_set_location -site {T19} [get_ports imx25_pclk]
+ldc_set_location -site {U19} [get_ports imx25_href]
+ldc_set_location -site {V19} [get_ports imx25_vsync]
+ldc_set_location -site {W19} [get_ports imx25_reset_n]
+ldc_set_location -site {Y19} [get_ports imx25_pwdn]
+
+# 設定 IMX25 I/O 標準
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE DRIVE=8} [get_ports {imx25_data[*]}]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE} [get_ports imx25_pclk]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE} [get_ports imx25_href]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE} [get_ports imx25_vsync]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE DRIVE=8} [get_ports imx25_reset_n]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE DRIVE=8} [get_ports imx25_pwdn]
+
+#==============================================================================
+# DDR3/4 Memory Interface
+#==============================================================================
+# 地址線
+ldc_set_location -site {B1} [get_ports {ddr_addr[0]}]
+ldc_set_location -site {C1} [get_ports {ddr_addr[1]}]
+ldc_set_location -site {D1} [get_ports {ddr_addr[2]}]
+ldc_set_location -site {E1} [get_ports {ddr_addr[3]}]
+ldc_set_location -site {F1} [get_ports {ddr_addr[4]}]
+ldc_set_location -site {G1} [get_ports {ddr_addr[5]}]
+ldc_set_location -site {H1} [get_ports {ddr_addr[6]}]
+ldc_set_location -site {J1} [get_ports {ddr_addr[7]}]
+ldc_set_location -site {K1} [get_ports {ddr_addr[8]}]
+ldc_set_location -site {L1} [get_ports {ddr_addr[9]}]
+ldc_set_location -site {M1} [get_ports {ddr_addr[10]}]
+ldc_set_location -site {N1} [get_ports {ddr_addr[11]}]
+ldc_set_location -site {P1} [get_ports {ddr_addr[12]}]
+ldc_set_location -site {R1} [get_ports {ddr_addr[13]}]
+
+# 資料線 (32-bit)
+ldc_set_location -site {A2} [get_ports {ddr_dq[0]}]
+ldc_set_location -site {B2} [get_ports {ddr_dq[1]}]
+# ... (其餘 30 個資料位元)
+
+# 控制信號
+ldc_set_location -site {A3} [get_ports ddr_ck]
+ldc_set_location -site {B3} [get_ports ddr_cke]
+ldc_set_location -site {C3} [get_ports ddr_cs_n]
+ldc_set_location -site {D3} [get_ports ddr_ras_n]
+ldc_set_location -site {E3} [get_ports ddr_cas_n]
+ldc_set_location -site {F3} [get_ports ddr_we_n]
+
+#==============================================================================
+# AI Processing Interface
+#==============================================================================
+# AI 資料輸出 (32-bit)
+ldc_set_location -site {A15} [get_ports {ai_data_out[0]}]
+ldc_set_location -site {B15} [get_ports {ai_data_out[1]}]
+# ... (其餘 30 個位元)
+ldc_set_location -site {A16} [get_ports ai_data_valid]
+
+# AI 配置介面
+ldc_set_location -site {B16} [get_ports {ai_config[0]}]
+ldc_set_location -site {C16} [get_ports {ai_config[1]}]
+# ... (其餘 6 個位元)
+
+#==============================================================================
+# Vibe Code Control Interface
+#==============================================================================
+ldc_set_location -site {A17} [get_ports {vibe_cmd[0]}]
+# ... (32-bit 命令介面)
+ldc_set_location -site {A18} [get_ports {vibe_status[0]}]
+# ... (32-bit 狀態介面)
+ldc_set_location -site {B18} [get_ports vibe_interrupt]
+
+#==============================================================================
+# Debug Interface
+#==============================================================================
+# Debug LEDs
+ldc_set_location -site {U6} [get_ports {debug_led[0]}]
+ldc_set_location -site {U7} [get_ports {debug_led[1]}]
+ldc_set_location -site {V6} [get_ports {debug_led[2]}]
+ldc_set_location -site {V7} [get_ports {debug_led[3]}]
+ldc_set_location -site {W6} [get_ports {debug_led[4]}]
+ldc_set_location -site {W7} [get_ports {debug_led[5]}]
+ldc_set_location -site {Y6} [get_ports {debug_led[6]}]
+ldc_set_location -site {Y7} [get_ports {debug_led[7]}]
+
+# Debug Switches
+ldc_set_location -site {T5} [get_ports {debug_sw[0]}]
+ldc_set_location -site {U5} [get_ports {debug_sw[1]}]
+ldc_set_location -site {V5} [get_ports {debug_sw[2]}]
+ldc_set_location -site {W5} [get_ports {debug_sw[3]}]
+
+# Test Point
+ldc_set_location -site {Y5} [get_ports test_point]
+
+# 設定 Debug I/O 標準
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 DRIVE=8} [get_ports {debug_led[*]}]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 PULLMODE=100K_PU} [get_ports {debug_sw[*]}]
+ldc_set_port -iobuf {IO_TYPE=LVCMOS33 DRIVE=8} [get_ports test_point]
+
+#==============================================================================
+# 高速信號完整性設定
+#==============================================================================
+# IMX25 PCLK 特殊處理 (高速時鐘)
+ldc_set_port -iobuf {IO_TYPE=LVCMOS18 PULLMODE=NONE OPENDRAIN=OFF TERMINATION=OFF} [get_ports imx25_pclk]
+
+# DDR 高速信號設定
+ldc_set_port -iobuf {IO_TYPE=SSTL15_I DRIVE=NONE PULLMODE=NONE TERMINATION=50} [get_ports {ddr_dq[*]}]
+ldc_set_port -iobuf {IO_TYPE=SSTL15_I DRIVE=NONE PULLMODE=NONE TERMINATION=50} [get_ports {ddr_dqs[*]}]
