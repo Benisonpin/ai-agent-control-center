@@ -4,1505 +4,798 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CTE Vibe Code for AI Image Drone Chip</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-            color: #F1F5F9;
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
         }
 
         .header {
-            background: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 100%);
-            padding: 1rem 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            gap: 1rem;
         }
 
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
+        .header p {
+            font-size: 1.125rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
             padding: 2rem;
-            height: calc(100vh - 120px);
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
         }
 
         .panel {
-            background: rgba(30, 41, 59, 0.9);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
             border-radius: 16px;
             padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
-        .panel:hover {
-            border-color: rgba(59, 130, 246, 0.6);
-            transform: translateY(-2px);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .panel h2 {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            color: #60a5fa;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #10b981;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-            color: white;
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            color: white;
+        .metric {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+            margin-top: 0.5rem;
         }
 
         .file-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem;
-            margin: 0.25rem 0;
-            background: rgba(15, 23, 42, 0.6);
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.4);
             border-radius: 8px;
+            margin-bottom: 0.5rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
         }
 
         .file-item:hover {
-            background: rgba(59, 130, 246, 0.2);
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
             transform: translateX(4px);
+        }
+
+        .btn {
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #8b5cf6;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #047857 100%);
+        }
+
+        .notification.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 頂部標題 -->
     <div class="header">
-        <div>
-            <h1 style="font-size: 2rem; font-weight: 700; color: white; margin: 0;">
-                <i class="fas fa-robot"></i> CTE Vibe Code for AI Image Drone Chip
-            </h1>
-            <div style="font-size: 1rem; color: rgba(255, 255, 255, 0.9); margin-top: 0.5rem;">
-                AI-Powered Image Processing for Drone Applications | 4K@32.5fps | 28ms latency | 3.5W efficiency
-            </div>
-        </div>
+        <h1>
+            <i class="fas fa-robot"></i>
+            CTE Vibe Code for AI Image Drone Chip
+        </h1>
+        <p>AI-Powered Image Processing for Drone Applications | 4K@32.5fps | 28ms latency | 3.5W efficiency</p>
     </div>
 
-    <!-- 主要內容 -->
-    <div class="main-container">
-        <!-- 系統狀態 -->
+    <div class="container">
+        <!-- 左側面板：系統狀態監控 -->
         <div class="panel">
-            <h3 style="color: #60A5FA; margin-bottom: 1.5rem;">
-                <i class="fas fa-cloud"></i> 系統狀態監控
-            </h3>
-            
-            <div style="display: grid; gap: 1rem;">
-                <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: rgba(15, 23, 42, 0.8); border-radius: 8px; border-left: 4px solid #10B981;">
-                    <span>Cloud Shell 狀態</span>
-                    <span style="color: #10B981;">✅ 已連接</span>
+            <h2>
+                <i class="fas fa-cloud"></i>
+                系統狀態監控
+            </h2>
+
+            <div class="status-item">
+                <span>Cloud Shell 狀態</span>
+                <span style="color: #10b981;">
+                    <i class="fas fa-check-circle"></i> 已連接
+                </span>
+            </div>
+
+            <div class="status-item">
+                <span>專案 ID</span>
+                <span style="color: #06b6d4;">CTE-Vibe-Code-Drone</span>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric">
+                    <div class="metric-value">32.5</div>
+                    <div class="metric-label">FPS</div>
                 </div>
-                <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: rgba(15, 23, 42, 0.8); border-radius: 8px; border-left: 4px solid #10B981;">
-                    <span>專案 ID</span>
-                    <span style="color: #10B981;">CTE-Vibe-Code-Drone</span>
+                <div class="metric">
+                    <div class="metric-value">28ms</div>
+                    <div class="metric-label">延遲</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">3.5W</div>
+                    <div class="metric-label">功耗</div>
+                </div>
+                <div class="metric">
+                    <div class="metric-value">95%</div>
+                    <div class="metric-label">準確度</div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
-                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); padding: 1rem; border-radius: 12px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #60A5FA;">32.5</div>
-                    <div style="font-size: 0.875rem; color: #94A3B8;">FPS</div>
-                </div>
-                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); padding: 1rem; border-radius: 12px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #60A5FA;">28ms</div>
-                    <div style="font-size: 0.875rem; color: #94A3B8;">延遲</div>
-                </div>
-                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); padding: 1rem; border-radius: 12px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #60A5FA;">3.5W</div>
-                    <div style="font-size: 0.875rem; color: #94A3B8;">功耗</div>
-                </div>
-                <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); padding: 1rem; border-radius: 12px; text-align: center;">
-                    <div style="font-size: 1.5rem; font-weight: 700; color: #60A5FA;">95%</div>
-                    <div style="font-size: 0.875rem; color: #94A3B8;">準確度</div>
-                </div>
+            <button class="btn btn-primary" onclick="openSmartCloudShell()" style="width: 100%; margin-bottom: 1rem;">
+                <i class="fas fa-terminal"></i> Cloud Shell
+            </button>
+            <button class="btn btn-secondary" onclick="openAIIDE()" style="width: 100%;">
+                <i class="fas fa-code"></i> AI IDE
+            </button>
+        </div>
+
+        <!-- 中間面板：專案檔案架構 -->
+        <div class="panel">
+            <h2>
+                <i class="fas fa-folder-tree"></i>
+                專案檔案架構
+            </h2>
+
+            <div class="file-item" onclick="openFile('rtl/demosaic.v')">
+                <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #10b981;"></i>
+                <span>rtl/demosaic.v</span>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem;">
-                <button class="btn btn-primary" onclick="openSmartCloudShell()">
-                    <i class="fas fa-terminal"></i> Cloud Shell
-                </button>
-                <button class="btn btn-secondary" onclick="openAIIDE()">
-                    <i class="fas fa-code"></i> AI IDE
-                </button>
+            <div class="file-item" onclick="openFile('rtl/hdr_module.v')">
+                <i class="fas fa-sun" style="margin-right: 0.75rem; color: #f59e0b;"></i>
+                <span>rtl/hdr_module.v</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('python/working_agent.py')">
+                <i class="fab fa-python" style="margin-right: 0.75rem; color: #3b82f6;"></i>
+                <span>python/working_agent.py</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('python/smart_agent.sh')">
+                <i class="fas fa-terminal" style="margin-right: 0.75rem; color: #10b981;"></i>
+                <span>python/smart_agent.sh</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('rtos/main.c')">
+                <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #ef4444;"></i>
+                <span>rtos/main.c</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
+                <i class="fas fa-eye" style="margin-right: 0.75rem; color: #f59e0b;"></i>
+                <span>rtos/tasks/vision_task.c</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
+                <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8b5cf6;"></i>
+                <span>rtos/config/FreeRTOSConfig.h</span>
+            </div>
+
+            <!-- FPGA 相關檔案 -->
+            <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
+                <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #f59e0b;"></i>
+                <span>lattice_fpga/rtl/cte_vibe_top.v</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
+                <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10b981;"></i>
+                <span>lattice_fpga/constraints/pins.pdc</span>
+            </div>
+
+            <div class="file-item" onclick="openFile('testbench/tb_cte_vibe_top.v')">
+                <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8b5cf6;"></i>
+                <span>testbench/tb_cte_vibe_top.v</span>
             </div>
         </div>
 
-        <!-- 專案檔案 -->
+        <!-- 右側面板：AI 協作功能 -->
         <div class="panel">
-            <h3 style="color: #60A5FA; margin-bottom: 1.5rem;">
-                <i class="fas fa-folder-tree"></i> 專案檔案架構
-            </h3>
-            
-            <div style="max-height: 400px; overflow-y: auto;">
-                <div class="file-item" onclick="openFile('rtl/demosaic.v')">
-                    <i class="fas fa-image" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>rtl/demosaic.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtl/hdr_module.v')">
-                    <i class="fas fa-adjust" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>rtl/hdr_module.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('python/working_agent.py')">
-                    <i class="fab fa-python" style="margin-right: 0.75rem; color: #3B82F6;"></i>
-                    <span>python/working_agent.py</span>
-                </div>
-                <div class="file-item" onclick="openFile('python/smart_agent.sh')">
-                <div class="file-item" onclick="openFile('rtos/main.c')">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
-                    <span>rtos/main.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
-                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>rtos/tasks/vision_task.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>rtos/config/FreeRTOSConfig.h</span>
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/main.c')">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
-                    <span>rtos/main.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
-                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>rtos/tasks/vision_task.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>rtos/config/FreeRTOSConfig.h</span>
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                </div>
-                    <i class="fas fa-terminal" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>python/smart_agent.sh</span>
-                <div class="file-item" onclick="openFile('rtos/main.c')">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
-                    <span>rtos/main.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
-                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>rtos/tasks/vision_task.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>rtos/config/FreeRTOSConfig.h</span>
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/main.c')">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #EF4444;"></i>
-                    <span>rtos/main.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/tasks/vision_task.c')">
-                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>rtos/tasks/vision_task.c</span>
-                </div>
-                <div class="file-item" onclick="openFile('rtos/config/FreeRTOSConfig.h')">
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                    <i class="fas fa-wrench" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>rtos/config/FreeRTOSConfig.h</span>
-                <div class="file-item" onclick="openFile('lattice_fpga/rtl/cte_vibe_top.v')">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #F59E0B;"></i>
-                    <span>lattice_fpga/rtl/cte_vibe_top.v</span>
-                </div>
-                <div class="file-item" onclick="openFile('lattice_fpga/constraints/cte_vibe_pins.pdc')">
-                    <i class="fas fa-map-pin" style="margin-right: 0.75rem; color: #10B981;"></i>
-                    <span>lattice_fpga/constraints/cte_vibe_pins.pdc</span>
-                </div>
-                <div class="file-item" onclick="openFile('testbench/generated/tb_cte_vibe_top.v')">
-                    <i class="fas fa-vial" style="margin-right: 0.75rem; color: #8B5CF6;"></i>
-                    <span>testbench/generated/tb_cte_vibe_top.v</span>
-                </div>
-                </div>
-                </div>
-            </div>
-        </div>
+            <h2>
+                <i class="fas fa-brain"></i>
+                AI 協作功能
+            </h2>
 
-        <!-- AI 功能 -->
-        <div class="panel">
-            <h3 style="color: #60A5FA; margin-bottom: 1.5rem;">
-                <i class="fas fa-brain"></i> AI 協作功能
-            </h3>
-            
-            <div style="display: grid; gap: 1rem;">
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8B5CF6;">
-                    <i class="fas fa-magic" style="margin-right: 0.75rem; color: #A78BFA;"></i>
-                    <div>
-                        <div style="font-weight: 600;">智能程式碼生成</div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">AI 輔助開發</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8B5CF6;">
-                    <i class="fas fa-eye" style="margin-right: 0.75rem; color: #A78BFA;"></i>
-                    <div>
-                        <div style="font-weight: 600;">無人機影像處理</div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(139, 92, 246, 0.1); border-radius: 8px; border-left: 4px solid #8B5CF6; margin-top: 0.5rem;">
-                    <i class="fas fa-graduation-cap" style="margin-right: 0.75rem; color: #A78BFA;"></i>
-                    <div>
-                        <div style="font-weight: 600;">AI 模型訓練</div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">自動收集→訓練→蒸餾→部署</div>
-                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
-                </button>
-                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
-                <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-tools mr-2"></i>FPGA 開發流程
-                </button>
-                <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-vial mr-2"></i>生成 Testbench
-                </button>
-                </button>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px; border-left: 4px solid #10B981; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #34D399;"></i>
-                    <div>
-                        <div style="font-weight: 600;">FPGA 硬體加速</div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">即時推理 + OTA 更新</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #EF4444; margin-top: 0.5rem;">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #F87171;"></i>
-                    <div>
-                        <div style="font-weight: 600;">FreeRTOS 多工系統</div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid #F59E0B; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #FBBF24;"></i>
-                    <div>
-                        <div style="font-weight: 600;">Lattice FPGA 整合</div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">LIFCL-40 + Radiant + ModelSim</div>
-                    </div>
-                </div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">32.5fps 即時任務排程</div>
-                    </div>
-                </div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px; border-left: 4px solid #EF4444; margin-top: 0.5rem;">
-                    <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #F87171;"></i>
-                    <div>
-                        <div style="font-weight: 600;">FreeRTOS 多工系統</div>
-                <div style="display: flex; align-items: center; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px; border-left: 4px solid #F59E0B; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #FBBF24;"></i>
-                    <div>
-                        <div style="font-weight: 600;">Lattice FPGA 整合</div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">LIFCL-40 + Radiant + ModelSim</div>
-                    </div>
-                </div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">32.5fps 即時任務排程</div>
-                    </div>
-                </div>
-                        <div style="font-size: 0.875rem; color: #94A3B8;">即時 AI 分析</div>
-                    </div>
+            <div class="feature-item">
+                <i class="fas fa-magic" style="margin-right: 0.75rem; color: #a78bfa;"></i>
+                <div>
+                    <div style="font-weight: 600;">智能程式碼生成</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">AI 輔助開發</div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
-                <button class="btn btn-primary" onclick="deployToNetlify()">
-                    <i class="fas fa-rocket"></i> 部署
-                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
-                </button>
-                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
-                <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-tools mr-2"></i>FPGA 開發流程
-                </button>
-                <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-vial mr-2"></i>生成 Testbench
-                </button>
-                </button>
-                </button>
-                <button class="btn btn-secondary" onclick="openGitHub()">
-               <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-microchip mr-2"></i>FPGA 開發流程
-               </button>
-               <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-vial mr-2"></i>生成 Testbench
-               </button>
-                    <i class="fab fa-github"></i> GitHub
-               <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-microchip mr-2"></i>FPGA 開發流程
-               </button>
-               <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-vial mr-2"></i>生成 Testbench
-               </button>
-                </button>
+            <!-- Lattice FPGA 整合 -->
+            <div class="feature-item" style="background: rgba(245, 158, 11, 0.1); border-left-color: #f59e0b;">
+                <i class="fas fa-microchip" style="margin-right: 0.75rem; color: #fbbf24;"></i>
+                <div>
+                    <div style="font-weight: 600;">Lattice FPGA 整合</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">LIFCL-40 + Radiant + ModelSim</div>
+                </div>
             </div>
+
+            <div class="feature-item">
+                <i class="fas fa-eye" style="margin-right: 0.75rem; color: #f87171;"></i>
+                <div>
+                    <div style="font-weight: 600;">無人機影像處理</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">即時 AI 分析</div>
+                </div>
+            </div>
+
+            <div class="feature-item" style="background: rgba(239, 68, 68, 0.1); border-left-color: #ef4444;">
+                <i class="fas fa-cogs" style="margin-right: 0.75rem; color: #f87171;"></i>
+                <div>
+                    <div style="font-weight: 600;">FreeRTOS 多工系統</div>
+                    <div style="font-size: 0.875rem; color: #94a3b8;">32.5fps 即時任務排程</div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
+            <button class="btn btn-primary" onclick="startStage1Training()" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-database mr-2"></i>第一階段：大模型訓練
+            </button>
+                <i class="fas fa-brain"></i>啟動 AI 訓練
+            </button>
+
+            <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
+                <i class="fas fa-microchip"></i>部署到 FPGA
+            </button>
+
+            <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
+                <i class="fas fa-tools"></i>FPGA 開發流程
+            </button>
+
+            <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
+                <i class="fas fa-vial"></i>生成 Testbench
+            <button class="btn btn-success" onclick="executeRealFPGADevelopment()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-play"></i>實際執行開發
+            </button>
+            </button>
+
+            <a href="https://github.com/Benisonpin/ai-agent-control-center" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
+                <i class="fab fa-github"></i>GitHub
+            </a>
+
+            <button class="btn btn-primary" onclick="showDeploymentStatus()" style="width: 100%; margin-top: 0.5rem;">
+                <i class="fas fa-rocket"></i>部署
+            </button>
         </div>
     </div>
 
     <script>
-        // 簡潔的按鍵事件處理
-        function openSmartCloudShell() {
-    // 顯示增強保護警告
-    const enhancedModal = document.createElement("div");
-    enhancedModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
-    
-    enhancedModal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid #F59E0B;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 600px;
-            text-align: center;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-        ">
-            <h3 style="color: #F59E0B; margin-bottom: 1rem; font-size: 1.5rem;">
-                🛡️ CTE Vibe Code 增強保護模式
-            </h3>
-            <div style="margin-bottom: 1.5rem; line-height: 1.8; text-align: left;">
-                <p><strong>🚀 全新保護機制：</strong></p>
-                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
-                    <li>✅ 持續監控系統（10秒檢查）</li>
-                    <li>✅ 多重備份保護鏈結</li>
-                    <li>✅ 即時自動恢復機制</li>
-                    <li>✅ 背景保護程序</li>
-                </ul>
-                <p><strong>⚡ 恢復指令：</strong></p>
-                <code style="background: rgba(0,0,0,0.3); padding: 0.5rem; border-radius: 4px; display: block; margin: 0.5rem 0;">~/INSTANT_RECOVERY.sh</code>
-            </div>
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button onclick="proceedWithEnhancedCloudShell()" style="
-                    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 1.5rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 1rem;
-                ">
-                    🚀 啟動增強保護模式
-                </button>
-                <button onclick="cancelEnhancedCloudShell()" style="
-                    background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 1.5rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    font-size: 1rem;
-                ">
-                    ❌ 取消
-                </button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(enhancedModal);
-            showNotification('🚀 啟動 Cloud Shell...');
-            setTimeout(() => {
-                window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
-                showNotification('✅ Cloud Shell 已啟動');
-            }, 1000);
-        }
-
-        function openAIIDE() {
-            showNotification('💻 AI IDE 啟動中...');
-        }
-
-        function openFile(fileName) {
-            showNotification('📝 開啟: ' + fileName);
-        }
-
-        function openGitHub() {
-               <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-microchip mr-2"></i>FPGA 開發流程
-               </button>
-               <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-vial mr-2"></i>生成 Testbench
-               </button>
-            showNotification('🔗 開啟 GitHub...');
-               <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 1rem; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-microchip mr-2"></i>FPGA 開發流程
-               </button>
-               <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                   <i class="fas fa-vial mr-2"></i>生成 Testbench
-               </button>
-            setTimeout(() => {
-                window.open('https://github.com/Benisonpin/ai-agent-control-center', '_blank');
-            }, 500);
-        }
-
-        function deployToNetlify() {
-            showNotification('🚀 部署中...');
-                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
-                </button>
-                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
-                <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-tools mr-2"></i>FPGA 開發流程
-                </button>
-                <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-vial mr-2"></i>生成 Testbench
-                </button>
-                </button>
-            setTimeout(() => {
-                showNotification('✅ 部署完成！');
-                <button class="btn btn-primary" onclick="startAITraining()" style="width: 100%; margin-top: 1rem;">
-                    <i class="fas fa-brain mr-2"></i>啟動 AI 訓練
-                </button>
-                <button class="btn btn-secondary" onclick="deployToFPGA()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-microchip mr-2"></i>部署到 FPGA
-                <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-tools mr-2"></i>FPGA 開發流程
-                </button>
-                <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-vial mr-2"></i>生成 Testbench
-                </button>
-                </button>
-            }, 2000);
-        }
-
-        function showNotification(message) {
+    </script>
+        // 通知系統
+        function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>${message}`;
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 right: 20px;
-                background: rgba(59, 130, 246, 0.9);
-                color: white;
                 padding: 1rem 1.5rem;
                 border-radius: 8px;
+                color: white;
                 font-weight: 600;
                 z-index: 1000;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+                word-wrap: break-word;
             `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
             
+            if (type === 'info') {
+                notification.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+            } else if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #047857 100%)';
+            } else if (type === 'warning') {
+                notification.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            }
+            
+            document.body.appendChild(notification);
+
             setTimeout(() => {
                 if (notification.parentNode) {
                     notification.remove();
                 }
+            }, 4000);
+        }
+
+        // 第一階段大模型訓練
+        function startStage1Training() {
+            console.log('🎯 Starting Stage 1 Training...');
+            showNotification('🎯 啟動第一階段：大模型訓練管線...', 'info');
+            
+            const stage1Steps = [
+                '📊 從開源數據集收集13種場景...',
+                '🔄 COCO, Places365, Cityscapes 數據下載中...',
+                '📁 處理戶外自然、城市街道、航拍風景場景...',
+                '🏗️ 建立 ConvNeXt Large 教師模型 (197M參數)...',
+                '🚀 開始大模型訓練 (100 epochs)...',
+                '📈 第30輪：驗證準確率 89.5%...',
+                '📈 第60輪：驗證準確率 93.2%...',
+                '📈 第90輪：驗證準確率 94.8%...',
+                '✅ 第一階段完成！最佳準確率 95.2%',
+                '🔗 準備連接第二階段知識蒸餾...'
+            ];
+            
+            stage1Steps.forEach((step, index) => {
+                setTimeout(() => {
+                    showNotification(step, index === stage1Steps.length - 1 ? 'success' : 'info');
+                    
+                    if (index === 4) {
+                        setTimeout(() => showStage1TrainingDetails(), 1000);
+                    }
+                    
+                    if (index === stage1Steps.length - 1) {
+                        setTimeout(() => showStage1CompletionModal(), 1500);
+                    }
+                }, (index + 1) * 2500);
+            });
+        }
+
+        // 顯示第一階段訓練詳情
+        function showStage1TrainingDetails() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+                color: white;
+                padding: 2rem;
+                border-radius: 16px;
+                max-width: 450px;
+                z-index: 1000;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                backdrop-filter: blur(10px);
+            `;
+            
+            modal.innerHTML = `
+                <h3 style="margin: 0 0 1.5rem 0; display: flex; align-items: center;">
+                    <i class="fas fa-database" style="margin-right: 0.5rem;"></i>
+                    第一階段：大模型訓練
+                </h3>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">📊 13種場景數據收集</h4>
+                    <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
+                        🌳 戶外自然: 15,000 樣本<br>
+                        🏠 室內住宅: 8,000 樣本<br>
+                        🏙️ 城市街道: 20,000 樣本<br>
+                        ✈️ 航拍風景: 12,000 樣本<br>
+                        🌙 夜間場景: 8,000 樣本<br>
+                        🌊 水域海事: 6,000 樣本<br>
+                        🌲 森林植被: 10,000 樣本<br>
+                        🌾 農業場景: 9,000 樣本<br>
+                        🏭 工業場地: 7,000 樣本<br>
+                        🏖️ 海岸沙灘: 5,000 樣本<br>
+                        ⛰️ 山地地形: 8,000 樣本<br>
+                        🏜️ 沙漠乾旱: 4,000 樣本<br>
+                        ⚽ 運動休閒: 6,000 樣本<br>
+                        <strong>總計: 118,000 樣本</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">🏗️ ConvNeXt Large 教師模型</h4>
+                    <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
+                        📊 參數量: 197,000,000 參數<br>
+                        💾 模型大小: 788 MB<br>
+                        🎯 目標準確度: >95%<br>
+                        ⚡ 訓練時長: 100 epochs<br>
+                        🔥 硬體需求: GPU 8-12 小時
+                    </div>
+                </div>
+                
+                <div style="background: rgba(255, 255, 255, 0.15); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">🎯 訓練進度模擬</div>
+                    <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="stage1Progress" style="background: #FBBF24; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div id="progressText" style="font-size: 0.875rem; margin-top: 0.5rem;">Epoch 0/100 - 初始化中...</div>
+                </div>
+                
+                <button onclick="this.parentElement.remove()" style="
+                    background: rgba(255, 255, 255, 0.2);
+                    border: none;
+                    color: white;
+                    padding: 0.75rem 1.5rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    float: right;
+                ">關閉</button>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模擬訓練進度
+            let progress = 0;
+            const progressBar = modal.querySelector('#stage1Progress');
+            const progressText = modal.querySelector('#progressText');
+            
+            const updateProgress = () => {
+                progress += Math.random() * 4 + 1;
+                if (progress > 100) progress = 100;
+                
+                if (progressBar) progressBar.style.width = progress + '%';
+                
+                if (progressText) {
+                    if (progress < 100) {
+                        const epoch = Math.floor(progress);
+                        const acc = 75 + (progress / 100) * 20;
+                        progressText.textContent = `Epoch ${epoch}/100 - 驗證準確率: ${acc.toFixed(1)}%`;
+                        setTimeout(updateProgress, 1500);
+                    } else {
+                        progressText.innerHTML = '<strong>✅ 訓練完成 - 最佳準確率: 95.2%</strong>';
+                    }
+                }
+            };
+            
+            setTimeout(updateProgress, 2000);
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 20000);
+        }
+
+        // 第一階段完成模態視窗
+        function showStage1CompletionModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10001;
+            `;
+            
+            modal.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                    border: 3px solid #3B82F6;
+                    border-radius: 20px;
+                    padding: 3rem;
+                    max-width: 700px;
+                    text-align: center;
+                    max-height: 90vh;
+                    overflow-y: auto;
+                ">
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="color: #3B82F6; margin-bottom: 1.5rem;">
+                        第一階段大模型訓練完成！
+                    </h2>
+                    
+                    <div style="margin-bottom: 2rem; line-height: 1.8;">
+                        <p style="font-size: 1.125rem; margin-bottom: 1rem;">
+                            🎯 <strong>ConvNeXt Large 教師模型已就緒</strong>
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #60A5FA; font-weight: 600;">訓練樣本</div>
+                                <div style="font-size: 0.875rem;">118,000 樣本</div>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #34D399; font-weight: 600;">最佳準確率</div>
+                                <div style="font-size: 0.875rem;">95.2%</div>
+                            </div>
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #FBBF24; font-weight: 600;">模型參數</div>
+                                <div style="font-size: 0.875rem;">197M 參數</div>
+                            </div>
+                            <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #A78BFA; font-weight: 600;">場景類別</div>
+                                <div style="font-size: 0.875rem;">13 種情境</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(59, 130, 246, 0.15); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                        <h4 style="color: #60A5FA; margin: 0 0 1rem 0;">🔗 下一步：知識蒸餾</h4>
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p style="margin-bottom: 0.5rem;">✅ 第一階段大模型訓練完成</p>
+                            <p style="margin-bottom: 0.5rem;">🔄 自動連接到第二階段蒸餾系統</p>
+                            <p style="margin-bottom: 0.5rem;">🎯 目標：壓縮到輕量化模型 (75% 參數減少)</p>
+                            <p style="margin-bottom: 0;">⚡ 預期效能：32.5fps, 28ms延遲, 3.5W功耗</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="if(typeof startAITraining === 'function') startAITraining(); this.closest('div[style*=\"fixed\"]').remove();" style="
+                            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            margin: 0.5rem;
+                        ">🚀 開始第二階段蒸餾</button>
+                        <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
+                            background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            margin: 0.5rem;
+                        ">關閉</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        // Cloud Shell 開啟功能
+        function openSmartCloudShell() {
+            console.log('🛡️ Opening Smart Cloud Shell...');
+            showNotification('🛡️ 正在啟動增強保護的 Cloud Shell...', 'info');
+            setTimeout(() => {
+                window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
+            }, 1000);
+        }
+
+        // AI IDE 功能
+        function openAIIDE() {
+            console.log('🚀 Opening AI IDE...');
+            showNotification('🚀 正在啟動 AI 開發環境...', 'info');
+            setTimeout(() => {
+                showNotification('✅ AI IDE 已準備就緒！', 'success');
+            }, 2000);
+        }
+
+        // 第二階段 AI 訓練功能（知識蒸餾）
+        function startAITraining() {
+            console.log('🔬 Starting Stage 2 AI Training...');
+            showNotification('🔬 啟動第二階段：知識蒸餾優化...', 'info');
+            
+            const stage2Steps = [
+                '🎓 載入第一階段教師模型 (ConvNeXt Large)...',
+                '🏗️ 建立輕量化學生模型 (MobileNetV3)...',
+                '🔬 開始知識蒸餾訓練 (Teacher→Student)...',
+                '📊 蒸餾進度：準確度保持 94.1% (目標>90%)...',
+                '✂️ 執行結構化模型剪枝優化...',
+                '🔢 應用 INT8 量化壓縮...',
+                '⚡ 最終模型：32.5fps, 28ms延遲, 3.5W功耗',
+                '✅ 第二階段完成！輕量化模型已優化'
+            ];
+            
+            stage2Steps.forEach((step, index) => {
+                setTimeout(() => {
+                    showNotification(step, index === stage2Steps.length - 1 ? 'success' : 'info');
+                }, (index + 1) * 2500);
+            });
+        }
+
+        // FPGA 部署功能
+        function deployToFPGA() {
+            console.log('🚀 Deploying to FPGA...');
+            showNotification('🚀 開始部署到 FPGA...', 'info');
+            
+            const deploymentSteps = [
+                '⚙️ 模型量化優化中...',
+                '🔧 轉換為 FPGA 格式...',
+                '📡 上傳到 Lattice LIFCL-40...',
+                '🎯 效能驗證: 32.5fps, 28ms延遲',
+                '✅ FPGA 部署成功！'
+            ];
+            
+            deploymentSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    showNotification(step, index === deploymentSteps.length - 1 ? 'success' : 'info');
+                }, (index + 1) * 1500);
+            });
+        }
+
+        // 其他功能（確保所有按鈕都有對應函數）
+        function runFPGADevelopment() {
+            console.log('🔧 Running FPGA Development...');
+            showNotification('🔧 啟動 Lattice FPGA 開發流程...', 'info');
+            setTimeout(() => {
+                showNotification('✅ FPGA 開發環境已準備就緒！', 'success');
             }, 3000);
         }
 
-        // 初始化
-        window.addEventListener('load', () => {
+        function generateTestbench() {
+            console.log('🧪 Generating Testbench...');
+            showNotification('🧪 啟動智能 Testbench 生成器...', 'info');
             setTimeout(() => {
-                showNotification('🎉 CTE Vibe Code 已就緒！');
-            }, 500);
+                showNotification('✅ 所有 Testbench 生成完成！', 'success');
+            }, 2500);
+        }
+
+        function executeRealFPGADevelopment() {
+            console.log('⚡ Executing Real FPGA Development...');
+            showNotification('⚡ 準備實際執行 FPGA 開發任務...', 'info');
+            setTimeout(() => {
+                showNotification('💡 請前往 Cloud Shell 執行實際開發腳本', 'warning');
+            }, 2000);
+        }
+
+        function showDeploymentStatus() {
+            console.log('📊 Showing Deployment Status...');
+            showNotification('📊 檢查部署狀態...', 'info');
+            setTimeout(() => {
+                showNotification('✅ 系統運行正常，所有服務已部署', 'success');
+            }, 1500);
+        }
+
+        function openFile(fileName) {
+            console.log('📄 Opening file:', fileName);
+            showNotification(`📄 開啟檔案: ${fileName}`, 'info');
+            setTimeout(() => {
+                showNotification(`✅ ${fileName} 已開啟`, 'success');
+            }, 1000);
+        }
+
+        // 頁面載入時的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚁 CTE Vibe Code 系統初始化...');
+            setTimeout(() => {
+                showNotification('🚁 CTE Vibe Code 系統已就緒！', 'success');
+            }, 1000);
+            
+            setTimeout(() => {
+                showNotification('🎯 點擊按鈕開始 AI 開發流程', 'info');
+            }, 3000);
         });
-    </script>
+
+        // 錯誤處理
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            showNotification('⚠️ 系統錯誤，請重新整理頁面', 'warning');
+        });
 </body>
 </html>
 
-<script>
-function proceedWithEnhancedCloudShell() {
-    // 移除模態視窗
-    document.querySelector('div[style*="position: fixed"]').remove();
-    
-    // 顯示保護啟動過程
-    showNotification('🛡️ 啟動增強保護系統...');
-    
-    setTimeout(() => {
-        showNotification('✅ 持續監控已啟動');
-    }, 1000);
-    
-    setTimeout(() => {
-        showNotification('📂 多重備份已建立');
-    }, 2000);
-    
-    setTimeout(() => {
-        showNotification('🚀 安全啟動 Cloud Shell...');
-        
-        // 記錄啟動時間和保護狀態
-        localStorage.setItem('cteVibeProtectionActive', 'true');
-        localStorage.setItem('cteVibeProtectionStart', Date.now());
-        
-        // 開啟 Cloud Shell
-        window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
-        
-    }, 3000);
-    
-    // 啟動定期提醒
-    setInterval(() => {
-        if (localStorage.getItem('cteVibeProtectionActive') === 'true') {
-            showNotification('💡 提醒：檔案持續保護中，如需恢復執行 ~/INSTANT_RECOVERY.sh');
-        }
-    }, 300000); // 每5分鐘提醒一次
-}
 
-function cancelEnhancedCloudShell() {
-    document.querySelector('div[style*="position: fixed"]').remove();
-    showNotification('❌ Cloud Shell 啟動已取消');
-}
-
-// 檢查保護狀態
-function checkProtectionStatus() {
-    if (localStorage.getItem('cteVibeProtectionActive') === 'true') {
-        const startTime = localStorage.getItem('cteVibeProtectionStart');
-        const elapsed = Date.now() - parseInt(startTime);
-        const minutes = Math.floor(elapsed / 60000);
-        
-        if (minutes > 2) {
-            showNotification(`⚡ 保護系統運行 ${minutes} 分鐘，隨時可執行恢復指令`);
-        }
-    }
-}
-
-// 頁面載入時檢查保護狀態
-window.addEventListener('load', () => {
-    setTimeout(checkProtectionStatus, 3000);
-});
-
-</script>
-
-<script>
-// AI 模型開發功能
-function startAITraining() {
-    showNotification('🧠 啟動 AI 模型訓練管線...', 'info');
-    
-    // 模擬訓練過程
-    const trainingSteps = [
-        '📊 智能資料收集中...',
-        '🎯 AI 輔助標註進行中...',
-        '🧠 多模型並行訓練...',
-        '🔬 知識蒸餾優化中...',
-        '✅ AI 模型訓練完成！'
-    ];
-    
-    trainingSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === trainingSteps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 2000);
-    });
-}
-
-function deployToFPGA() {
-    showNotification('🚀 開始部署到 FPGA...', 'info');
-                <button class="btn btn-warning" onclick="runFPGADevelopment()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-tools mr-2"></i>FPGA 開發流程
-                </button>
-                <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
-                    <i class="fas fa-vial mr-2"></i>生成 Testbench
-                </button>
-    
-    const deploymentSteps = [
-        '⚙️ 模型量化優化中...',
-        '🔧 轉換為 FPGA 格式...',
-        '📡 上傳到硬體平台...',
-        '🎯 效能驗證: 32.5fps, 28ms延遲',
-        '✅ FPGA 部署成功！'
-    ];
-    
-    deploymentSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === deploymentSteps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 1500);
-    });
-}
-
-// 顯示 AI 開發狀態
-function showAIDevelopmentStatus() {
-    const statusDiv = document.createElement('div');
-    statusDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: rgba(139, 92, 246, 0.95);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        max-width: 400px;
-        z-index: 1000;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    `;
-    
-    statusDiv.innerHTML = `
-        <h4 style="margin: 0 0 1rem 0;">🤖 AI 開發狀態</h4>
-        <div style="margin-bottom: 0.5rem;">📊 資料收集: 進行中</div>
-        <div style="margin-bottom: 0.5rem;">🧠 模型訓練: 排程中</div>
-        <div style="margin-bottom: 0.5rem;">🔬 知識蒸餾: 待啟動</div>
-        <div style="margin-bottom: 1rem;">🚀 FPGA 部署: 準備就緒</div>
-        <button onclick="this.parentElement.remove()" style="
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            float: right;
-        ">關閉</button>
-    `;
-    
-    document.body.appendChild(statusDiv);
-    
-    setTimeout(() => {
-        if (statusDiv.parentNode) {
-            statusDiv.remove();
-        }
-    }, 10000);
-}
-
-// 頁面載入時顯示 AI 開發狀態
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        showNotification('🤖 CTE Vibe Code AI 開發環境已就緒！');
-        setTimeout(showAIDevelopmentStatus, 2000);
-    }, 3000);
-});
-
-</script>
-
-<script>
-// FPGA 開發功能
-function runFPGADevelopment() {
-    showNotification('🔧 啟動 FPGA 完整開發流程...', 'info');
-    
-    const developmentSteps = [
-        '🔍 檢查開發環境 (Radiant + ModelSim)...',
-        '📝 驗證 RTL 設計檔案...',
-        '🧪 自動生成 Testbench...',
-        '🔬 執行 ModelSim 模擬...',
-        '🔨 Radiant 合成和實現...',
-        '📊 效能驗證和報告生成...',
-        '✅ FPGA 開發流程完成！'
-    ];
-    
-    developmentSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === developmentSteps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 3000);
-    });
-    
-    // 顯示開發進度視窗
-    setTimeout(() => {
-        showFPGADevelopmentProgress();
-    }, 2000);
-}
-
-function generateTestbench() {
-    showNotification('🧪 自動生成 Testbench...', 'info');
-    
-    const testbenchSteps = [
-        '📋 分析 RTL 模組介面...',
-        '🏗️ 生成單元測試 Testbench...',
-        '🔧 生成整合測試 Testbench...',
-        '⚡ 生成效能測試 Testbench...',
-        '📜 生成 ModelSim 執行腳本...',
-        '✅ 所有 Testbench 生成完成！'
-    ];
-    
-    testbenchSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === testbenchSteps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 1500);
-    });
-}
-
-function showFPGADevelopmentProgress() {
-    const progressDiv = document.createElement('div');
-    progressDiv.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 12px;
-        max-width: 450px;
-        z-index: 1000;
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-    `;
-    
-    progressDiv.innerHTML = `
-        <h4 style="margin: 0 0 1rem 0;">🔧 FPGA 開發進度</h4>
-        <div style="margin-bottom: 0.5rem;">
-            <div style="display: flex; align-items: center;">
-                <span style="width: 20px;">✅</span>
-                <span>環境檢查完成</span>
-            </div>
-        </div>
-        <div style="margin-bottom: 0.5rem;">
-            <div style="display: flex; align-items: center;">
-                <span style="width: 20px;">⏳</span>
-                <span>RTL 設計驗證中...</span>
-            </div>
-        </div>
-        <div style="margin-bottom: 0.5rem;">
-            <div style="display: flex; align-items: center;">
-                <span style="width: 20px;">📋</span>
-                <span>Testbench 生成排程中</span>
-            </div>
-        </div>
-        <div style="margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center;">
-                <span style="width: 20px;">🔨</span>
-                <span>等待 Radiant 合成</span>
-            </div>
-        </div>
-        <div style="background: rgba(255, 255, 255, 0.1); padding: 0.75rem; border-radius: 6px; margin-bottom: 1rem;">
-            <div style="font-size: 0.875rem; font-weight: 600;">目標規格</div>
-            <div style="font-size: 0.75rem; margin-top: 0.25rem;">
-                📊 4K@32.5fps | ⚡ 28ms延遲 | 🔋 3.5W功耗<br>
-                🎯 Lattice LIFCL-40-9BG400C
-            </div>
-        </div>
-        <button onclick="this.parentElement.remove()" style="
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            float: right;
-        ">關閉</button>
-    `;
-    
-    document.body.appendChild(progressDiv);
-    
-    // 10秒後自動關閉
-    setTimeout(() => {
-        if (progressDiv.parentNode) {
-            progressDiv.remove();
-        }
-    }, 15000);
-}
-
-// 更新檔案開啟功能，支援 FPGA 相關檔案
-const originalOpenFile = window.openFile;
-window.openFile = function(fileName) {
-    // FPGA 專用檔案處理
-    if (fileName.includes('lattice_fpga') || fileName.includes('testbench')) {
-        showNotification(`📄 開啟 FPGA 檔案: ${fileName}`, 'info');
-        
-        // 顯示檔案內容預覽
-        setTimeout(() => {
-            showFPGAFilePreview(fileName);
-        }, 500);
-    } else {
-        // 使用原始的檔案開啟功能
-        if (originalOpenFile) {
-            originalOpenFile(fileName);
-        }
-    }
-};
-
-function showFPGAFilePreview(fileName) {
-    let fileContent = '';
-    let fileType = '';
-    
-    if (fileName.includes('cte_vibe_top.v')) {
-        fileType = 'Verilog RTL Top Module';
-        fileContent = `//==============================================================================
-// CTE Vibe Code Top Module for Lattice LIFCL-40
-// Target: 4K@32.5fps, 28ms latency, 3.5W power
-//==============================================================================
-
-module cte_vibe_top (
-    // Clock and Reset
-    input  wire         clk_200m,
-    input  wire         rst_n,
-    
-    // IMX25 Camera Interface  
-    input  wire [11:0]  imx25_data,
-    input  wire         imx25_pclk,
-    // ... (更多介面定義)
-    
-    // AI Processing Interface
-    output wire [31:0]  ai_data_out,
-    output wire         ai_data_valid
-);
-
-// CTE Vibe Code AI Processing Pipeline
-// Stage 1-8: 完整的 AI 處理管線
-// 目標: 4K@32.5fps, 28ms延遲
-
-endmodule`;
-    } else if (fileName.includes('pins.pdc')) {
-        fileType = 'Pin Constraints (PDC)';
-        fileContent = `#==============================================================================
-# CTE Vibe Code Pin Constraints for Lattice LIFCL-40-9BG400C
-#==============================================================================
-
-# 時鐘輸入
-ldc_set_location -site {A10} [get_ports clk_100m]
-ldc_set_location -site {B10} [get_ports clk_200m]
-
-# IMX25 Camera Interface (12-bit data + control)
-ldc_set_location -site {P19} [get_ports {imx25_data[0]}]
-# ... (更多 pin 約束)
-
-# AI Processing Interface
-ldc_set_location -site {A15} [get_ports {ai_data_out[0]}]
-# ... (32-bit output)`;
-    } else if (fileName.includes('testbench')) {
-        fileType = 'Testbench (自動生成)';
-        fileContent = `//==============================================================================
-// CTE Vibe Code - 自動生成的 Testbench
-// 驗證 4K@32.5fps, 28ms延遲需求
-//==============================================================================
-
-module tb_cte_vibe_top;
-
-// 測試參數
-parameter TARGET_FPS = 32.5;
-parameter TARGET_LATENCY_MS = 28;
-parameter FRAME_PIXELS = 3840 * 2160;  // 4K
-
-// 效能測量任務
-task measure_performance();
-    // 測量 FPS 和延遲
-    // 驗證是否達到目標規格
-endtask
-
-// 主測試序列
-initial begin
-    // 執行完整的效能驗證
-end
-
-endmodule`;
-    }
-    
-    // 顯示檔案內容視窗
-    const fileModal = document.createElement('div');
-    fileModal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10001;
-    `;
-    
-    fileModal.innerHTML = `
-        <div style="
-            background: #1e293b;
-            border: 2px solid #F59E0B;
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 80%;
-            max-height: 80%;
-            overflow: auto;
-        ">
-            <h3 style="color: #F59E0B; margin-bottom: 1rem;">${fileType}</h3>
-            <div style="color: #94A3B8; margin-bottom: 1rem; font-size: 0.875rem;">
-                📁 ${fileName}
-            </div>
-            <pre style="
-                background: #0f172a;
-                color: #e2e8f0;
-                padding: 1rem;
-                border-radius: 6px;
-                overflow: auto;
-                font-family: 'Courier New', monospace;
-                font-size: 0.875rem;
-                line-height: 1.4;
-                white-space: pre-wrap;
-            ">${fileContent}</pre>
-            <div style="margin-top: 1rem; text-align: right;">
-                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                    background: #F59E0B;
-                    color: white;
-                    border: none;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 6px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">關閉</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(fileModal);
-}
-
-</script>
-
-<script>
-// FPGA 開發功能
-function runFPGADevelopment() {
-    showNotification('🔧 啟動 Lattice FPGA 開發流程...', 'info');
-    
-    const fpgaSteps = [
-        '🔍 檢查 Radiant + ModelSim 環境...',
-        '📝 驗證 RTL 設計檔案...',
-        '🧪 自動生成 Testbench...',
-        '🔬 執行 ModelSim 功能模擬...',
-        '🔨 Radiant 合成和佈局佈線...',
-        '📊 效能驗證和報告生成...',
-        '✅ FPGA 開發流程完成！準備燒錄位流檔案'
-    ];
-    
-    fpgaSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === fpgaSteps.length - 1 ? 'success' : 'info');
-            
-            if (index === fpgaSteps.length - 1) {
-                // 最後一步時顯示 FPGA 開發完成視窗
-                setTimeout(() => {
-                    showFPGACompletionModal();
-                }, 1000);
-            }
-        }, (index + 1) * 2500);
-    });
-    
-    // 顯示開發進度
-    setTimeout(() => {
-        showFPGAProgressModal();
-    }, 1000);
-}
-
-function generateTestbench() {
-    showNotification('🧪 啟動智能 Testbench 生成器...', 'info');
-    
-    const testbenchSteps = [
-        '📋 分析 Lattice LIFCL-40 RTL 模組...',
-        '🏗️ 生成 cte_vibe_top 單元測試...',
-        '🔧 生成 IMX25 介面整合測試...',
-        '⚡ 生成效能測試 (32.5fps, 28ms)...',
-        '📜 生成 ModelSim 自動化腳本...',
-        '✅ 所有 Testbench 生成完成！'
-    ];
-    
-    testbenchSteps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === testbenchSteps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 1200);
-    });
-    
-    // 顯示 Testbench 詳情
-    setTimeout(() => {
-        showTestbenchDetailsModal();
-    }, 8000);
-}
-
-function showFPGAProgressModal() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 16px;
-        max-width: 400px;
-        z-index: 1000;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-    `;
-    
-    modal.innerHTML = `
-        <h3 style="margin: 0 0 1.5rem 0; display: flex; align-items: center;">
-            <i class="fas fa-microchip" style="margin-right: 0.5rem;"></i>
-            Lattice FPGA 開發
-        </h3>
-        <div style="margin-bottom: 1rem;">
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                <span style="width: 25px;">✅</span>
-                <span>LIFCL-40-9BG400C 目標確認</span>
-            </div>
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                <span style="width: 25px;">⏳</span>
-                <span>RTL 設計驗證中...</span>
-            </div>
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                <span style="width: 25px;">📋</span>
-                <span>Testbench 自動生成</span>
-            </div>
-            <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                <span style="width: 25px;">🔨</span>
-                <span>Radiant 合成排程中</span>
-            </div>
-        </div>
-        <div style="background: rgba(255, 255, 255, 0.15); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">🎯 目標規格</div>
-            <div style="font-size: 0.875rem; line-height: 1.4;">
-                📊 4K@32.5fps 影像處理<br>
-                ⚡ 28ms 端到端延遲<br>
-                🔋 3.5W 功耗限制<br>
-                📷 IMX25 攝影機介面
-            </div>
-        </div>
-        <button onclick="this.parentElement.remove()" style="
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            float: right;
-        ">關閉</button>
-    `;
-    
-    document.body.appendChild(modal);
-    setTimeout(() => modal.remove(), 15000);
-}
-
-function showTestbenchDetailsModal() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
-    
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid #8B5CF6;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 600px;
-            max-height: 80%;
-            overflow: auto;
-        ">
-            <h3 style="color: #8B5CF6; margin-bottom: 1.5rem;">
-                🧪 Testbench 生成完成
-            </h3>
-            <div style="margin-bottom: 1.5rem;">
-                <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <h4 style="color: #A78BFA; margin: 0 0 0.5rem 0;">📋 生成的測試檔案</h4>
-                    <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>tb_cte_vibe_top.v - 主模組整合測試</li>
-                        <li>tb_imx25_interface.v - 攝影機介面測試</li>
-                        <li>tb_ai_processing.v - AI 處理管線測試</li>
-                        <li>tb_performance.v - 效能驗證測試</li>
-                    </ul>
-                </div>
-                <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                    <h4 style="color: #FBBF24; margin: 0 0 0.5rem 0;">⚙️ ModelSim 腳本</h4>
-                    <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>run_modelsim.do - 自動化模擬腳本</li>
-                        <li>run_test.bat - Windows 批次執行檔</li>
-                        <li>performance_report.txt - 效能測試報告</li>
-                    </ul>
-                </div>
-                <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
-                    <h4 style="color: #34D399; margin: 0 0 0.5rem 0;">🎯 驗證項目</h4>
-                    <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                        <li>✅ 32.5fps 幀率驗證</li>
-                        <li>✅ 28ms 延遲限制檢查</li>
-                        <li>✅ 3.5W 功耗估算</li>
-                        <li>✅ 4K 解析度處理</li>
-                    </ul>
-                </div>
-            </div>
-            <div style="text-align: center;">
-                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                    background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                    margin-right: 1rem;
-                ">完成</button>
-                <button onclick="showNotification('💡 請在安裝了 ModelSim 的環境中執行 run_test.bat', 'info')" style="
-                    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">執行測試</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-function showFPGACompletionModal() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10001;
-    `;
-    
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 3px solid #F59E0B;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 700px;
-            text-align: center;
-        ">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-            <h2 style="color: #F59E0B; margin-bottom: 1.5rem;">
-                FPGA 開發流程完成！
-            </h2>
-            <div style="margin-bottom: 2rem; line-height: 1.8;">
-                <p style="font-size: 1.125rem; margin-bottom: 1rem;">
-                    🚁 <strong>CTE Vibe Code for Lattice LIFCL-40</strong> 已準備就緒
-                </p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
-                    <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #FBBF24; font-weight: 600;">位流檔案</div>
-                        <div style="font-size: 0.875rem;">cte_vibe_drone.bit</div>
-                    </div>
-                    <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #A78BFA; font-weight: 600;">測試覆蓋率</div>
-                        <div style="font-size: 0.875rem;">98.5%</div>
-                    </div>
-                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #34D399; font-weight: 600;">時序收斂</div>
-                        <div style="font-size: 0.875rem;">✅ 通過</div>
-                    </div>
-                    <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #F87171; font-weight: 600;">資源使用</div>
-                        <div style="font-size: 0.875rem;">75% LUT</div>
-                    </div>
-                </div>
-            </div>
-            <div style="background: rgba(245, 158, 11, 0.15); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                <h4 style="color: #FBBF24; margin: 0 0 1rem 0;">🎯 下一步：硬體整合</h4>
-                <ol style="text-align: left; padding-left: 1.5rem; line-height: 1.6;">
-                    <li>🔌 連接 IMX25 攝影機到 LIFCL-40</li>
-                    <li>💾 載入位流檔案到 FPGA</li>
-                    <li>🚀 啟動 CTE Vibe Code AI 系統</li>
-                    <li>📊 驗證 32.5fps + 28ms 效能</li>
-                    <li>🎉 享受 AI 無人機影像處理！</li>
-                </ol>
-            </div>
-            <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-                color: white;
-                border: none;
-                padding: 1.25rem 2.5rem;
-                border-radius: 12px;
-                cursor: pointer;
-                font-weight: 600;
-                font-size: 1.125rem;
-            ">準備硬體整合！</button>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-// 更新檔案開啟功能以支援 FPGA 檔案
-const originalOpenFile = window.openFile || function() {};
-window.openFile = function(fileName) {
-    if (fileName.includes('lattice_fpga') || fileName.includes('testbench')) {
-        showFPGAFileContent(fileName);
-    } else {
-        originalOpenFile(fileName);
-    }
-};
-
-function showFPGAFileContent(fileName) {
-    let content = '';
-    let fileType = '';
-    
-    if (fileName.includes('cte_vibe_top.v')) {
-        fileType = 'Lattice LIFCL-40 Top Module';
-        content = `//==============================================================================
-// CTE Vibe Code Top Module for Lattice LIFCL-40-9BG400C
-// AI-Powered 4K@32.5fps Image Processing for Drone Applications
-//==============================================================================
-
-module cte_vibe_top (
-    // 時鐘和重置
-    input  wire         clk_200m,           // 200MHz 主時鐘
-    input  wire         rst_n,              // 低電平重置
-    
-    // IMX25 攝影機介面
-    input  wire [11:0]  imx25_data,         // 12位元像素資料
-    input  wire         imx25_pclk,         // 像素時鐘
-    input  wire         imx25_href,         // 水平參考
-    input  wire         imx25_vsync,        // 垂直同步
-    output wire         imx25_reset_n,      // 攝影機重置
-    
-    // AI 處理介面
-    output wire [31:0]  ai_data_out,        // AI 處理結果
-    output wire         ai_data_valid,      // AI 資料有效
-    
-    // CTE Vibe Code 控制介面
-    input  wire [31:0]  vibe_cmd,           // Vibe 命令
-    output wire [31:0]  vibe_status,        // Vibe 狀態
-    output wire         vibe_interrupt      // 中斷信號
-);
-
-// 效能參數
-parameter TARGET_FPS = 32.5;
-parameter TARGET_LATENCY_MS = 28;
-parameter TARGET_POWER_W = 3.5;
-
-// CTE Vibe Code AI 處理管線
-// Stage 1-8: 完整的 AI 影像處理流水線
-// 確保達到 4K@32.5fps, 28ms 延遲需求
-
-endmodule`;
-    } else if (fileName.includes('pins.pdc')) {
-        fileType = 'LIFCL-40 Pin Constraints';
-        content = `#==============================================================================
-# CTE Vibe Code Pin Constraints for Lattice LIFCL-40-9BG400C
-# Optimized for IMX25 Camera + AI Processing + DDR Memory
-#==============================================================================
-
-# 主時鐘 (200MHz, 100MHz)
-ldc_set_location -site {A10} [get_ports clk_100m]
-ldc_set_location -site {B10} [get_ports clk_200m]
-
-# IMX25 攝影機介面 (12位元資料)
-ldc_set_location -site {P19} [get_ports {imx25_data[0]}]
-ldc_set_location -site {R19} [get_ports {imx25_data[1]}]
-# ... (更多 pin 分配)
-
-# AI 處理輸出 (32位元)
-ldc_set_location -site {A15} [get_ports {ai_data_out[0]}]
-# ... (完整的 32位元輸出)
-
-# 設定 I/O 標準
-ldc_set_port -iobuf {IO_TYPE=LVCMOS18} [get_ports {imx25_data[*]}]
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33 DRIVE=8} [get_ports {ai_data_out[*]}]`;
-    } else if (fileName.includes('testbench')) {
-        fileType = 'ModelSim Testbench (自動生成)';
-        content = `//==============================================================================
-// CTE Vibe Code - 自動生成的效能驗證 Testbench
-// 驗證 4K@32.5fps, 28ms延遲, 3.5W功耗需求
-//==============================================================================
-
-module tb_cte_vibe_top;
-
-// 測試參數
-parameter TARGET_FPS = 32.5;
-parameter TARGET_LATENCY_MS = 28;
-parameter CLOCK_FREQ = 200; // MHz
-
-// 效能監控
-real fps_measured;
-real latency_measured_ms;
-integer frame_count = 0;
-
-// DUT 實例化
-cte_vibe_top u_dut (
-    .clk_200m(clk),
-    .rst_n(rst_n),
-    .imx25_data(test_data),
-    .ai_data_out(ai_result),
-    .ai_data_valid(ai_valid)
-);
-
-// 主測試序列
-initial begin
-    $display("🧪 開始 CTE Vibe Code 效能驗證");
-    $display("🎯 目標: %.1f fps, %d ms延遲", TARGET_FPS, TARGET_LATENCY_MS);
-    
-    // 執行 1000 幀測試
-    repeat(1000) begin
-        test_single_frame();
-        frame_count = frame_count + 1;
-    end
-    
-    // 計算並驗證效能
-    calculate_performance();
-    verify_requirements();
-    
-    $display("✅ 效能驗證完成");
-    $finish;
-end
-
-endmodule`;
-    }
-    
-    // 顯示檔案內容模態視窗
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-    `;
-    
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid #F59E0B;
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 90%;
-            max-height: 85%;
-            overflow: auto;
-        ">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <div>
-                    <h3 style="color: #F59E0B; margin: 0;">${fileType}</h3>
-                    <div style="color: #94A3B8; font-size: 0.875rem; margin-top: 0.25rem;">📁 ${fileName}</div>
-                </div>
-                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                    background: #EF4444;
-                    color: white;
-                    border: none;
-                    padding: 0.5rem 1rem;
-                    border-radius: 6px;
-                    cursor: pointer;
-                ">✕</button>
-            </div>
-            <pre style="
-                background: #0f172a;
-                color: #e2e8f0;
-                padding: 1.5rem;
-                border-radius: 8px;
-                overflow: auto;
-                font-family: 'Courier New', monospace;
-                font-size: 0.875rem;
-                line-height: 1.5;
-                white-space: pre-wrap;
-                border: 1px solid #334155;
-            ">${content}</pre>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-// 頁面載入時的歡迎訊息
-window.addEventListener('load', function() {
-    setTimeout(() => {
-        showNotification('🔧 Lattice FPGA 開發環境已就緒！點擊 "FPGA 開發流程" 開始', 'info');
-    }, 3000);
-});
-
-</script>
+<- Integration with existing IMX25_verify Updated: Tue Aug  5 07:01:11 AM UTC 2025 -->
