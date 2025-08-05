@@ -386,6 +386,9 @@
 
             <button class="btn btn-info" onclick="generateTestbench()" style="width: 100%; margin-top: 0.5rem;">
                 <i class="fas fa-vial"></i>生成 Testbench
+            <button class="btn btn-success" onclick="executeRealFPGADevelopment()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-play"></i>實際執行開發
+            </button>
             </button>
 
             <a href="https://github.com/Benisonpin/ai-agent-control-center" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 1rem;">
@@ -473,6 +476,9 @@
                 '🔍 檢查 Radiant + ModelSim 環境...',
                 '📝 驗證 RTL 設計檔案...',
                 '🧪 自動生成 Testbench...',
+            <button class="btn btn-success" onclick="executeRealFPGADevelopment()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                <i class="fas fa-play"></i>實際執行開發
+            </button>
                 '🔬 執行 ModelSim 功能模擬...',
                 '🔨 Radiant 合成和佈局佈線...',
                 '📊 效能驗證和報告生成...',
@@ -956,3 +962,102 @@ endmodule`;
    </script>
 </body>
 </html>
+
+<script>
+// 實際執行 FPGA 開發
+function executeRealFPGADevelopment() {
+    showNotification('🚀 開始實際執行 FPGA 開發任務...', 'info');
+    
+    // 顯示實際執行指南
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 3px solid #10B981;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            text-align: center;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
+            <h2 style="color: #10B981; margin-bottom: 1.5rem;">
+                實際執行 FPGA 開發
+            </h2>
+            
+            <div style="text-align: left; margin-bottom: 2rem; background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 12px;">
+                <h4 style="color: #34D399; margin: 0 0 1rem 0;">📋 要執行實際開發任務，請前往 Cloud Shell：</h4>
+                <div style="background: #0f172a; padding: 1rem; border-radius: 8px; font-family: monospace; margin: 1rem 0;">
+                    <div style="color: #10B981;"># 前往專案目錄</div>
+                    <div style="color: #e2e8f0;">cd ~/cloudshell_open/ai-agent-control-center</div>
+                    <br>
+                    <div style="color: #10B981;"># 執行實際的 FPGA 開發腳本</div>
+                    <div style="color: #e2e8f0;">python3 execute_real_fpga_development.py</div>
+                    <br>
+                    <div style="color: #10B981;"># 或執行完整開發流程</div>
+                    <div style="color: #e2e8f0;">~/CTE_FPGA_DEVELOPMENT.sh</div>
+                </div>
+                
+                <h4 style="color: #FBBF24; margin: 1rem 0 0.5rem 0;">🎯 實際執行將會：</h4>
+                <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>✅ 檢查開發環境 (Python, Git, 檔案結構)</li>
+                    <li>✅ 生成實際的 RTL 檔案和約束檔案</li>
+                    <li>✅ 建立真正的 Testbench 檔案</li>
+                    <li>✅ 生成 ModelSim 執行腳本</li>
+                    <li>✅ 建立詳細的開發報告</li>
+                    <li>✅ 驗證專案檔案完整性</li>
+                </ul>
+                
+                <h4 style="color: #EF4444; margin: 1rem 0 0.5rem 0;">🔍 執行結果將包含：</h4>
+                <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
+                    <li>📄 fpga_execution_results.json - 詳細執行結果</li>
+                    <li>📋 CTE_VIBE_DEVELOPMENT_REPORT_*.md - 開發報告</li>
+                    <li>📁 實際的專案檔案 (非模擬)</li>
+                    <li>🧪 可執行的 Testbench 檔案</li>
+                </ul>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button onclick="window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git', '_blank')" style="
+                    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+                    color: white;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">🚀 前往 Cloud Shell</button>
+                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
+                    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+                    color: white;
+                    border: none;
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    cursor: pointer;
+                    font-weight: 600;
+                ">關閉</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // 同時顯示通知
+    setTimeout(() => {
+        showNotification('💡 實際執行需要在 Cloud Shell 中進行', 'warning');
+    }, 2000);
+}
+
+</script>
