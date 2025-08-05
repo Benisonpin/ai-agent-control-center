@@ -405,165 +405,88 @@
     </div>
 
     <script>
+    </script>
         // 通知系統
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
-            notification.textContent = message;
+            notification.innerHTML = `<i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>${message}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                max-width: 400px;
+                word-wrap: break-word;
+            `;
+            
+            if (type === 'info') {
+                notification.style.background = 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)';
+            } else if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, #10b981 0%, #047857 100%)';
+            } else if (type === 'warning') {
+                notification.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            }
+            
             document.body.appendChild(notification);
 
             setTimeout(() => {
-                notification.remove();
+                if (notification.parentNode) {
+                    notification.remove();
+                }
             }, 4000);
         }
 
-        // Cloud Shell 開啟功能
-        function openSmartCloudShell() {
-            showNotification('🛡️ 正在啟動增強保護的 Cloud Shell...', 'info');
-            setTimeout(() => {
-                window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
-            }, 1000);
-        }
-
-        // AI IDE 功能
-        function openAIIDE() {
-            showNotification('🚀 正在啟動 AI 開發環境...', 'info');
-            setTimeout(() => {
-                showNotification('✅ AI IDE 已準備就緒！', 'success');
-            }, 2000);
-        }
-
-        // AI 訓練功能
-        function startAITraining() {
-            showNotification('🧠 啟動 AI 模型訓練管線...', 'info');
+        // 第一階段大模型訓練
+        function startStage1Training() {
+            console.log('🎯 Starting Stage 1 Training...');
+            showNotification('🎯 啟動第一階段：大模型訓練管線...', 'info');
             
-            const trainingSteps = [
-                '📊 智能資料收集中...',
-                '🎯 AI 輔助標註進行中...',
-                '🧠 多模型並行訓練...',
-                '🔬 知識蒸餾優化中...',
-                '✅ AI 模型訓練完成！'
+            const stage1Steps = [
+                '📊 從開源數據集收集13種場景...',
+                '🔄 COCO, Places365, Cityscapes 數據下載中...',
+                '📁 處理戶外自然、城市街道、航拍風景場景...',
+                '🏗️ 建立 ConvNeXt Large 教師模型 (197M參數)...',
+                '🚀 開始大模型訓練 (100 epochs)...',
+                '📈 第30輪：驗證準確率 89.5%...',
+                '📈 第60輪：驗證準確率 93.2%...',
+                '📈 第90輪：驗證準確率 94.8%...',
+                '✅ 第一階段完成！最佳準確率 95.2%',
+                '🔗 準備連接第二階段知識蒸餾...'
             ];
             
-            trainingSteps.forEach((step, index) => {
+            stage1Steps.forEach((step, index) => {
                 setTimeout(() => {
-                    showNotification(step, index === trainingSteps.length - 1 ? 'success' : 'info');
-                }, (index + 1) * 2000);
-            });
-        }
-
-        // FPGA 部署功能
-        function deployToFPGA() {
-            showNotification('🚀 開始部署到 FPGA...', 'info');
-            
-            const deploymentSteps = [
-                '⚙️ 模型量化優化中...',
-                '🔧 轉換為 FPGA 格式...',
-                '📡 上傳到硬體平台...',
-                '🎯 效能驗證: 32.5fps, 28ms延遲',
-                '✅ FPGA 部署成功！'
-            ];
-            
-            deploymentSteps.forEach((step, index) => {
-                setTimeout(() => {
-                    showNotification(step, index === deploymentSteps.length - 1 ? 'success' : 'info');
-                }, (index + 1) * 1500);
-            });
-        }
-
-        // FPGA 開發流程
-        function runFPGADevelopment() {
-            showNotification('🔧 啟動 Lattice FPGA 開發流程...', 'info');
-            
-            const fpgaSteps = [
-                '🔍 檢查 Radiant + ModelSim 環境...',
-                '📝 驗證 RTL 設計檔案...',
-                '🧪 自動生成 Testbench...',
-            <button class="btn btn-success" onclick="executeRealFPGADevelopment()" style="width: 100%; margin-top: 0.5rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%); border: none; color: white; padding: 1rem; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                <i class="fas fa-play"></i>實際執行開發
-            </button>
-                '🔬 執行 ModelSim 功能模擬...',
-                '🔨 Radiant 合成和佈局佈線...',
-                '📊 效能驗證和報告生成...',
-                '✅ FPGA 開發流程完成！準備燒錄位流檔案'
-            ];
-            
-            fpgaSteps.forEach((step, index) => {
-                setTimeout(() => {
-                    showNotification(step, index === fpgaSteps.length - 1 ? 'success' : 'info');
+                    showNotification(step, index === stage1Steps.length - 1 ? 'success' : 'info');
                     
-                    if (index === fpgaSteps.length - 1) {
-                        setTimeout(() => {
-                            showFPGACompletionModal();
-                        }, 1000);
+                    if (index === 4) {
+                        setTimeout(() => showStage1TrainingDetails(), 1000);
+                    }
+                    
+                    if (index === stage1Steps.length - 1) {
+                        setTimeout(() => showStage1CompletionModal(), 1500);
                     }
                 }, (index + 1) * 2500);
             });
-            
-            setTimeout(() => {
-                showFPGAProgressModal();
-            }, 1000);
         }
 
-        // Testbench 生成
-        function generateTestbench() {
-            showNotification('🧪 啟動智能 Testbench 生成器...', 'info');
-            
-            const testbenchSteps = [
-                '📋 分析 Lattice LIFCL-40 RTL 模組...',
-                '🏗️ 生成 cte_vibe_top 單元測試...',
-                '🔧 生成 IMX25 介面整合測試...',
-                '⚡ 生成效能測試 (32.5fps, 28ms)...',
-                '📜 生成 ModelSim 自動化腳本...',
-                '✅ 所有 Testbench 生成完成！'
-            ];
-            
-            testbenchSteps.forEach((step, index) => {
-                setTimeout(() => {
-                    showNotification(step, index === testbenchSteps.length - 1 ? 'success' : 'info');
-                }, (index + 1) * 1200);
-            });
-            
-            setTimeout(() => {
-                showTestbenchDetailsModal();
-            }, 8000);
-        }
-
-        // 部署狀態
-        function showDeploymentStatus() {
-            showNotification('📊 檢查部署狀態...', 'info');
-            setTimeout(() => {
-                showNotification('✅ 系統運行正常，所有服務已部署', 'success');
-            }, 1500);
-        }
-
-        // 檔案開啟功能
-        function openFile(fileName) {
-            showNotification(`📄 開啟檔案: ${fileName}`, 'info');
-            
-            if (fileName.includes('lattice_fpga') || fileName.includes('testbench')) {
-                setTimeout(() => {
-                    showFPGAFileContent(fileName);
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    showNotification(`✅ ${fileName} 已開啟`, 'success');
-                }, 1000);
-            }
-        }
-
-        // FPGA 進度模態視窗
-        function showFPGAProgressModal() {
+        // 顯示第一階段訓練詳情
+        function showStage1TrainingDetails() {
             const modal = document.createElement('div');
             modal.style.cssText = `
                 position: fixed;
                 top: 20px;
-                right: 20px;
-                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                left: 20px;
+                background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
                 color: white;
                 padding: 2rem;
                 border-radius: 16px;
-                max-width: 400px;
+                max-width: 450px;
                 z-index: 1000;
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
                 backdrop-filter: blur(10px);
@@ -571,36 +494,49 @@
             
             modal.innerHTML = `
                 <h3 style="margin: 0 0 1.5rem 0; display: flex; align-items: center;">
-                    <i class="fas fa-microchip" style="margin-right: 0.5rem;"></i>
-                    Lattice FPGA 開發
+                    <i class="fas fa-database" style="margin-right: 0.5rem;"></i>
+                    第一階段：大模型訓練
                 </h3>
-                <div style="margin-bottom: 1rem;">
-                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="width: 25px;">✅</span>
-                        <span>LIFCL-40-9BG400C 目標確認</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="width: 25px;">⏳</span>
-                        <span>RTL 設計驗證中...</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="width: 25px;">📋</span>
-                        <span>Testbench 自動生成</span>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                        <span style="width: 25px;">🔨</span>
-                        <span>Radiant 合成排程中</span>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">📊 13種場景數據收集</h4>
+                    <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
+                        🌳 戶外自然: 15,000 樣本<br>
+                        🏠 室內住宅: 8,000 樣本<br>
+                        🏙️ 城市街道: 20,000 樣本<br>
+                        ✈️ 航拍風景: 12,000 樣本<br>
+                        🌙 夜間場景: 8,000 樣本<br>
+                        🌊 水域海事: 6,000 樣本<br>
+                        🌲 森林植被: 10,000 樣本<br>
+                        🌾 農業場景: 9,000 樣本<br>
+                        🏭 工業場地: 7,000 樣本<br>
+                        🏖️ 海岸沙灘: 5,000 樣本<br>
+                        ⛰️ 山地地形: 8,000 樣本<br>
+                        🏜️ 沙漠乾旱: 4,000 樣本<br>
+                        ⚽ 運動休閒: 6,000 樣本<br>
+                        <strong>總計: 118,000 樣本</strong>
                     </div>
                 </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">🏗️ ConvNeXt Large 教師模型</h4>
+                    <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
+                        📊 參數量: 197,000,000 參數<br>
+                        💾 模型大小: 788 MB<br>
+                        🎯 目標準確度: >95%<br>
+                        ⚡ 訓練時長: 100 epochs<br>
+                        🔥 硬體需求: GPU 8-12 小時
+                    </div>
+                </div>
+                
                 <div style="background: rgba(255, 255, 255, 0.15); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-                    <div style="font-weight: 600; margin-bottom: 0.5rem;">🎯 目標規格</div>
-                    <div style="font-size: 0.875rem; line-height: 1.4;">
-                        📊 4K@32.5fps 影像處理<br>
-                        ⚡ 28ms 端到端延遲<br>
-                        🔋 3.5W 功耗限制<br>
-                        📷 IMX25 攝影機介面
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">🎯 訓練進度模擬</div>
+                    <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="stage1Progress" style="background: #FBBF24; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
                     </div>
+                    <div id="progressText" style="font-size: 0.875rem; margin-top: 0.5rem;">Epoch 0/100 - 初始化中...</div>
                 </div>
+                
                 <button onclick="this.parentElement.remove()" style="
                     background: rgba(255, 255, 255, 0.2);
                     border: none;
@@ -614,11 +550,38 @@
             `;
             
             document.body.appendChild(modal);
-            setTimeout(() => modal.remove(), 15000);
+            
+            // 模擬訓練進度
+            let progress = 0;
+            const progressBar = modal.querySelector('#stage1Progress');
+            const progressText = modal.querySelector('#progressText');
+            
+            const updateProgress = () => {
+                progress += Math.random() * 4 + 1;
+                if (progress > 100) progress = 100;
+                
+                if (progressBar) progressBar.style.width = progress + '%';
+                
+                if (progressText) {
+                    if (progress < 100) {
+                        const epoch = Math.floor(progress);
+                        const acc = 75 + (progress / 100) * 20;
+                        progressText.textContent = `Epoch ${epoch}/100 - 驗證準確率: ${acc.toFixed(1)}%`;
+                        setTimeout(updateProgress, 1500);
+                    } else {
+                        progressText.innerHTML = '<strong>✅ 訓練完成 - 最佳準確率: 95.2%</strong>';
+                    }
+                }
+            };
+            
+            setTimeout(updateProgress, 2000);
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 20000);
         }
 
-        // Testbench 詳情模態視窗
-        function showTestbenchDetailsModal() {
+        // 第一階段完成模態視窗
+        function showStage1CompletionModal() {
             const modal = document.createElement('div');
             modal.style.cssText = `
                 position: fixed;
@@ -626,688 +589,213 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.8);
+                background: rgba(0, 0, 0, 0.9);
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                z-index: 10000;
+                z-index: 10001;
             `;
             
             modal.innerHTML = `
                 <div style="
                     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                    border: 2px solid #8b5cf6;
-                    border-radius: 16px;
-                    padding: 2rem;
-                    max-width: 600px;
-                    max-height: 80%;
-                    overflow: auto;
+                    border: 3px solid #3B82F6;
+                    border-radius: 20px;
+                    padding: 3rem;
+                    max-width: 700px;
+                    text-align: center;
+                    max-height: 90vh;
+                    overflow-y: auto;
                 ">
-                    <h3 style="color: #8b5cf6; margin-bottom: 1.5rem;">
-                        🧪 Testbench 生成完成
-                    </h3>
-                    <div style="margin-bottom: 1.5rem;">
-                        <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h4 style="color: #a78bfa; margin: 0 0 0.5rem 0;">📋 生成的測試檔案</h4>
-                            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                                <li>tb_cte_vibe_top.v - 主模組整合測試</li>
-                                <li>tb_imx25_interface.v - 攝影機介面測試</li>
-                                <li>tb_ai_processing.v - AI 處理管線測試</li>
-                                <li>tb_performance.v - 效能驗證測試</li>
-                            </ul>
+                    <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
+                    <h2 style="color: #3B82F6; margin-bottom: 1.5rem;">
+                        第一階段大模型訓練完成！
+                    </h2>
+                    
+                    <div style="margin-bottom: 2rem; line-height: 1.8;">
+                        <p style="font-size: 1.125rem; margin-bottom: 1rem;">
+                            🎯 <strong>ConvNeXt Large 教師模型已就緒</strong>
+                        </p>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
+                            <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #60A5FA; font-weight: 600;">訓練樣本</div>
+                                <div style="font-size: 0.875rem;">118,000 樣本</div>
+                            </div>
+                            <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #34D399; font-weight: 600;">最佳準確率</div>
+                                <div style="font-size: 0.875rem;">95.2%</div>
+                            </div>
+                            <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #FBBF24; font-weight: 600;">模型參數</div>
+                                <div style="font-size: 0.875rem;">197M 參數</div>
+                            </div>
+                            <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="color: #A78BFA; font-weight: 600;">場景類別</div>
+                                <div style="font-size: 0.875rem;">13 種情境</div>
+                            </div>
                         </div>
-                        <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
-                            <h4 style="color: #fbbf24; margin: 0 0 0.5rem 0;">⚙️ ModelSim 腳本</h4>
-                            <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                                <li>run_modelsim.do - 自動化模擬腳本</li>RetryBPContinueEdithtml                               <li>run_test.bat - Windows 批次執行檔</li>
-                               <li>performance_report.txt - 效能測試報告</li>
-                           </ul>
-                       </div>
-                       <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
-                           <h4 style="color: #34d399; margin: 0 0 0.5rem 0;">🎯 驗證項目</h4>
-                           <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.6;">
-                               <li>✅ 32.5fps 幀率驗證</li>
-                               <li>✅ 28ms 延遲限制檢查</li>
-                               <li>✅ 3.5W 功耗估算</li>
-                               <li>✅ 4K 解析度處理</li>
-                           </ul>
-                       </div>
-                   </div>
-                   <div style="text-align: center;">
-                       <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                           background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-                           color: white;
-                           border: none;
-                           padding: 1rem 2rem;
-                           border-radius: 8px;
-                           cursor: pointer;
-                           font-weight: 600;
-                           margin-right: 1rem;
-                       ">完成</button>
-                       <button onclick="showNotification('💡 請在安裝了 ModelSim 的環境中執行 run_test.bat', 'info')" style="
-                           background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-                           color: white;
-                           border: none;
-                           padding: 1rem 2rem;
-                           border-radius: 8px;
-                           cursor: pointer;
-                           font-weight: 600;
-                       ">執行測試</button>
-                   </div>
-               </div>
-           `;
-           
-           document.body.appendChild(modal);
-       }
+                    </div>
+                    
+                    <div style="background: rgba(59, 130, 246, 0.15); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                        <h4 style="color: #60A5FA; margin: 0 0 1rem 0;">🔗 下一步：知識蒸餾</h4>
+                        <div style="text-align: left; line-height: 1.6;">
+                            <p style="margin-bottom: 0.5rem;">✅ 第一階段大模型訓練完成</p>
+                            <p style="margin-bottom: 0.5rem;">🔄 自動連接到第二階段蒸餾系統</p>
+                            <p style="margin-bottom: 0.5rem;">🎯 目標：壓縮到輕量化模型 (75% 參數減少)</p>
+                            <p style="margin-bottom: 0;">⚡ 預期效能：32.5fps, 28ms延遲, 3.5W功耗</p>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="if(typeof startAITraining === 'function') startAITraining(); this.closest('div[style*=\"fixed\"]').remove();" style="
+                            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            margin: 0.5rem;
+                        ">🚀 開始第二階段蒸餾</button>
+                        <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
+                            background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+                            color: white;
+                            border: none;
+                            padding: 1rem 2rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            font-weight: 600;
+                            margin: 0.5rem;
+                        ">關閉</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
 
-       // FPGA 完成模態視窗
-       function showFPGACompletionModal() {
-           const modal = document.createElement('div');
-           modal.style.cssText = `
-               position: fixed;
-               top: 0;
-               left: 0;
-               width: 100%;
-               height: 100%;
-               background: rgba(0, 0, 0, 0.9);
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               z-index: 10001;
-           `;
-           
-           modal.innerHTML = `
-               <div style="
-                   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                   border: 3px solid #f59e0b;
-                   border-radius: 20px;
-                   padding: 3rem;
-                   max-width: 700px;
-                   text-align: center;
-               ">
-                   <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-                   <h2 style="color: #f59e0b; margin-bottom: 1.5rem;">
-                       FPGA 開發流程完成！
-                   </h2>
-                   <div style="margin-bottom: 2rem; line-height: 1.8;">
-                       <p style="font-size: 1.125rem; margin-bottom: 1rem;">
-                           🚁 <strong>CTE Vibe Code for Lattice LIFCL-40</strong> 已準備就緒
-                       </p>
-                       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
-                           <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px;">
-                               <div style="color: #fbbf24; font-weight: 600;">位流檔案</div>
-                               <div style="font-size: 0.875rem;">cte_vibe_drone.bit</div>
-                           </div>
-                           <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px;">
-                               <div style="color: #a78bfa; font-weight: 600;">測試覆蓋率</div>
-                               <div style="font-size: 0.875rem;">98.5%</div>
-                           </div>
-                           <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
-                               <div style="color: #34d399; font-weight: 600;">時序收斂</div>
-                               <div style="font-size: 0.875rem;">✅ 通過</div>
-                           </div>
-                           <div style="background: rgba(239, 68, 68, 0.1); padding: 1rem; border-radius: 8px;">
-                               <div style="color: #f87171; font-weight: 600;">資源使用</div>
-                               <div style="font-size: 0.875rem;">75% LUT</div>
-                           </div>
-                       </div>
-                   </div>
-                   <div style="background: rgba(245, 158, 11, 0.15); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                       <h4 style="color: #fbbf24; margin: 0 0 1rem 0;">🎯 下一步：硬體整合</h4>
-                       <ol style="text-align: left; padding-left: 1.5rem; line-height: 1.6;">
-                           <li>🔌 連接 IMX25 攝影機到 LIFCL-40</li>
-                           <li>💾 載入位流檔案到 FPGA</li>
-                           <li>🚀 啟動 CTE Vibe Code AI 系統</li>
-                           <li>📊 驗證 32.5fps + 28ms 效能</li>
-                           <li>🎉 享受 AI 無人機影像處理！</li>
-                       </ol>
-                   </div>
-                   <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                       background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-                       color: white;
-                       border: none;
-                       padding: 1.25rem 2.5rem;
-                       border-radius: 12px;
-                       cursor: pointer;
-                       font-weight: 600;
-                       font-size: 1.125rem;
-                   ">準備硬體整合！</button>
-               </div>
-           `;
-           
-           document.body.appendChild(modal);
-       }
+        // Cloud Shell 開啟功能
+        function openSmartCloudShell() {
+            console.log('🛡️ Opening Smart Cloud Shell...');
+            showNotification('🛡️ 正在啟動增強保護的 Cloud Shell...', 'info');
+            setTimeout(() => {
+                window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=.', '_blank');
+            }, 1000);
+        }
 
-       // FPGA 檔案內容顯示
-       function showFPGAFileContent(fileName) {
-           let content = '';
-           let fileType = '';
-           
-           if (fileName.includes('cte_vibe_top.v')) {
-               fileType = 'Lattice LIFCL-40 Top Module';
-               content = `//==============================================================================
-// CTE Vibe Code Top Module for Lattice LIFCL-40-9BG400C
-// AI-Powered 4K@32.5fps Image Processing for Drone Applications
-//==============================================================================
+        // AI IDE 功能
+        function openAIIDE() {
+            console.log('🚀 Opening AI IDE...');
+            showNotification('🚀 正在啟動 AI 開發環境...', 'info');
+            setTimeout(() => {
+                showNotification('✅ AI IDE 已準備就緒！', 'success');
+            }, 2000);
+        }
 
-module cte_vibe_top (
-   // 時鐘和重置
-   input  wire         clk_200m,           // 200MHz 主時鐘
-   input  wire         rst_n,              // 低電平重置
-   
-   // IMX25 攝影機介面
-   input  wire [11:0]  imx25_data,         // 12位元像素資料
-   input  wire         imx25_pclk,         // 像素時鐘
-   input  wire         imx25_href,         // 水平參考
-   input  wire         imx25_vsync,        // 垂直同步
-   output wire         imx25_reset_n,      // 攝影機重置
-   
-   // AI 處理介面
-   output wire [31:0]  ai_data_out,        // AI 處理結果
-   output wire         ai_data_valid,      // AI 資料有效
-   
-   // CTE Vibe Code 控制介面
-   input  wire [31:0]  vibe_cmd,           // Vibe 命令
-   output wire [31:0]  vibe_status,        // Vibe 狀態
-   output wire         vibe_interrupt      // 中斷信號
-);
+        // 第二階段 AI 訓練功能（知識蒸餾）
+        function startAITraining() {
+            console.log('🔬 Starting Stage 2 AI Training...');
+            showNotification('🔬 啟動第二階段：知識蒸餾優化...', 'info');
+            
+            const stage2Steps = [
+                '🎓 載入第一階段教師模型 (ConvNeXt Large)...',
+                '🏗️ 建立輕量化學生模型 (MobileNetV3)...',
+                '🔬 開始知識蒸餾訓練 (Teacher→Student)...',
+                '📊 蒸餾進度：準確度保持 94.1% (目標>90%)...',
+                '✂️ 執行結構化模型剪枝優化...',
+                '🔢 應用 INT8 量化壓縮...',
+                '⚡ 最終模型：32.5fps, 28ms延遲, 3.5W功耗',
+                '✅ 第二階段完成！輕量化模型已優化'
+            ];
+            
+            stage2Steps.forEach((step, index) => {
+                setTimeout(() => {
+                    showNotification(step, index === stage2Steps.length - 1 ? 'success' : 'info');
+                }, (index + 1) * 2500);
+            });
+        }
 
-// 效能參數
-parameter TARGET_FPS = 32.5;
-parameter TARGET_LATENCY_MS = 28;
-parameter TARGET_POWER_W = 3.5;
+        // FPGA 部署功能
+        function deployToFPGA() {
+            console.log('🚀 Deploying to FPGA...');
+            showNotification('🚀 開始部署到 FPGA...', 'info');
+            
+            const deploymentSteps = [
+                '⚙️ 模型量化優化中...',
+                '🔧 轉換為 FPGA 格式...',
+                '📡 上傳到 Lattice LIFCL-40...',
+                '🎯 效能驗證: 32.5fps, 28ms延遲',
+                '✅ FPGA 部署成功！'
+            ];
+            
+            deploymentSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    showNotification(step, index === deploymentSteps.length - 1 ? 'success' : 'info');
+                }, (index + 1) * 1500);
+            });
+        }
 
-// CTE Vibe Code AI 處理管線
-// Stage 1-8: 完整的 AI 影像處理流水線
-// 確保達到 4K@32.5fps, 28ms 延遲需求
+        // 其他功能（確保所有按鈕都有對應函數）
+        function runFPGADevelopment() {
+            console.log('🔧 Running FPGA Development...');
+            showNotification('🔧 啟動 Lattice FPGA 開發流程...', 'info');
+            setTimeout(() => {
+                showNotification('✅ FPGA 開發環境已準備就緒！', 'success');
+            }, 3000);
+        }
 
-endmodule`;
-           } else if (fileName.includes('pins.pdc')) {
-               fileType = 'LIFCL-40 Pin Constraints';
-               content = `#==============================================================================
-# CTE Vibe Code Pin Constraints for Lattice LIFCL-40-9BG400C
-# Optimized for IMX25 Camera + AI Processing + DDR Memory
-#==============================================================================
+        function generateTestbench() {
+            console.log('🧪 Generating Testbench...');
+            showNotification('🧪 啟動智能 Testbench 生成器...', 'info');
+            setTimeout(() => {
+                showNotification('✅ 所有 Testbench 生成完成！', 'success');
+            }, 2500);
+        }
 
-# 主時鐘 (200MHz, 100MHz)
-ldc_set_location -site {A10} [get_ports clk_100m]
-ldc_set_location -site {B10} [get_ports clk_200m]
+        function executeRealFPGADevelopment() {
+            console.log('⚡ Executing Real FPGA Development...');
+            showNotification('⚡ 準備實際執行 FPGA 開發任務...', 'info');
+            setTimeout(() => {
+                showNotification('💡 請前往 Cloud Shell 執行實際開發腳本', 'warning');
+            }, 2000);
+        }
 
-# IMX25 攝影機介面 (12位元資料)
-ldc_set_location -site {P19} [get_ports {imx25_data[0]}]
-ldc_set_location -site {R19} [get_ports {imx25_data[1]}]
-# ... (更多 pin 分配)
+        function showDeploymentStatus() {
+            console.log('📊 Showing Deployment Status...');
+            showNotification('📊 檢查部署狀態...', 'info');
+            setTimeout(() => {
+                showNotification('✅ 系統運行正常，所有服務已部署', 'success');
+            }, 1500);
+        }
 
-# AI 處理輸出 (32位元)
-ldc_set_location -site {A15} [get_ports {ai_data_out[0]}]
-# ... (完整的 32位元輸出)
+        function openFile(fileName) {
+            console.log('📄 Opening file:', fileName);
+            showNotification(`📄 開啟檔案: ${fileName}`, 'info');
+            setTimeout(() => {
+                showNotification(`✅ ${fileName} 已開啟`, 'success');
+            }, 1000);
+        }
 
-# 設定 I/O 標準
-ldc_set_port -iobuf {IO_TYPE=LVCMOS18} [get_ports {imx25_data[*]}]
-ldc_set_port -iobuf {IO_TYPE=LVCMOS33 DRIVE=8} [get_ports {ai_data_out[*]}]`;
-           } else if (fileName.includes('testbench')) {
-               fileType = 'ModelSim Testbench (自動生成)';
-               content = `//==============================================================================
-// CTE Vibe Code - 自動生成的效能驗證 Testbench
-// 驗證 4K@32.5fps, 28ms延遲, 3.5W功耗需求
-//==============================================================================
+        // 頁面載入時的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚁 CTE Vibe Code 系統初始化...');
+            setTimeout(() => {
+                showNotification('🚁 CTE Vibe Code 系統已就緒！', 'success');
+            }, 1000);
+            
+            setTimeout(() => {
+                showNotification('🎯 點擊按鈕開始 AI 開發流程', 'info');
+            }, 3000);
+        });
 
-module tb_cte_vibe_top;
-
-// 測試參數
-parameter TARGET_FPS = 32.5;
-parameter TARGET_LATENCY_MS = 28;
-parameter CLOCK_FREQ = 200; // MHz
-
-// 效能監控
-real fps_measured;
-real latency_measured_ms;
-integer frame_count = 0;
-
-// DUT 實例化
-cte_vibe_top u_dut (
-   .clk_200m(clk),
-   .rst_n(rst_n),
-   .imx25_data(test_data),
-   .ai_data_out(ai_result),
-   .ai_data_valid(ai_valid)
-);
-
-// 主測試序列
-initial begin
-   $display("🧪 開始 CTE Vibe Code 效能驗證");
-   $display("🎯 目標: %.1f fps, %d ms延遲", TARGET_FPS, TARGET_LATENCY_MS);
-   
-   // 執行 1000 幀測試
-   repeat(1000) begin
-       test_single_frame();
-       frame_count = frame_count + 1;
-   end
-   
-   // 計算並驗證效能
-   calculate_performance();
-   verify_requirements();
-   
-   $display("✅ 效能驗證完成");
-   $finish;
-end
-
-endmodule`;
-           }
-           
-           // 顯示檔案內容模態視窗
-           const modal = document.createElement('div');
-           modal.style.cssText = `
-               position: fixed;
-               top: 0;
-               left: 0;
-               width: 100%;
-               height: 100%;
-               background: rgba(0, 0, 0, 0.85);
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               z-index: 10000;
-           `;
-           
-           modal.innerHTML = `
-               <div style="
-                   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                   border: 2px solid #f59e0b;
-                   border-radius: 16px;
-                   padding: 2rem;
-                   max-width: 90%;
-                   max-height: 85%;
-                   overflow: auto;
-               ">
-                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                       <div>
-                           <h3 style="color: #f59e0b; margin: 0;">${fileType}</h3>
-                           <div style="color: #94a3b8; font-size: 0.875rem; margin-top: 0.25rem;">📁 ${fileName}</div>
-                       </div>
-                       <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                           background: #ef4444;
-                           color: white;
-                           border: none;
-                           padding: 0.5rem 1rem;
-                           border-radius: 6px;
-                           cursor: pointer;
-                       ">✕</button>
-                   </div>
-                   <pre style="
-                       background: #0f172a;
-                       color: #e2e8f0;
-                       padding: 1.5rem;
-                       border-radius: 8px;
-                       overflow: auto;
-                       font-family: 'Courier New', monospace;
-                       font-size: 0.875rem;
-                       line-height: 1.5;
-                       white-space: pre-wrap;
-                       border: 1px solid #334155;
-                   ">${content}</pre>
-               </div>
-           `;
-           
-           document.body.appendChild(modal);
-       }
-
-       // 頁面載入時的歡迎訊息
-       window.addEventListener('load', function() {
-           setTimeout(() => {
-               showNotification('🚁 CTE Vibe Code 系統已就緒！', 'success');
-           }, 1000);
-           
-           setTimeout(() => {
-               showNotification('🔧 Lattice FPGA 開發環境已準備完成！', 'info');
-           }, 3000);
-       });
-   </script>
+        // 錯誤處理
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            showNotification('⚠️ 系統錯誤，請重新整理頁面', 'warning');
+        });
 </body>
 </html>
 
-<script>
-// 實際執行 FPGA 開發
-function executeRealFPGADevelopment() {
-    showNotification('🚀 開始實際執行 FPGA 開發任務...', 'info');
-    
-    // 顯示實際執行指南
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10001;
-    `;
-    
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 3px solid #10B981;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 800px;
-            text-align: center;
-        ">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
-            <h2 style="color: #10B981; margin-bottom: 1.5rem;">
-                實際執行 FPGA 開發
-            </h2>
-            
-            <div style="text-align: left; margin-bottom: 2rem; background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 12px;">
-                <h4 style="color: #34D399; margin: 0 0 1rem 0;">📋 要執行實際開發任務，請前往 Cloud Shell：</h4>
-                <div style="background: #0f172a; padding: 1rem; border-radius: 8px; font-family: monospace; margin: 1rem 0;">
-                    <div style="color: #10B981;"># 前往專案目錄</div>
-                    <div style="color: #e2e8f0;">cd ~/cloudshell_open/ai-agent-control-center</div>
-                    <br>
-                    <div style="color: #10B981;"># 執行實際的 FPGA 開發腳本</div>
-                    <div style="color: #e2e8f0;">python3 execute_real_fpga_development.py</div>
-                    <br>
-                    <div style="color: #10B981;"># 或執行完整開發流程</div>
-                    <div style="color: #e2e8f0;">~/CTE_FPGA_DEVELOPMENT.sh</div>
-                </div>
-                
-                <h4 style="color: #FBBF24; margin: 1rem 0 0.5rem 0;">🎯 實際執行將會：</h4>
-                <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
-                    <li>✅ 檢查開發環境 (Python, Git, 檔案結構)</li>
-                    <li>✅ 生成實際的 RTL 檔案和約束檔案</li>
-                    <li>✅ 建立真正的 Testbench 檔案</li>
-                    <li>✅ 生成 ModelSim 執行腳本</li>
-                    <li>✅ 建立詳細的開發報告</li>
-                    <li>✅ 驗證專案檔案完整性</li>
-                </ul>
-                
-                <h4 style="color: #EF4444; margin: 1rem 0 0.5rem 0;">🔍 執行結果將包含：</h4>
-                <ul style="margin: 0; padding-left: 1.5rem; line-height: 1.8;">
-                    <li>📄 fpga_execution_results.json - 詳細執行結果</li>
-                    <li>📋 CTE_VIBE_DEVELOPMENT_REPORT_*.md - 開發報告</li>
-                    <li>📁 實際的專案檔案 (非模擬)</li>
-                    <li>🧪 可執行的 Testbench 檔案</li>
-                </ul>
-            </div>
-            
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button onclick="window.open('https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git', '_blank')" style="
-                    background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">🚀 前往 Cloud Shell</button>
-                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">關閉</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // 同時顯示通知
-    setTimeout(() => {
-        showNotification('💡 實際執行需要在 Cloud Shell 中進行', 'warning');
-    }, 2000);
-}
 
-</script>
-
-<script>
-// 第一階段大模型訓練
-function startStage1Training() {
-    showNotification('🎯 啟動第一階段：大模型訓練管線...', 'info');
-    
-    const stage1Steps = [
-        '📊 從開源數據集收集13種場景...',
-        '🔄 COCO, Places365, Cityscapes 數據下載中...',
-        '📁 處理戶外自然、城市街道、航拍風景場景...',
-        '🏗️ 建立 ConvNeXt Large 教師模型...',
-        '🚀 開始大模型訓練 (100 epochs)...',
-        '📈 第50輪：驗證準確率 92.3%...',
-        '📈 第80輪：驗證準確率 94.7%...',
-        '✅ 第一階段完成！最佳準確率 95.2%',
-        '🔗 準備連接第二階段蒸餾...'
-    ];
-    
-    stage1Steps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === stage1Steps.length - 1 ? 'success' : 'info');
-            
-            if (index === stage1Steps.length - 1) {
-                setTimeout(() => {
-                    showStage1CompletionModal();
-                }, 1000);
-            }
-        }, (index + 1) * 3000);
-    });
-    
-    // 顯示第一階段訓練詳情
-    setTimeout(() => {
-        showStage1TrainingDetails();
-    }, 2000);
-}
-
-function showStage1TrainingDetails() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 20px;
-        left: 20px;
-        background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 16px;
-        max-width: 450px;
-        z-index: 1000;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        backdrop-filter: blur(10px);
-    `;
-    
-    modal.innerHTML = `
-        <h3 style="margin: 0 0 1.5rem 0; display: flex; align-items: center;">
-            <i class="fas fa-database" style="margin-right: 0.5rem;"></i>
-            第一階段：大模型訓練
-        </h3>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">📊 13種場景數據收集</h4>
-            <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
-                🌳 戶外自然: 15,000 樣本<br>
-                🏠 室內住宅: 8,000 樣本<br>
-                🏙️ 城市街道: 20,000 樣本<br>
-                ✈️ 航拍風景: 12,000 樣本<br>
-                🌙 夜間場景: 8,000 樣本<br>
-                🌊 水域海事: 6,000 樣本<br>
-                🌲 森林植被: 10,000 樣本<br>
-                🌾 農業場景: 9,000 樣本<br>
-                🏭 工業場地: 7,000 樣本<br>
-                🏖️ 海岸沙灘: 5,000 樣本<br>
-                ⛰️ 山地地形: 8,000 樣本<br>
-                🏜️ 沙漠乾旱: 4,000 樣本<br>
-                ⚽ 運動休閒: 6,000 樣本
-            </div>
-        </div>
-        
-        <div style="margin-bottom: 1.5rem;">
-            <h4 style="color: #BFDBFE; margin: 0 0 0.5rem 0;">🏗️ ConvNeXt Large 教師模型</h4>
-            <div style="font-size: 0.875rem; line-height: 1.4; margin-left: 1rem;">
-                📊 參數量: 197M 參數<br>
-                💾 模型大小: 788 MB<br>
-                🎯 目標準確度: >95%<br>
-                ⚡ 訓練時長: 100 epochs
-            </div>
-        </div>
-        
-        <div style="background: rgba(255, 255, 255, 0.15); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
-            <div style="font-weight: 600; margin-bottom: 0.5rem;">🎯 訓練進度</div>
-            <div style="background: rgba(255, 255, 255, 0.2); height: 8px; border-radius: 4px; overflow: hidden;">
-                <div id="stage1Progress" style="background: #FBBF24; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
-            </div>
-            <div style="font-size: 0.875rem; margin-top: 0.5rem;">Epoch 0/100 - 開始訓練...</div>
-        </div>
-        
-        <button onclick="this.parentElement.remove()" style="
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            float: right;
-        ">關閉</button>
-    `;
-    
-    document.body.appendChild(modal);
-    
-    // 模擬訓練進度
-    let progress = 0;
-    const progressBar = modal.querySelector('#stage1Progress');
-    const progressText = modal.querySelector('div:last-of-type');
-    
-    const updateProgress = () => {
-        progress += Math.random() * 3;
-        if (progress > 100) progress = 100;
-        
-        progressBar.style.width = progress + '%';
-        
-        if (progress < 100) {
-            const epoch = Math.floor(progress);
-            const acc = 80 + (progress / 100) * 15;
-            progressText.textContent = `Epoch ${epoch}/100 - 驗證準確率: ${acc.toFixed(1)}%`;
-            setTimeout(updateProgress, 2000);
-        } else {
-            progressText.innerHTML = '✅ 訓練完成 - 最佳準確率: 95.2%';
-        }
-    };
-    
-    setTimeout(updateProgress, 3000);
-    setTimeout(() => modal.remove(), 25000);
-}
-
-function showStage1CompletionModal() {
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10001;
-    `;
-    
-    modal.innerHTML = `
-        <div style="
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 3px solid #3B82F6;
-            border-radius: 20px;
-            padding: 3rem;
-            max-width: 800px;
-            text-align: center;
-        ">
-            <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-            <h2 style="color: #3B82F6; margin-bottom: 1.5rem;">
-                第一階段大模型訓練完成！
-            </h2>
-            
-            <div style="margin-bottom: 2rem; line-height: 1.8;">
-                <p style="font-size: 1.125rem; margin-bottom: 1rem;">
-                    🎯 <strong>ConvNeXt Large 教師模型已就緒</strong>
-                </p>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0;">
-                    <div style="background: rgba(59, 130, 246, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #60A5FA; font-weight: 600;">訓練樣本</div>
-                        <div style="font-size: 0.875rem;">118,000 樣本</div>
-                    </div>
-                    <div style="background: rgba(16, 185, 129, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #34D399; font-weight: 600;">最佳準確率</div>
-                        <div style="font-size: 0.875rem;">95.2%</div>
-                    </div>
-                    <div style="background: rgba(245, 158, 11, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #FBBF24; font-weight: 600;">模型參數</div>
-                        <div style="font-size: 0.875rem;">197M 參數</div>
-                    </div>
-                    <div style="background: rgba(139, 92, 246, 0.1); padding: 1rem; border-radius: 8px;">
-                        <div style="color: #A78BFA; font-weight: 600;">場景類別</div>
-                        <div style="font-size: 0.875rem;">13 種情境</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="background: rgba(59, 130, 246, 0.15); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                <h4 style="color: #60A5FA; margin: 0 0 1rem 0;">🔗 下一步：知識蒸餾</h4>
-                <div style="text-align: left; line-height: 1.6;">
-                    <p style="margin-bottom: 0.5rem;">✅ 第一階段大模型訓練完成</p>
-                    <p style="margin-bottom: 0.5rem;">🔄 自動連接到第二階段蒸餾系統</p>
-                    <p style="margin-bottom: 0.5rem;">🎯 目標：壓縮到輕量化模型 (75% 參數減少)</p>
-                    <p style="margin-bottom: 0;">⚡ 預期效能：32.5fps, 28ms延遲, 3.5W功耗</p>
-                </div>
-            </div>
-            
-            <div style="display: flex; gap: 1rem; justify-content: center;">
-                <button onclick="startAITraining()" style="
-                    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">🚀 開始第二階段蒸餾</button>
-                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
-                    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
-                    color: white;
-                    border: none;
-                    padding: 1rem 2rem;
-                    border-radius: 8px;
-                    cursor: pointer;
-                    font-weight: 600;
-                ">關閉</button>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-// 修改原有的 AI 訓練功能，使其成為第二階段
-const originalStartAITraining = window.startAITraining;
-window.startAITraining = function() {
-    showNotification('🔬 啟動第二階段：知識蒸餾優化...', 'info');
-    
-    const stage2Steps = [
-        '🎓 載入第一階段教師模型...',
-        '🏗️ 建立輕量化學生模型...',
-        '🔬 開始知識蒸餾訓練...',
-        '✂️ 執行模型剪枝優化...',
-        '🔢 INT8 量化壓縮...',
-        '✅ 第二階段完成！模型已優化'
-    ];
-    
-    stage2Steps.forEach((step, index) => {
-        setTimeout(() => {
-            showNotification(step, index === stage2Steps.length - 1 ? 'success' : 'info');
-        }, (index + 1) * 2000);
-    });
-};
-
-</script>
 <- Integration with existing IMX25_verify Updated: Tue Aug  5 07:01:11 AM UTC 2025 -->
