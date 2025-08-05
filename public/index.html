@@ -641,3 +641,268 @@
     </script>
 </body>
 </html>
+
+<script>
+// 修改第一階段訓練函數，添加真實執行選項
+function startStage1Training() {
+    // 顯示選擇模態
+    showExecutionChoiceModal();
+}
+
+function showExecutionChoiceModal() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 3px solid #3B82F6;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            text-align: center;
+        ">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">🤔</div>
+            <h2 style="color: #3B82F6; margin-bottom: 1.5rem;">
+                選擇執行模式
+            </h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+                <!-- 模擬演示 -->
+                <div style="
+                    background: rgba(59, 130, 246, 0.1);
+                    border: 2px solid #3B82F6;
+                    border-radius: 16px;
+                    padding: 2rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onclick="startDemoMode(); this.closest('div[style*=\"fixed\"]').remove();"
+                   onmouseover="this.style.background='rgba(59, 130, 246, 0.2)'"
+                   onmouseout="this.style.background='rgba(59, 130, 246, 0.1)'">
+                    
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🎭</div>
+                    <h3 style="color: #60A5FA; margin-bottom: 1rem;">模擬演示</h3>
+                    <div style="text-align: left; font-size: 0.9rem; line-height: 1.6;">
+                        <p>✅ 立即展示完整流程</p>
+                        <p>✅ 互動式訓練進度</p>
+                        <p>✅ 模擬 95.2% 準確率結果</p>
+                        <p>⚡ 約 25 秒完成演示</p>
+                        <p style="color: #FBBF24;">⚠️ 僅供展示，無實際訓練</p>
+                    </div>
+                </div>
+                
+                <!-- 真實執行 -->
+                <div style="
+                    background: rgba(16, 185, 129, 0.1);
+                    border: 2px solid #10B981;
+                    border-radius: 16px;
+                    padding: 2rem;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                " onclick="startRealMode(); this.closest('div[style*=\"fixed\"]').remove();"
+                   onmouseover="this.style.background='rgba(16, 185, 129, 0.2)'"
+                   onmouseout="this.style.background='rgba(16, 185, 129, 0.1)'">
+                    
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🔥</div>
+                    <h3 style="color: #34D399; margin-bottom: 1rem;">真實執行</h3>
+                    <div style="text-align: left; font-size: 0.9rem; line-height: 1.6;">
+                        <p>🚀 實際下載開源數據集</p>
+                        <p>💪 真實 GPU 模型訓練</p>
+                        <p>📊 實時訓練指標追蹤</p>
+                        <p>⏰ 需要 8-12 小時完成</p>
+                        <p style="color: #F87171;">💡 需要 Cloud Shell 環境</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
+                background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+                color: white; border: none;
+                padding: 1rem 2rem; border-radius: 8px;
+                cursor: pointer; font-weight: 600;
+            ">取消</button>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+
+// 模擬演示模式（目前的功能）
+function startDemoMode() {
+    console.log('🎭 Starting Demo Mode...');
+    showNotification('🎭 啟動模擬演示模式...', 'info');
+    
+    const stage1Steps = [
+        '📊 從開源數據集收集13種場景...',
+        '🔄 COCO, Places365, Cityscapes 數據下載中...',
+        '📁 處理戶外自然、城市街道、航拍風景場景...',
+        '🏗️ 建立 ConvNeXt Large 教師模型 (197M參數)...',
+        '🚀 開始大模型訓練 (100 epochs)...',
+        '📈 第30輪：驗證準確率 89.5%...',
+        '📈 第60輪：驗證準確率 93.2%...',
+        '📈 第90輪：驗證準確率 94.8%...',
+        '✅ 第一階段完成！最佳準確率 95.2% (模擬)',
+        '🔗 準備連接第二階段知識蒸餾...'
+    ];
+    
+    stage1Steps.forEach((step, index) => {
+        setTimeout(() => {
+            showNotification(step, index === stage1Steps.length - 1 ? 'success' : 'info');
+            
+            if (index === 4) {
+                setTimeout(() => showStage1TrainingDetails(), 1000);
+            }
+            
+            if (index === stage1Steps.length - 1) {
+                setTimeout(() => showStage1CompletionModal(), 1500);
+            }
+        }, (index + 1) * 2500);
+    });
+}
+
+// 真實執行模式
+function startRealMode() {
+    console.log('🔥 Starting Real Execution Mode...');
+    showNotification('🔥 啟動真實執行模式...', 'warning');
+    
+    // 顯示真實執行指引
+    setTimeout(() => {
+        showRealExecutionGuide();
+    }, 1000);
+}
+
+function showRealExecutionGuide() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+    `;
+    
+    modal.innerHTML = `
+        <div style="
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 3px solid #10B981;
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+        ">
+            <div style="text-align: center;">
+                <div style="font-size: 4rem; margin-bottom: 1rem;">🚀</div>
+                <h2 style="color: #10B981; margin-bottom: 2rem;">
+                    真實執行指南
+                </h2>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: #34D399; margin-bottom: 1rem;">🛠️ 執行步驟</h3>
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 1.5rem; border-radius: 12px;">
+                    <ol style="line-height: 1.8; padding-left: 1.5rem;">
+                        <li><strong>點擊 "實際執行開發" 按鈕</strong> 開啟 Cloud Shell</li>
+                        <li><strong>執行數據收集：</strong><br>
+                            <code style="background: #374151; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; display: block;">
+                                python3 stage1_training/data_collection/auto_data_collector.py
+                            </code>
+                        </li>
+                        <li><strong>執行模型訓練：</strong><br>
+                            <code style="background: #374151; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; display: block;">
+                                python3 stage1_training/cte_stage1_training_pipeline.py
+                            </code>
+                        </li>
+                        <li><strong>或執行完整流程：</strong><br>
+                            <code style="background: #374151; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; display: block;">
+                                ~/STAGE1_EXECUTION.sh
+                            </code>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: #FBBF24; margin-bottom: 1rem;">⚠️ 系統需求</h3>
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 1.5rem; border-radius: 12px;">
+                    <ul style="line-height: 1.6; padding-left: 1.5rem;">
+                        <li><strong>硬體：</strong> GPU (建議 V100 或 A100)</li>
+                        <li><strong>記憶體：</strong> 至少 16GB RAM</li>
+                        <li><strong>儲存空間：</strong> 至少 100GB</li>
+                        <li><strong>網路：</strong> 穩定連線下載數據集</li>
+                        <li><strong>時間：</strong> 8-12 小時完整訓練</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 2rem;">
+                <h3 style="color: #60A5FA; margin-bottom: 1rem;">📊 真實執行 vs 模擬對比</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background: rgba(59, 130, 246, 0.1);">
+                        <th style="padding: 0.75rem; text-align: left; color: #60A5FA;">項目</th>
+                        <th style="padding: 0.75rem; text-align: center; color: #60A5FA;">模擬演示</th>
+                        <th style="padding: 0.75rem; text-align: center; color: #60A5FA;">真實執行</th>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem; border-bottom: 1px solid #374151;">數據下載</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">❌ 模擬</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">✅ 118,000 樣本</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem; border-bottom: 1px solid #374151;">模型訓練</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">❌ 模擬</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">✅ GPU 運算</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem; border-bottom: 1px solid #374151;">執行時間</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">25 秒</td>
+                        <td style="padding: 0.75rem; text-align: center; border-bottom: 1px solid #374151;">8-12 小時</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0.75rem;">最終模型</td>
+                        <td style="padding: 0.75rem; text-align: center;">❌ 無檔案</td>
+                        <td style="padding: 0.75rem; text-align: center;">✅ .pth 模型檔案</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <button onclick="openSmartCloudShell(); this.closest('div[style*=\"fixed\"]').remove();" style="
+                    background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+                    color: white; border: none;
+                    padding: 1rem 2rem; border-radius: 8px;
+                    cursor: pointer; font-weight: 600;
+                ">🚀 開啟 Cloud Shell 真實執行</button>
+                
+                <button onclick="startDemoMode(); this.closest('div[style*=\"fixed\"]').remove();" style="
+                    background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+                    color: white; border: none;
+                    padding: 1rem 2rem; border-radius: 8px;
+                    cursor: pointer; font-weight: 600;
+                ">🎭 改為模擬演示</button>
+                
+                <button onclick="this.closest('div[style*=\"fixed\"]').remove()" style="
+                    background: linear-gradient(135deg, #6B7280 0%, #4B5563 100%);
+                    color: white; border: none;
+                    padding: 1rem 2rem; border-radius: 8px;
+                    cursor: pointer; font-weight: 600;
+                ">關閉</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+}
+</script>

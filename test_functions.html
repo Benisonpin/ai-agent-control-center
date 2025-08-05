@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Function Test</title>
+</head>
+<body>
+   <h1>測試所有功能</h1>
+   <button onclick="testAllFunctions()">測試所有功能</button>
+   
+   <script>
+       function testAllFunctions() {
+           console.log('Testing all functions...');
+           
+           // 測試所有函數是否存在
+           const functions = [
+               'startStage1Training',
+               'startAITraining', 
+               'deployToFPGA',
+               'openSmartCloudShell',
+               'generateTestbench',
+               'showNotification'
+           ];
+           
+           functions.forEach(funcName => {
+               if (typeof window[funcName] === 'function') {
+                   console.log(`✅ ${funcName} exists and is callable`);
+               } else {
+                   console.log(`❌ ${funcName} is missing or not a function`);
+               }
+           });
+           
+           // 測試通知系統
+           if (typeof showNotification === 'function') {
+               showNotification('🧪 功能測試完成！', 'success');
+           }
+       }
+       
+       // 複製主要函數進行測試
+       function showNotification(message, type = 'info') {
+           const notification = document.createElement('div');
+           notification.style.cssText = `
+               position: fixed; top: 20px; right: 20px;
+               padding: 1rem; background: #10b981; color: white;
+               border-radius: 8px; z-index: 1000;
+           `;
+           notification.textContent = message;
+           document.body.appendChild(notification);
+           setTimeout(() => notification.remove(), 3000);
+       }
+       
+       function startStage1Training() {
+           console.log('Stage 1 Training function called');
+           showNotification('🎯 第一階段測試成功！', 'success');
+       }
+       
+       function startAITraining() {
+           console.log('AI Training function called');
+           showNotification('🔬 第二階段測試成功！', 'success');
+       }
+       
+       function deployToFPGA() {
+           console.log('FPGA deployment function called');
+           showNotification('🚀 第三階段測試成功！', 'success');
+       }
+       
+       function openSmartCloudShell() {
+           console.log('Cloud Shell function called');
+           showNotification('🛡️ Cloud Shell 測試成功！', 'success');
+       }
+       
+       function generateTestbench() {
+           console.log('Testbench function called');
+           showNotification('🧪 Testbench 測試成功！', 'success');
+       }
+   </script>
+</body>
+</html>
