@@ -160,39 +160,6 @@
             border: 1px solid #333;
         }
         
-        .chip-diagram {
-            background: rgba(0,0,0,0.8);
-            padding: 2rem;
-            border-radius: 15px;
-            margin: 2rem 0;
-            text-align: center;
-        }
-        
-        .pinout-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 2px;
-            max-width: 600px;
-            margin: 2rem auto;
-            background: #1a1a2e;
-            padding: 1rem;
-            border-radius: 10px;
-        }
-        
-        .pin {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 1px solid #555;
-            position: relative;
-        }
-        
-        .pin-power { background: #e74c3c; }
-        .pin-ground { background: #34495e; }
-        .pin-signal { background: #3498db; }
-        .pin-gpio { background: #2ecc71; }
-        .pin-special { background: #f39c12; }
-        
         .animated-bg {
             position: absolute;
             width: 100%;
@@ -207,30 +174,10 @@
             100% { transform: translateX(100%); }
         }
         
-        .processing-pipeline {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 2rem 0;
-            padding: 1rem;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
-            overflow-x: auto;
-        }
-        
-        .pipeline-stage {
-            background: linear-gradient(135deg, #667db6, #0082c8);
-            padding: 1rem;
-            border-radius: 8px;
-            min-width: 120px;
-            text-align: center;
-            position: relative;
-        }
-        
-        .pipeline-arrow {
-            font-size: 2rem;
-            color: #00d2ff;
-            margin: 0 1rem;
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
+            50% { box-shadow: 0 15px 40px rgba(102,125,182,0.6); }
+            100% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
         }
     </style>
 </head>
@@ -246,8 +193,8 @@
             <div style="background: linear-gradient(45deg, #ff6b6b, #ee5a24, #ffa726); padding: 1rem 2rem; border-radius: 50px; display: inline-block; font-size: 1.2rem; font-weight: bold; color: white; box-shadow: 0 8px 25px rgba(255,107,107,0.3);">
                 ⭐ 完整整合版 - Radiant + ModelSim + OTA + 13種場景AI
             </div>
-    </div>
         </div>
+        
         <div class="status-monitor">
             <div class="status-item">
                 <div class="status-value" id="systemTemp">45.2°C</div>
@@ -327,11 +274,10 @@
         </div>
     </div>
 
-    @keyframes pulse {
-        0% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
-        50% { box-shadow: 0 15px 40px rgba(102,125,182,0.6); }
-        100% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
-    }
+    <!-- 13種場景智能識別 -->
+    <div style="margin: 2rem 0;">
+        <h2 style="text-align: center; color: #00d2ff; margin-bottom: 2rem;">🎯 13種場景智能識別</h2>
+    
     <div class="scene-grid">
         <div class="scene-card">
             <div class="scene-icon">🌳</div>
@@ -424,119 +370,9 @@
             <button class="btn" onclick="activateScene('detection')">啟動場景</button>
         </div>
     </div>
-
-    <!-- 三階段開發流程 -->
-    <div class="control-panel">
-        <h2>⚙️ 三階段開發流程</h2>
-        <div class="three-stage">
-            <div class="stage stage-1">
-                <h3>🗄️ 第一階段：大模型訓練</h3>
-                <p>基礎AI模型訓練與優化</p>
-                <button class="btn btn-success" onclick="startStage(1)">啟動訓練</button>
-                <button class="btn" onclick="monitorStage(1)">監控狀態</button>
-            </div>
-            <div class="stage stage-2">
-                <h3>🧠 第二階段：知識蒸餾</h3>
-                <p>模型壓縮與邊緣優化</p>
-                <button class="btn btn-success" onclick="startStage(2)">開始蒸餾</button>
-                <button class="btn" onclick="validateModel()">驗證模型</button>
-            </div>
-            <div class="stage stage-3">
-                <h3>🔧 第三階段：FPGA 部署</h3>
-                <p>硬體加速與實際部署</p>
-                <button class="btn btn-success" onclick="deployFPGA()">部署FPGA</button>
-                <button class="btn" onclick="testHardware()">硬體測試</button>
-            </div>
-        </div>
     </div>
 
-    <!-- 開發工具 -->
-    <div class="control-panel">
-        <h2>🛠️ 開發工具</h2>
-        <div style="text-align: center;">
-            <button class="btn" onclick="openRealDev()">▶ 實際執行開發</button>
-            <button class="btn" onclick="openGithub()">🔗 GitHub</button>
-            <button class="btn" onclick="generateTestbench()">🧪 生成 Testbench</button>
-            <button class="btn btn-danger" onclick="systemReset()">🔄 系統重置</button>
-        </div>
-    </div>
-
-    <!-- AI ISP 處理管線 -->
-    <div class="control-panel">
-        <h2>📸 AI ISP 處理管線</h2>
-        <div class="processing-pipeline">
-            <div class="pipeline-stage">
-                <strong>感測器輸入</strong><br>
-                4K@60fps<br>
-                MIPI CSI-2
-            </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="pipeline-stage">
-                <strong>ISP處理</strong><br>
-                專業級<br>
-                HDR+降噪
-            </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="pipeline-stage">
-                <strong>AI處理</strong><br>
-                場景識別<br>
-                &lt;1ms
-            </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="pipeline-stage">
-                <strong>參數調整</strong><br>
-                ISP優化<br>
-                自適應
-            </div>
-            <div class="pipeline-arrow">→</div>
-            <div class="pipeline-stage">
-                <strong>最終輸出</strong><br>
-                優化影像<br>
-                USB 3.0
-            </div>
-        </div>
-    </div>
-
-    <!-- BGA-484 晶片圖 -->
-    <div class="chip-diagram">
-        <h2>💾 AI ISP 晶片 Pinout 實體圖</h2>
-        <p><strong>型號:</strong> CTE-AI-ISP-2025 BGA-484 封裝設計配置</p>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
-            <div>
-                <h4>封裝規格</h4>
-                <ul style="text-align: left;">
-                    <li>封裝型號: BGA-484</li>
-                    <li>球間距: 0.65mm</li>
-                    <li>總計接點: 484</li>
-                    <li>晶片尺寸: 7×7mm</li>
-                </ul>
-            </div>
-            <div>
-                <h4>針腳分配</h4>
-                <ul style="text-align: left;">
-                    <li>供電接點: 120</li>
-                    <li>接地接點: 40</li>
-                    <li>MIPI接點: 12</li>
-                    <li>GPIO接點: 32</li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="pinout-grid" id="pinoutGrid">
-            <!-- Pin grid will be generated by JavaScript -->
-        </div>
-        
-        <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 2rem;">
-            <div><span class="pin pin-power"></span> 電源 (VDD)</div>
-            <div><span class="pin pin-ground"></span> 接地 (GND)</div>
-            <div><span class="pin pin-signal"></span> 訊號 (MIPI/USB)</div>
-            <div><span class="pin pin-gpio"></span> GPIO</div>
-            <div><span class="pin pin-special"></span> 特殊功能</div>
-        </div>
-    </div>
-
-    <!-- 系統日志 -->
+    <!-- 系統日誌 -->
     <div class="control-panel">
         <h2>📋 系統日誌</h2>
         <div class="log-output" id="systemLog">
@@ -549,7 +385,7 @@
     </div>
 
     <script>
-        // 系統類
+        // 系統類別整合現有的 CTEVibeSystem
         class CTEVibeSystem {
             constructor() {
                 this.scenes = {
@@ -568,37 +404,14 @@
                     detection: { name: '目標檢測', accuracy: 98.2 }
                 };
                 
-                this.currentStage = null;
-                this.initializePinout();
-                this.startStatusUpdates();
-            }
-            
-            initializePinout() {
-                const grid = document.getElementById('pinoutGrid');
-                const totalPins = 144; // 12x12 grid for visualization
+                this.systemStatus = {
+                    ota: 'ready',
+                    radiant: 'connected', 
+                    modelsim: 'licensed'
+                };
                 
-                for (let i = 0; i < totalPins; i++) {
-                    const pin = document.createElement('div');
-                    pin.className = 'pin';
-                    
-                    // Assign pin types based on position
-                    if (i % 15 < 3) pin.classList.add('pin-power');
-                    else if (i % 15 < 5) pin.classList.add('pin-ground');
-                    else if (i % 15 < 8) pin.classList.add('pin-signal');
-                    else if (i % 15 < 12) pin.classList.add('pin-gpio');
-                    else pin.classList.add('pin-special');
-                    
-                    // Add center area (AI ISP Die)
-                    const row = Math.floor(i / 12);
-                    const col = i % 12;
-                    if (row >= 4 && row <= 7 && col >= 4 && col <= 7) {
-                        pin.style.background = 'linear-gradient(45deg, #667db6, #0082c8)';
-                        pin.style.border = '2px solid #00d2ff';
-                        pin.title = 'AI ISP Die Area 7×7mm';
-                    }
-                    
-                    grid.appendChild(pin);
-                }
+                this.currentStage = null;
+                this.startStatusUpdates();
             }
             
             startStatusUpdates() {
@@ -756,6 +569,8 @@
                 document.querySelector('button[onclick="launchCTEVibe()"]').style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
             }, 3000);
         }
+        
+        // 場景啟動功能
         function activateScene(sceneType) {
             const scene = cteSystem.scenes[sceneType];
             if (scene) {
@@ -768,256 +583,15 @@
             }
         }
         
-        function startStage(stage) {
-            cteSystem.currentStage = stage;
-            const stages = {
-                1: '大模型訓練',
-                2: '知識蒸餾',
-                3: 'FPGA 部署'
-            };
-            
-            cteSystem.log(`🚀 啟動第${stage}階段: ${stages[stage]}`, 'success');
-            
-            // 模擬進度
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 20;
-                if (progress >= 100) {
-                    progress = 100;
-                    cteSystem.log(`✅ 第${stage}階段 ${stages[stage]} 完成！`, 'success');
-                    clearInterval(interval);
-                } else {
-                    cteSystem.log(`⏳ 第${stage}階段進度: ${progress.toFixed(1)}%`, 'info');
-                }
-            }, 1000);
-        }
-        
-        function monitorStage(stage) {
-            cteSystem.log(`📊 監控第${stage}階段狀態...`, 'info');
-            cteSystem.log(`💾 GPU記憶體使用: 85%`, 'warning');
-            cteSystem.log(`🌡️ 訓練溫度: 72°C`, 'info');
-            cteSystem.log(`📈 Loss值: 0.0234 (持續下降)`, 'success');
-        }
-        
-        function validateModel() {
-            cteSystem.log(`🔬 開始模型驗證...`, 'info');
-            setTimeout(() => {
-                cteSystem.log(`📏 模型大小: 24.6MB -> 8.2MB (壓縮率: 66.4%)`, 'success');
-                cteSystem.log(`⚡ 推理速度: 0.8ms (FPGA優化後)`, 'success');
-                cteSystem.log(`🎯 準確率保持: 96.3% (下降<2%)`, 'success');
-            }, 2000);
-        }
-        
-        function deployFPGA() {
-            cteSystem.log(`🔧 開始FPGA部署...`, 'info');
-            cteSystem.log(`📋 載入Radiant工具鍊...`, 'info');
-            
-            setTimeout(() => {
-                cteSystem.log(`⚡ 綜合完成 - 資源使用: LUT 78%, BRAM 65%`, 'success');
-                cteSystem.log(`🎛️ 佈局繞線完成 - 時序約束滿足`, 'success');
-                cteSystem.log(`📱 Bitstream生成完成`, 'success');
-                cteSystem.log(`🚀 FPGA配置成功！`, 'success');
-            }, 3000);
-        }
-        
-        function testHardware() {
-            cteSystem.log(`🧪 開始硬體測試...`, 'info');
-            
-            const tests = [
-                '4K@60fps 影像處理測試',
-                'MIPI CSI-2 介面測試',
-                'AI推理延遲測試',
-                '溫度負載測試',
-                '長時間穩定性測試'
-            ];
-            
-            tests.forEach((test, index) => {
-                setTimeout(() => {
-                    const result = Math.random() > 0.1 ? '✅ PASS' : '❌ FAIL';
-                    cteSystem.log(`${test}: ${result}`, result.includes('✅') ? 'success' : 'error');
-                }, (index + 1) * 1000);
-            });
-        }
-        
-        function openRealDev() {
-            cteSystem.log(`🛠️ 啟動實際執行開發環境...`, 'info');
-            cteSystem.log(`🔗 連接至開發伺服器...`, 'info');
-            cteSystem.log(`📝 載入Verilog HDL編輯器...`, 'success');
-            cteSystem.log(`🎛️ ModelSim仿真器就緒`, 'success');
-        }
-        
-        function openGithub() {
-            cteSystem.log(`🔗 打開GitHub專案頁面...`, 'info');
-            window.open('https://github.com/Benisonpin/ai-agent-control-center', '_blank');
-        }
-        
-        function generateTestbench() {
-            cteSystem.log(`🧪 自動生成Testbench...`, 'info');
-            cteSystem.log(`📝 生成時鐘信號發生器`, 'info');
-            cteSystem.log(`📊 生成測試向量`, 'info');
-            
-            setTimeout(() => {
-                cteSystem.log(`✅ ISP_testbench.v 生成完成`, 'success');
-                cteSystem.log(`✅ AI_processor_tb.v 生成完成`, 'success');
-                cteSystem.log(`📋 測試案例: 1000+ vectors`, 'success');
-            }, 2000);
-        }
-        
-        function systemReset() {
-            cteSystem.log(`🔄 執行系統重置...`, 'warning');
-            cteSystem.log(`⏹️ 停止所有處理程序`, 'warning');
-            cteSystem.log(`💾 保存當前配置`, 'info');
-            
-            setTimeout(() => {
-                document.getElementById('systemLog').innerHTML = `
-                    <div style="color: #00ff00">[${new Date().toLocaleTimeString()}] 系統重置完成</div>
-                    <div style="color: #00ff00">[${new Date().toLocaleTimeString()}] AI ISP 晶片重新初始化</div>
-                    <div style="color: #00ff00">[${new Date().toLocaleTimeString()}] 所有場景模型已重載</div>
-                    <div style="color: #00ff00">[${new Date().toLocaleTimeString()}] 系統待命中，等待指令...</div>
-                `;
-            }, 2000);
-        }
-        
-        // ROS 整合功能
-        function connectROS() {
-            cteSystem.log(`🤖 連接到ROS2系統...`, 'info');
-            cteSystem.log(`📡 啟動 cte_camera_node`, 'info');
-            cteSystem.log(`🔗 建立 /cte/image_enhanced topic`, 'success');
-            cteSystem.log(`⚙️ 參數服務器就緒`, 'success');
-        }
-        
-        function startDroneIntegration() {
-            cteSystem.log(`🚁 啟動無人機整合模式...`, 'info');
-            cteSystem.log(`📸 4K@60fps 即時串流`, 'success');
-            cteSystem.log(`🎯 目標追蹤算法啟動`, 'success');
-            cteSystem.log(`🚧 障礙物偵測就緒`, 'success');
-            cteSystem.log(`🌙 夜視模式可用`, 'info');
-        }
-        
-        function runPerformanceBench() {
-            cteSystem.log(`⚡ 開始效能基準測試...`, 'info');
-            
-            const benchmarks = [
-                { test: 'ISP處理延遲', result: '0.8ms', status: 'success' },
-                { test: 'AI推理速度', result: '1.2ms', status: 'success' },
-                { test: '功耗效率', result: '2.1W', status: 'success' },
-                { test: '溫度控制', result: '47.3°C', status: 'success' },
-                { test: '記憶體佔用', result: '128MB', status: 'warning' }
-            ];
-            
-            benchmarks.forEach((bench, index) => {
-                setTimeout(() => {
-                    cteSystem.log(`📊 ${bench.test}: ${bench.result}`, bench.status);
-                }, (index + 1) * 800);
-            });
-        }
-        
-        // 自動化功能
-        function autoOptimization() {
-            cteSystem.log(`🤖 啟動自動優化系統...`, 'info');
-            cteSystem.log(`📊 分析當前場景特徵`, 'info');
-            cteSystem.log(`⚙️ 動態調整ISP參數`, 'success');
-            cteSystem.log(`🎯 優化完成 - 影像品質提升15%`, 'success');
-        }
-        
         // 初始化完成提示
-        cteSystem.log(`🎵 CTE Vibe Code 系統啟動完成`, 'success');
-        cteSystem.log(`🔧 支援13種場景智能識別`, 'info');
-        cteSystem.log(`⚡ AI ISP晶片就緒 - BGA-484封裝`, 'info');
-        cteSystem.log(`🚀 三階段開發流程已載入`, 'info');
-        cteSystem.log(`📡 等待ROS整合指令...`, 'info');
+        setTimeout(() => {
+            cteSystem.log(`🎵 CTE Vibe Code 系統啟動完成`, 'success');
+            cteSystem.log(`🔧 支援13種場景智能識別`, 'info');
+            cteSystem.log(`⚡ AI ISP晶片就緒 - BGA-484封裝`, 'info');
+            cteSystem.log(`🚀 三大核心工具已整合`, 'info');
+            cteSystem.log(`📡 等待開發指令...`, 'info');
+        }, 1000);
     </script>
-    
-    <!-- 額外控制面板 -->
-    <div class="control-panel">
-        <h2>🚁 ROS & 無人機整合</h2>
-        <div style="text-align: center; margin: 1rem 0;">
-            <button class="btn" onclick="connectROS()">🤖 連接ROS2</button>
-            <button class="btn" onclick="startDroneIntegration()">🚁 無人機整合</button>
-            <button class="btn" onclick="runPerformanceBench()">⚡ 效能測試</button>
-            <button class="btn" onclick="autoOptimization()">🤖 自動優化</button>
-        </div>
-        
-        <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
-            <h4>🔧 2天快速整合流程</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
-                <div>
-                    <strong>Day 1 上午:</strong><br>
-                    • 硬體連接與驅動安裝<br>
-                    • ROS2環境配置<br>
-                    • 基礎功能測試
-                </div>
-                <div>
-                    <strong>Day 1 下午:</strong><br>
-                    • ISP參數調整<br>
-                    • 場景識別驗證<br>
-                    • AI模型載入
-                </div>
-                <div>
-                    <strong>Day 2 上午:</strong><br>
-                    • 無人機系統整合<br>
-                    • 飛行控制測試<br>
-                    • 即時影像串流
-                </div>
-                <div>
-                    <strong>Day 2 下午:</strong><br>
-                    • 效能優化調整<br>
-                    • 實際場景測試<br>
-                    • 系統驗收完成
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 技術規格面板 -->
-    <div class="control-panel">
-        <h2>📋 技術規格總覽</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
-            <div style="background: rgba(52,152,219,0.1); padding: 1rem; border-radius: 8px; border: 1px solid #3498db;">
-                <h4>🔧 硬體規格</h4>
-                <ul style="text-align: left; margin: 1rem 0;">
-                    <li>封裝: BGA-484 (7×7mm)</li>
-                    <li>製程: TSMC 28nm</li>
-                    <li>ARM Cortex A55/A78 雙核</li>
-                    <li>AI NPU: 2 TOPS @INT8</li>
-                    <li>記憶體: 2GB LPDDR4</li>
-                </ul>
-            </div>
-            
-            <div style="background: rgba(46,204,113,0.1); padding: 1rem; border-radius: 8px; border: 1px solid #2ecc71;">
-                <h4>📸 ISP 功能</h4>
-                <ul style="text-align: left; margin: 1rem 0;">
-                    <li>最高解析度: 4K@60fps</li>
-                    <li>HDR處理: 支援</li>
-                    <li>降噪算法: AI增強</li>
-                    <li>自動對焦: 雷射+相位</li>
-                    <li>色彩校正: 專業級</li>
-                </ul>
-            </div>
-            
-            <div style="background: rgba(230,126,34,0.1); padding: 1rem; border-radius: 8px; border: 1px solid #e67e22;">
-                <h4>🤖 AI 功能</h4>
-                <ul style="text-align: left; margin: 1rem 0;">
-                    <li>場景識別: 13大類別</li>
-                    <li>目標檢測: YOLO v8</li>
-                    <li>追蹤算法: DeepSORT</li>
-                    <li>夜視增強: 低光AI</li>
-                    <li>邊緣計算: 即時處理</li>
-                </ul>
-            </div>
-            
-            <div style="background: rgba(155,89,182,0.1); padding: 1rem; border-radius: 8px; border: 1px solid #9b59b6;">
-                <h4>🔌 介面規格</h4>
-                <ul style="text-align: left; margin: 1rem 0;">
-                    <li>MIPI CSI-2: 4-lane</li>
-                    <li>USB 3.0: 高速傳輸</li>
-                    <li>I2C/SPI: 感測器控制</li>
-                    <li>UART: 調試介面</li>
-                    <li>GPIO: 16個可配置</li>
-                </ul>
-            </div>
-        </div>
-    </div>
     
     <!-- Footer -->
     <div style="text-align: center; padding: 2rem; background: rgba(0,0,0,0.5); margin-top: 2rem;">
@@ -1030,9 +604,6 @@
             © 2024 CTE Technology. 專為無人機AI應用設計的完整開發解決方案
         </p>
     </div>
-    
-</body>
-</html>
     
 </body>
 </html>
