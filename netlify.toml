@@ -1,26 +1,7 @@
 [build]
   publish = "public"
-  functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "18"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/*"
+  to = "/index.html"
   status = 200
-
-[[redirects]]
-  from = "/cloud-shell"
-  to = "https://shell.cloud.google.com/?cloudshell_git_repo=https://github.com/Benisonpin/ai-agent-control-center.git&cloudshell_tutorial=README.md&cloudshell_workspace=."
-  status = 302
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-
-[context.production]
-  environment = { NODE_ENV = "production" }

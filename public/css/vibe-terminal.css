@@ -1,0 +1,182 @@
+/* CTE Vibe Terminal 樣式 */
+
+.cte-vibe-terminal {
+    background: rgba(0, 0, 0, 0.9);
+    border-radius: 12px;
+    margin: 2rem 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.terminal-header {
+    background: linear-gradient(135deg, #2d3748, #4a5568);
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.terminal-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.terminal-dot.red { background: #ff5f56; }
+.terminal-dot.yellow { background: #ffbd2e; }
+.terminal-dot.green { background: #27ca3f; }
+
+.terminal-title {
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.terminal-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #a0aec0;
+    font-size: 0.8rem;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.connecting {
+    background: #fbbf24;
+    animation: pulse 1.5s infinite;
+}
+
+.status-indicator.connected {
+    background: #10b981;
+}
+
+.status-indicator.error {
+    background: #ef4444;
+}
+
+.terminal-body {
+    padding: 1rem;
+    min-height: 400px;
+    background: #1a202c;
+}
+
+.terminal-output {
+    color: #e2e8f0;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.welcome-message {
+    color: #4ade80;
+    margin-bottom: 1rem;
+}
+
+.terminal-input-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.terminal-prompt {
+    color: #34d399;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-weight: 600;
+}
+
+.terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: #e2e8f0;
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.9rem;
+    outline: none;
+    padding: 0.5rem 0;
+}
+
+.terminal-input::placeholder {
+    color: #6b7280;
+}
+
+.quick-actions {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.quick-btn {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.quick-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.command-output {
+    margin: 0.5rem 0;
+}
+
+.command-success {
+    color: #10b981;
+}
+
+.command-error {
+    color: #ef4444;
+}
+
+.command-info {
+    color: #3b82f6;
+}
+
+.command-warning {
+    color: #f59e0b;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .terminal-header {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+    
+    .quick-actions {
+        justify-content: center;
+    }
+    
+    .quick-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
