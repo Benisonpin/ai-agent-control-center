@@ -1,37 +1,37 @@
 {
   "name": "cte-vibe-code",
-  "version": "2.0.0",
-  "description": "AI Image Drone Chip 開發平台 - 完整的軟硬體整合解決方案",
-  "main": "public/index.html",
+  "version": "2.1.3",
+  "description": "CTE Vibe Code - AI Image Drone Chip Development Platform",
+  "main": "index.js",
   "scripts": {
-    "dev": "npx live-server public --port=8080",
-    "build": "echo 'Static build - no build process needed'",
-    "deploy": "netlify deploy --prod --dir=public",
-    "preview": "netlify deploy --dir=public"
+    "build": "echo 'Static site build complete'",
+    "dev": "netlify dev",
+    "start": "netlify dev",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "keywords": [
     "AI",
+    "FPGA", 
+    "Drone",
     "ISP",
-    "SoC",
-    "FPGA",
-    "Radiant",
-    "ModelSim", 
-    "OTA",
-    "無人機",
-    "場景識別",
-    "drone",
-    "computer-vision"
+    "Computer Vision",
+    "Edge AI",
+    "Machine Learning",
+    "GPU Training"
   ],
-  "author": "CTE Vision Technology",
+  "author": "CTE Technology",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/Benisonpin/ai-agent-control-center.git"
-  },
-  "devDependencies": {
-    "live-server": "^1.2.2"
-  },
-  "engines": {
-    "node": ">=16.0.0"
   }
 }
