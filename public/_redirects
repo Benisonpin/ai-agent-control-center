@@ -1,5 +1,15 @@
 # API redirects
 /api/* /.netlify/functions/:splat 200
 
+# Legacy API support
+/v1/api/* /.netlify/functions/:splat 200
+
+# Admin redirects
+/admin/* /admin/index.html 200
+/dashboard/* /admin/index.html 200
+
 # SPA fallback
 /* /index.html 200
+
+# Force HTTPS
+http://cte-vibe-code.netlify.app/* https://cte-vibe-code.netlify.app/:splat 301!

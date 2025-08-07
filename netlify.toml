@@ -25,3 +25,24 @@
 
 [functions]
   directory = "netlify/functions"
+
+# Claid API 函數配置
+[functions.claid-enhance]
+  timeout = 30
+  memory = 1024
+
+[[headers]]
+  for = "/.netlify/functions/claid-*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+
+# 編輯器函數配置
+[functions.file-manager]
+ timeout = 30
+ memory = 1024
+
+[functions.code-runner]
+ timeout = 60
+ memory = 2048

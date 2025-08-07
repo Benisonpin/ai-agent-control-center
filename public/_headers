@@ -3,9 +3,24 @@
   X-XSS-Protection: 1; mode=block
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: https:; font-src 'self' data: https:;
+  Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss:;
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
 
 /api/*
   Access-Control-Allow-Origin: *
-  Access-Control-Allow-Headers: Content-Type
-  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Authorization
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS
+
+# Cache static assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=2592000
+
+# Don't cache API responses
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/.netlify/functions/*
+  Cache-Control: no-cache, no-store, must-revalidate
