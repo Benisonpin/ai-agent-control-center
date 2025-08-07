@@ -1,57 +1,18 @@
 [build]
   publish = "public"
-  command = "echo 'Static site build complete'"
+  functions = "netlify/functions"
 
-[build.environment]
-  NODE_VERSION = "18"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[functions]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[functions]
-  directory = "netlify/functions"
-
-# Claid API 函數配置
-[functions.claid-enhance]
-  timeout = 30
-  memory = 1024
-
 [[headers]]
-  for = "/.netlify/functions/claid-*"
+  for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
     Access-Control-Allow-Methods = "GET, POST, OPTIONS"
-
-# 編輯器函數配置
-[functions.file-manager]
- timeout = 30
- memory = 1024
-
-[functions.code-runner]
- timeout = 60
- memory = 2048
-
-# 編輯器函數配置
-[functions.file-manager]
- timeout = 30
- memory = 1024
-
-[functions.code-runner]
- timeout = 60
- memory = 2048
+    Access-Control-Allow-Headers = "Content-Type"
