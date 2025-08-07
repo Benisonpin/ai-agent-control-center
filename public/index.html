@@ -284,6 +284,117 @@
     </div>
     
     <!-- 線上編輯器面板 -->
+   </div>
+   
+   <!-- Vibe Coding 2.0 自然語言代碼生成 -->
+   <div class="control-panel">
+       <h2>🤖 Vibe Coding 2.0 自然語言代碼生成</h2>
+       <p style="text-align: center; color: #bdc3c7; margin-bottom: 2rem;">用自然語言描述需求，AI 自動生成 Verilog、Python、JavaScript 代碼</p>
+       
+       <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin: 2rem 0;">
+           
+           <!-- 自然語言輸入區 -->
+           <div style="background: rgba(0,0,0,0.8); border-radius: 15px; padding: 2rem;">
+               <h3 style="color: #00d2ff; margin-bottom: 1rem;">💬 自然語言輸入</h3>
+               
+               <textarea id="naturalLanguageInput" placeholder="用自然語言描述您的需求，例如：
+- 創建一個SPI控制器模組
+- 寫一個YOLO訓練腳本
+- 生成I2C通信協議
+- 製作數據增強程序
+- 建立UART串口發送器" style="width: 100%; height: 120px; background: #1e1e1e; color: #d4d4d4; border: 1px solid #444; padding: 1rem; border-radius: 8px; font-family: Consolas, monospace; resize: vertical; font-size: 14px;"></textarea>
+               
+               <div style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+                   <select id="targetLanguage" style="padding: 0.7rem; background: #2d2d30; color: #cccccc; border: 1px solid #444; border-radius: 5px; font-size: 0.9rem;">
+                       <option value="verilog">🔧 Verilog (FPGA)</option>
+                       <option value="python">🐍 Python (AI/ML)</option>
+                       <option value="javascript">🟨 JavaScript (前端)</option>
+                       <option value="cpp">🔵 C++ (嵌入式)</option>
+                       <option value="yaml">⚙️ YAML (配置)</option>
+                   </select>
+                   
+                   <select id="complexityLevel" style="padding: 0.7rem; background: #2d2d30; color: #cccccc; border: 1px solid #444; border-radius: 5px; font-size: 0.9rem;">
+                       <option value="simple">簡單 (100行內)</option>
+                       <option value="medium">中等 (100-300行)</option>
+                       <option value="complex">複雜 (300行以上)</option>
+                   </select>
+               </div>
+               
+               <div style="text-align: center;">
+                   <button class="btn" onclick="generateAICode()" style="background: linear-gradient(45deg, #ff6b35, #f7931e); padding: 1rem 2rem; font-size: 1.1rem; border-radius: 10px;">✨ AI 生成代碼</button>
+                   <button class="btn" onclick="insertToEditor()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); margin-left: 0.5rem;">📝 插入編輯器</button>
+               </div>
+           </div>
+           
+           <!-- 生成示例和幫助 -->
+           <div style="background: rgba(0,0,0,0.6); border-radius: 15px; padding: 1.5rem;">
+               <h4 style="color: #00d2ff; margin-bottom: 1rem;">💡 示例提示</h4>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #f39c12;">Verilog FPGA:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>創建SPI主控制器</li>
+                       <li>設計I2C從設備介面</li>
+                       <li>實現UART串口通信</li>
+                       <li>製作PWM信號產生器</li>
+                   </ul>
+               </div>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #e74c3c;">Python AI:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>YOLO物件檢測訓練</li>
+                       <li>13場景分類模型</li>
+                       <li>數據增強腳本</li>
+                       <li>GPU性能監控</li>
+                   </ul>
+               </div>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #27ae60;">JavaScript:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>API客戶端封裝</li>
+                       <li>即時數據監控</li>
+                       <li>圖表視覺化</li>
+                       <li>WebSocket通信</li>
+                   </ul>
+               </div>
+               
+               <div style="background: rgba(255,193,7,0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #ffc107;">
+                   <strong style="color: #ffc107;">🎯 使用技巧:</strong>
+                   <p style="color: #bdc3c7; font-size: 0.8rem; margin: 0.5rem 0;">描述越詳細，生成的代碼越精確。包含功能需求、介面規格、性能要求等資訊。</p>
+               </div>
+           </div>
+       </div>
+       
+       <!-- 生成結果顯示 -->
+       <div id="aiGeneratedResult" style="background: rgba(0,0,0,0.9); border-radius: 15px; padding: 2rem; margin-top: 2rem; display: none;">
+           <h3 style="color: #00d2ff; margin-bottom: 1rem;">🎉 AI 生成結果</h3>
+           
+           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+               <!-- 生成的代碼 -->
+               <div>
+                   <div style="background: #2d2d30; padding: 0.8rem; border-radius: 8px 8px 0 0; border-bottom: 1px solid #444;">
+                       <span style="color: #cccccc; font-weight: bold;" id="generatedFileName">generated_code.v</span>
+                       <button onclick="copyToClipboard()" style="float: right; background: #007acc; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">📋 複製</button>
+                   </div>
+                   <textarea id="generatedCodeDisplay" readonly style="width: 100%; height: 400px; background: #1e1e1e; color: #d4d4d4; border: none; padding: 1rem; font-family: Consolas, Monaco, monospace; font-size: 13px; line-height: 1.4; resize: vertical; border-radius: 0 0 8px 8px;"></textarea>
+               </div>
+               
+               <!-- 分析結果 -->
+               <div>
+                   <h4 style="color: #4ecdc4; margin-bottom: 1rem;">📊 代碼分析</h4>
+                   <div id="codeAnalysis" style="color: #bdc3c7; font-size: 0.9rem;">
+                       <!-- 動態填充 -->
+                   </div>
+                   
+                   <h4 style="color: #f39c12; margin: 1.5rem 0 1rem;">💡 建議</h4>
+                   <div id="codeSuggestions" style="color: #bdc3c7; font-size: 0.9rem;">
+                       <!-- 動態填充 -->
+                   </div>
+               </div>
+           </div>
+       </div>
     <div class="control-panel">
         <h2>💻 VS Code 線上編輯器</h2>
         <div style="display: grid; grid-template-columns: 300px 1fr; gap: 1rem; height: 600px; margin: 2rem 0;">
@@ -345,6 +456,117 @@
     </div>
     
     <!-- 線上編輯器面板 -->
+   </div>
+   
+   <!-- Vibe Coding 2.0 自然語言代碼生成 -->
+   <div class="control-panel">
+       <h2>🤖 Vibe Coding 2.0 自然語言代碼生成</h2>
+       <p style="text-align: center; color: #bdc3c7; margin-bottom: 2rem;">用自然語言描述需求，AI 自動生成 Verilog、Python、JavaScript 代碼</p>
+       
+       <div style="display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin: 2rem 0;">
+           
+           <!-- 自然語言輸入區 -->
+           <div style="background: rgba(0,0,0,0.8); border-radius: 15px; padding: 2rem;">
+               <h3 style="color: #00d2ff; margin-bottom: 1rem;">💬 自然語言輸入</h3>
+               
+               <textarea id="naturalLanguageInput" placeholder="用自然語言描述您的需求，例如：
+- 創建一個SPI控制器模組
+- 寫一個YOLO訓練腳本
+- 生成I2C通信協議
+- 製作數據增強程序
+- 建立UART串口發送器" style="width: 100%; height: 120px; background: #1e1e1e; color: #d4d4d4; border: 1px solid #444; padding: 1rem; border-radius: 8px; font-family: Consolas, monospace; resize: vertical; font-size: 14px;"></textarea>
+               
+               <div style="margin: 1rem 0; display: flex; gap: 1rem; align-items: center;">
+                   <select id="targetLanguage" style="padding: 0.7rem; background: #2d2d30; color: #cccccc; border: 1px solid #444; border-radius: 5px; font-size: 0.9rem;">
+                       <option value="verilog">🔧 Verilog (FPGA)</option>
+                       <option value="python">🐍 Python (AI/ML)</option>
+                       <option value="javascript">🟨 JavaScript (前端)</option>
+                       <option value="cpp">🔵 C++ (嵌入式)</option>
+                       <option value="yaml">⚙️ YAML (配置)</option>
+                   </select>
+                   
+                   <select id="complexityLevel" style="padding: 0.7rem; background: #2d2d30; color: #cccccc; border: 1px solid #444; border-radius: 5px; font-size: 0.9rem;">
+                       <option value="simple">簡單 (100行內)</option>
+                       <option value="medium">中等 (100-300行)</option>
+                       <option value="complex">複雜 (300行以上)</option>
+                   </select>
+               </div>
+               
+               <div style="text-align: center;">
+                   <button class="btn" onclick="generateAICode()" style="background: linear-gradient(45deg, #ff6b35, #f7931e); padding: 1rem 2rem; font-size: 1.1rem; border-radius: 10px;">✨ AI 生成代碼</button>
+                   <button class="btn" onclick="insertToEditor()" style="background: linear-gradient(45deg, #4ecdc4, #44a08d); margin-left: 0.5rem;">📝 插入編輯器</button>
+               </div>
+           </div>
+           
+           <!-- 生成示例和幫助 -->
+           <div style="background: rgba(0,0,0,0.6); border-radius: 15px; padding: 1.5rem;">
+               <h4 style="color: #00d2ff; margin-bottom: 1rem;">💡 示例提示</h4>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #f39c12;">Verilog FPGA:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>創建SPI主控制器</li>
+                       <li>設計I2C從設備介面</li>
+                       <li>實現UART串口通信</li>
+                       <li>製作PWM信號產生器</li>
+                   </ul>
+               </div>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #e74c3c;">Python AI:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>YOLO物件檢測訓練</li>
+                       <li>13場景分類模型</li>
+                       <li>數據增強腳本</li>
+                       <li>GPU性能監控</li>
+                   </ul>
+               </div>
+               
+               <div style="margin-bottom: 1rem;">
+                   <strong style="color: #27ae60;">JavaScript:</strong>
+                   <ul style="color: #bdc3c7; font-size: 0.85rem; margin: 0.5rem 0; padding-left: 1rem;">
+                       <li>API客戶端封裝</li>
+                       <li>即時數據監控</li>
+                       <li>圖表視覺化</li>
+                       <li>WebSocket通信</li>
+                   </ul>
+               </div>
+               
+               <div style="background: rgba(255,193,7,0.1); padding: 1rem; border-radius: 8px; border-left: 4px solid #ffc107;">
+                   <strong style="color: #ffc107;">🎯 使用技巧:</strong>
+                   <p style="color: #bdc3c7; font-size: 0.8rem; margin: 0.5rem 0;">描述越詳細，生成的代碼越精確。包含功能需求、介面規格、性能要求等資訊。</p>
+               </div>
+           </div>
+       </div>
+       
+       <!-- 生成結果顯示 -->
+       <div id="aiGeneratedResult" style="background: rgba(0,0,0,0.9); border-radius: 15px; padding: 2rem; margin-top: 2rem; display: none;">
+           <h3 style="color: #00d2ff; margin-bottom: 1rem;">🎉 AI 生成結果</h3>
+           
+           <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+               <!-- 生成的代碼 -->
+               <div>
+                   <div style="background: #2d2d30; padding: 0.8rem; border-radius: 8px 8px 0 0; border-bottom: 1px solid #444;">
+                       <span style="color: #cccccc; font-weight: bold;" id="generatedFileName">generated_code.v</span>
+                       <button onclick="copyToClipboard()" style="float: right; background: #007acc; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">📋 複製</button>
+                   </div>
+                   <textarea id="generatedCodeDisplay" readonly style="width: 100%; height: 400px; background: #1e1e1e; color: #d4d4d4; border: none; padding: 1rem; font-family: Consolas, Monaco, monospace; font-size: 13px; line-height: 1.4; resize: vertical; border-radius: 0 0 8px 8px;"></textarea>
+               </div>
+               
+               <!-- 分析結果 -->
+               <div>
+                   <h4 style="color: #4ecdc4; margin-bottom: 1rem;">📊 代碼分析</h4>
+                   <div id="codeAnalysis" style="color: #bdc3c7; font-size: 0.9rem;">
+                       <!-- 動態填充 -->
+                   </div>
+                   
+                   <h4 style="color: #f39c12; margin: 1.5rem 0 1rem;">💡 建議</h4>
+                   <div id="codeSuggestions" style="color: #bdc3c7; font-size: 0.9rem;">
+                       <!-- 動態填充 -->
+                   </div>
+               </div>
+           </div>
+       </div>
     <div class="control-panel">
         <h2>💻 VS Code 線上編輯器</h2>
         <div style="display: grid; grid-template-columns: 300px 1fr; gap: 1rem; height: 600px; margin: 2rem 0;">
