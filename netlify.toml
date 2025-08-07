@@ -46,3 +46,12 @@
 [functions.code-runner]
  timeout = 60
  memory = 2048
+
+# 編輯器函數配置
+[functions.file-manager]
+ timeout = 30
+ memory = 1024
+
+[functions.code-runner]
+ timeout = 60
+ memory = 2048

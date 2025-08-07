@@ -342,6 +342,67 @@
             <button class="btn" onclick="findAndReplace()" style="background: linear-gradient(45deg, #fd7e14, #e8590c);">🔍 尋找替換</button>
             <button class="btn" onclick="showShortcuts()" style="background: linear-gradient(45deg, #20c997, #17a2b8);">⌨️ 快捷鍵</button>
         </div>
+    </div>
+    
+    <!-- 線上編輯器面板 -->
+    <div class="control-panel">
+        <h2>💻 VS Code 線上編輯器</h2>
+        <div style="display: grid; grid-template-columns: 300px 1fr; gap: 1rem; height: 600px; margin: 2rem 0;">
+            
+            <!-- 文件瀏覽器 -->
+            <div style="background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden;">
+                <div style="background: #2d2d30; padding: 0.8rem; border-bottom: 1px solid #444;">
+                    <h4 style="color: #cccccc; margin: 0;">📁 檔案總管</h4>
+                </div>
+                <div id="fileExplorer" style="padding: 1rem; height: calc(100% - 60px); overflow-y: auto; color: #cccccc; font-family: Consolas, monospace; font-size: 0.9rem;">
+                    載入中...
+                </div>
+            </div>
+            
+            <!-- 編輯器區域 -->
+            <div style="background: rgba(0,0,0,0.9); border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
+                
+                <!-- 標籤欄 -->
+                <div style="background: #2d2d30; padding: 0.5rem; border-bottom: 1px solid #444; display: flex; align-items: center;">
+                    <div id="editorTabs" style="display: flex; gap: 0.5rem; flex: 1;">
+                        <!-- 動態標籤 -->
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn" onclick="saveCurrentFile()" style="background: #007acc; padding: 0.3rem 0.8rem; font-size: 0.8rem;">💾 保存</button>
+                        <button class="btn" onclick="runCurrentFile()" style="background: #28a745; padding: 0.3rem 0.8rem; font-size: 0.8rem;">▶️ 執行</button>
+                    </div>
+                </div>
+                
+                <!-- 編輯器主體 -->
+                <div style="flex: 1; position: relative;">
+                    <textarea id="codeEditor" style="width: 100%; height: 400px; background: #1e1e1e; color: #d4d4d4; border: none; padding: 1rem; font-family: Consolas, Monaco, monospace; font-size: 14px; line-height: 1.5; resize: none; outline: none;" placeholder="選擇檔案開始編輯..."></textarea>
+                </div>
+                
+                <!-- 輸出終端 -->
+                <div style="background: #0c0c0c; border-top: 1px solid #444; height: 150px; overflow-y: auto;">
+                    <div style="background: #333; padding: 0.5rem; border-bottom: 1px solid #555;">
+                        <span style="color: #cccccc; font-size: 0.9rem;">🖥️ 終端輸出</span>
+                        <button onclick="clearTerminal()" style="float: right; background: none; border: none; color: #888; cursor: pointer;">🗑️</button>
+                    </div>
+                    <div id="terminalOutput" style="padding: 1rem; color: #00ff41; font-family: Consolas, monospace; font-size: 0.85rem; white-space: pre-wrap;">
+                        CTE Vibe Code 線上編輯器已就緒
+                        支援語言: Verilog, Python, JavaScript, C/C++
+                        輸入 help 查看可用命令
+                        
+                        user@cte-vibe-code:~$ 
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 編輯器功能按鈕 -->
+        <div style="text-align: center; margin: 1rem 0;">
+            <button class="btn" onclick="createNewFile()" style="background: linear-gradient(45deg, #007acc, #005a9e);">📄 新建檔案</button>
+            <button class="btn" onclick="openProject()" style="background: linear-gradient(45deg, #28a745, #1e7e34);">📁 開啟專案</button>
+            <button class="btn" onclick="formatCode()" style="background: linear-gradient(45deg, #6f42c1, #5a32a3);">🎨 格式化</button>
+            <button class="btn" onclick="findAndReplace()" style="background: linear-gradient(45deg, #fd7e14, #e8590c);">🔍 尋找替換</button>
+            <button class="btn" onclick="showShortcuts()" style="background: linear-gradient(45deg, #20c997, #17a2b8);">⌨️ 快捷鍵</button>
+        </div>
     <div class="control-panel">
         <h2>🎨 Claid AI 圖像增強</h2>
         <div style="text-align: center; margin: 2rem 0;">
