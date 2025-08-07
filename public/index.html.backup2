@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CTE Vibe Code - AI Image Drone Chip 開發平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, #1e3c72, #2a5298, #667db6);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem 0;
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .scene-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .scene-card {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .scene-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,210,255,0.3);
+            border-color: #00d2ff;
+        }
+        
+        .scene-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .accuracy {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff88;
+            margin: 1rem 0;
+        }
+        
+        .control-panel {
+            background: rgba(0,0,0,0.8);
+            padding: 2rem;
+            margin: 2rem;
+            border-radius: 20px;
+            border: 1px solid #00d2ff;
+        }
+        
+        .three-stage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stage {
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .stage-1 { background: rgba(52,152,219,0.2); border: 1px solid #3498db; }
+        .stage-2 { background: rgba(46,204,113,0.2); border: 1px solid #2ecc71; }
+        .stage-3 { background: rgba(230,126,34,0.2); border: 1px solid #e67e22; }
+        
+        .btn {
+            background: linear-gradient(45deg, #667db6, #0082c8);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            margin: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            background: linear-gradient(45deg, #0082c8, #667db6);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,130,200,0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+        
+        .status-monitor {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .status-item {
+            background: rgba(0,0,0,0.5);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d2ff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .log-output {
+            background: #000;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 8px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            margin: 1rem 0;
+            border: 1px solid #333;
+        }
+        
+        .animated-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background: linear-gradient(45deg, transparent, #00d2ff, transparent);
+            animation: slide 3s infinite;
+        }
+        
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
+            50% { box-shadow: 0 15px 40px rgba(102,125,182,0.6); }
+            100% { box-shadow: 0 10px 30px rgba(102,125,182,0.4); }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="header">
+        <h1>🔧 CTE Vibe Code</h1>
+        <p>AI Image Drone Chip 開發平台 - 完整的軟硬體整合解決方案</p>
+        
+        <!-- 完整整合版標語 -->
+        <div style="margin: 2rem 0;">
+            <div style="background: linear-gradient(45deg, #ff6b6b, #ee5a24, #ffa726); padding: 1rem 2rem; border-radius: 50px; display: inline-block; font-size: 1.2rem; font-weight: bold; color: white; box-shadow: 0 8px 25px rgba(255,107,107,0.3);">
+                ⭐ 完整整合版 - Radiant + ModelSim + OTA + 13種場景AI
+            </div>
+        </div>
+        
+        <div class="status-monitor">
+            <div class="status-item">
+                <div class="status-value" id="systemTemp">45.2°C</div>
+                <div>晶片溫度</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="processingRate">4K@60fps</div>
+                <div>處理效能</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="powerConsume">2.5W</div>
+                <div>功耗</div>
+            </div>
+            <div class="status-item">
+                <div class="status-value" id="latency">&lt;1ms</div>
+                <div>延遲</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心工具整合面板 -->
+    <div class="control-panel">
+        <h2>🛠️ 核心工具整合</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; margin: 2rem 0;">
+            
+            <!-- OTA 更新系統 -->
+            <div style="background: rgba(52,152,219,0.15); border: 2px solid #3498db; border-radius: 20px; padding: 2rem; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #3498db, #2980b9);"></div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📡</div>
+                <h3 style="color: #3498db; margin-bottom: 1rem;">OTA 更新系統</h3>
+                <p style="color: #bdc3c7; margin-bottom: 1.5rem; font-size: 0.95rem;">Over-The-Air 模型更新，支援13種場景AI模型的熱插拔部署</p>
+                <div style="margin: 1rem 0;">
+                    <button class="btn" onclick="executeOTA('check')" style="background: linear-gradient(45deg, #3498db, #2980b9);">🔍 檢查更新</button>
+                    <button class="btn" onclick="executeOTA('deploy')" style="background: linear-gradient(45deg, #27ae60, #2ecc71);">🚀 部署模型</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                    <div style="color: #2ecc71; font-size: 0.9rem;" id="otaStatus">✅ 系統就緒，13個AI模型已載入</div>
+                </div>
+            </div>
+
+            <!-- Lattice Radiant FPGA -->
+            <div style="background: rgba(230,126,34,0.15); border: 2px solid #e67e22; border-radius: 20px; padding: 2rem; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #e67e22, #d35400);"></div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔧</div>
+                <h3 style="color: #e67e22; margin-bottom: 1rem;">Lattice Radiant FPGA</h3>
+                <p style="color: #bdc3c7; margin-bottom: 1.5rem; font-size: 0.95rem;">完整的FPGA開發工具鏈，專為AI ISP SoC設計優化</p>
+                <div style="margin: 1rem 0;">
+                    <button class="btn" onclick="runRadiant('synthesize')" style="background: linear-gradient(45deg, #e67e22, #d35400);">⚡ 邏輯綜合</button>
+                    <button class="btn" onclick="runRadiant('place')" style="background: linear-gradient(45deg, #f39c12, #e67e22);">📍 佈局繞線</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                    <div style="color: #f39c12; font-size: 0.9rem;" id="radiantStatus">⚙️ Radiant 2023.2 就緒，LUT使用率: 76%</div>
+                </div>
+            </div>
+
+            <!-- ModelSim 模擬環境 -->
+            <div style="background: rgba(46,204,113,0.15); border: 2px solid #2ecc71; border-radius: 20px; padding: 2rem; text-align: center; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, #2ecc71, #27ae60);"></div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                <h3 style="color: #2ecc71; margin-bottom: 1rem;">ModelSim 模擬環境</h3>
+                <p style="color: #bdc3c7; margin-bottom: 1.5rem; font-size: 0.95rem;">進階HDL模擬與驗證，支援4K@32.5fps性能測試</p>
+                <div style="margin: 1rem 0;">
+                    <button class="btn" onclick="runModelSim('simulate')" style="background: linear-gradient(45deg, #2ecc71, #27ae60);">▶️ 開始仿真</button>
+                    <button class="btn" onclick="runModelSim('waveform')" style="background: linear-gradient(45deg, #1abc9c, #16a085);">📈 波形分析</button>
+                </div>
+                <div style="background: rgba(0,0,0,0.6); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                    <div style="color: #1abc9c; font-size: 0.9rem;" id="modelsimStatus">🎯 ModelSim SE-64 2023.4，仿真時鐘: 100MHz</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 啟動CTE Vibe Code按鈕 -->
+        <div style="text-align: center; margin: 2rem 0;">
+            <button onclick="launchCTEVibe()" style="background: linear-gradient(45deg, #667db6, #0082c8, #667db6); color: white; border: none; padding: 1.5rem 3rem; font-size: 1.3rem; border-radius: 50px; cursor: pointer; box-shadow: 0 10px 30px rgba(102,125,182,0.4); transition: all 0.3s ease; animation: pulse 2s infinite;">
+                🚀 啟動 CTE Vibe Code
+            </button>
+        </div>
+    </div>
+
+    <!-- 13種場景智能識別 -->
+    <div style="margin: 2rem 0;">
+        <h2 style="text-align: center; color: #00d2ff; margin-bottom: 2rem;">🎯 13種場景智能識別</h2>
+    
+    <div class="scene-grid">
+        <div class="scene-card">
+            <div class="scene-icon">🌳</div>
+            <h3>戶外自然</h3>
+            <div class="accuracy">準確率: 96.8%</div>
+            <button class="btn" onclick="activateScene('outdoor')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🏠</div>
+            <h3>室內住宅</h3>
+            <div class="accuracy">準確率: 94.2%</div>
+            <button class="btn" onclick="activateScene('indoor')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🏙️</div>
+            <h3>城市街道</h3>
+            <div class="accuracy">準確率: 97.5%</div>
+            <button class="btn" onclick="activateScene('urban')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">✈️</div>
+            <h3>航拍風景</h3>
+            <div class="accuracy">準確率: 95.3%</div>
+            <button class="btn" onclick="activateScene('aerial')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🌙</div>
+            <h3>夜間場景</h3>
+            <div class="accuracy">準確率: 92.7%</div>
+            <button class="btn" onclick="activateScene('night')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🌊</div>
+            <h3>水域海事</h3>
+            <div class="accuracy">準確率: 93.9%</div>
+            <button class="btn" onclick="activateScene('water')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🌲</div>
+            <h3>森林植被</h3>
+            <div class="accuracy">準確率: 95.8%</div>
+            <button class="btn" onclick="activateScene('forest')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🌾</div>
+            <h3>農業場景</h3>
+            <div class="accuracy">準確率: 94.1%</div>
+            <button class="btn" onclick="activateScene('agriculture')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🏭</div>
+            <h3>工業場地</h3>
+            <div class="accuracy">準確率: 93.4%</div>
+            <button class="btn" onclick="activateScene('industrial')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🏖️</div>
+            <h3>海岸沙灘</h3>
+            <div class="accuracy">準確率: 96.1%</div>
+            <button class="btn" onclick="activateScene('beach')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">⛰️</div>
+            <h3>山地地形</h3>
+            <div class="accuracy">準確率: 95.7%</div>
+            <button class="btn" onclick="activateScene('mountain')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🏜️</div>
+            <h3>沙漠乾旱</h3>
+            <div class="accuracy">準確率: 94.6%</div>
+            <button class="btn" onclick="activateScene('desert')">啟動場景</button>
+        </div>
+        
+        <div class="scene-card">
+            <div class="scene-icon">🎯</div>
+            <h3>目標檢測</h3>
+            <div class="accuracy">準確率: 98.2%</div>
+            <button class="btn" onclick="activateScene('detection')">啟動場景</button>
+        </div>
+    </div>
+    </div>
+
+    <!-- 系統日誌 -->
+    <div class="control-panel">
+        <h2>📋 系統日誌</h2>
+        <div class="log-output" id="systemLog">
+            <div>[2024-12-19 14:30:15] 系統初始化完成...</div>
+            <div>[2024-12-19 14:30:16] AI ISP 晶片檢測成功</div>
+            <div>[2024-12-19 14:30:17] FPGA 配置載入完成</div>
+            <div>[2024-12-19 14:30:18] 13種場景模型已就緒</div>
+            <div>[2024-12-19 14:30:19] 系統待命中，等待指令...</div>
+        </div>
+    </div>
+
+    <script>
+        // 系統類別整合現有的 CTEVibeSystem
+        class CTEVibeSystem {
+            constructor() {
+                this.scenes = {
+                    outdoor: { name: '戶外自然', accuracy: 96.8 },
+                    indoor: { name: '室內住宅', accuracy: 94.2 },
+                    urban: { name: '城市街道', accuracy: 97.5 },
+                    aerial: { name: '航拍風景', accuracy: 95.3 },
+                    night: { name: '夜間場景', accuracy: 92.7 },
+                    water: { name: '水域海事', accuracy: 93.9 },
+                    forest: { name: '森林植被', accuracy: 95.8 },
+                    agriculture: { name: '農業場景', accuracy: 94.1 },
+                    industrial: { name: '工業場地', accuracy: 93.4 },
+                    beach: { name: '海岸沙灘', accuracy: 96.1 },
+                    mountain: { name: '山地地形', accuracy: 95.7 },
+                    desert: { name: '沙漠乾旱', accuracy: 94.6 },
+                    detection: { name: '目標檢測', accuracy: 98.2 }
+                };
+                
+                this.systemStatus = {
+                    ota: 'ready',
+                    radiant: 'connected', 
+                    modelsim: 'licensed'
+                };
+                
+                this.currentStage = null;
+                this.startStatusUpdates();
+            }
+            
+            startStatusUpdates() {
+                setInterval(() => {
+                    document.getElementById('systemTemp').textContent = 
+                        (45 + Math.random() * 10).toFixed(1) + '°C';
+                    
+                    const rates = ['4K@60fps', '1080p@120fps', '720p@240fps'];
+                    document.getElementById('processingRate').textContent = 
+                        rates[Math.floor(Math.random() * rates.length)];
+                    
+                    document.getElementById('powerConsume').textContent = 
+                        (2.0 + Math.random() * 1.5).toFixed(1) + 'W';
+                    
+                    document.getElementById('latency').textContent = 
+                        '<' + (0.5 + Math.random() * 1.5).toFixed(1) + 'ms';
+                }, 2000);
+            }
+            
+            log(message, type = 'info') {
+                const logEl = document.getElementById('systemLog');
+                const timestamp = new Date().toLocaleTimeString();
+                const colors = {
+                    info: '#00ff00',
+                    warning: '#ffff00',
+                    error: '#ff0000',
+                    success: '#00ffff'
+                };
+                
+                const logEntry = document.createElement('div');
+                logEntry.style.color = colors[type] || colors.info;
+                logEntry.textContent = `[${timestamp}] ${message}`;
+                
+                logEl.appendChild(logEntry);
+                logEl.scrollTop = logEl.scrollHeight;
+            }
+        }
+        
+        const cteSystem = new CTEVibeSystem();
+        
+        // OTA 更新功能
+        function executeOTA(action) {
+            const statusEl = document.getElementById('otaStatus');
+            
+            if (action === 'check') {
+                cteSystem.log(`🔍 檢查OTA更新...`, 'info');
+                statusEl.textContent = '🔄 檢查更新中...';
+                statusEl.style.color = '#f39c12';
+                
+                setTimeout(() => {
+                    cteSystem.log(`✅ 發現新版本: v2.1.3 - 增強夜視AI`, 'success');
+                    cteSystem.log(`📦 更新大小: 45.2MB`, 'info');
+                    statusEl.textContent = '🆕 發現更新 v2.1.3 - 夜視AI增強版';
+                    statusEl.style.color = '#2ecc71';
+                }, 2000);
+                
+            } else if (action === 'deploy') {
+                cteSystem.log(`🚀 開始OTA部署...`, 'info');
+                statusEl.textContent = '⬇️ 下載模型中... 0%';
+                statusEl.style.color = '#3498db';
+                
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += Math.random() * 15 + 5;
+                    if (progress >= 100) {
+                        progress = 100;
+                        statusEl.textContent = '✅ 13個AI模型熱更新完成';
+                        statusEl.style.color = '#2ecc71';
+                        cteSystem.log(`🎯 所有場景AI模型更新完成`, 'success');
+                        cteSystem.log(`⚡ 新功能: 低光增強提升30%`, 'success');
+                        clearInterval(interval);
+                    } else {
+                        statusEl.textContent = `⬇️ 部署進度: ${progress.toFixed(0)}%`;
+                        cteSystem.log(`📊 OTA進度: ${progress.toFixed(1)}%`, 'info');
+                    }
+                }, 300);
+            }
+        }
+        
+        // Radiant FPGA 功能
+        function runRadiant(action) {
+            const statusEl = document.getElementById('radiantStatus');
+            
+            if (action === 'synthesize') {
+                cteSystem.log(`⚡ 啟動Radiant邏輯綜合...`, 'info');
+                statusEl.textContent = '⚡ 邏輯綜合進行中...';
+                statusEl.style.color = '#f39c12';
+                
+                setTimeout(() => {
+                    cteSystem.log(`✅ 綜合完成 - LUT: 76%, BRAM: 65%, DSP: 45%`, 'success');
+                    cteSystem.log(`🎯 時序約束: 所有路徑滿足100MHz`, 'success');
+                    statusEl.textContent = '✅ 綜合完成 - 資源使用最佳化';
+                    statusEl.style.color = '#2ecc71';
+                }, 3000);
+                
+            } else if (action === 'place') {
+                cteSystem.log(`📍 開始佈局與繞線...`, 'info');
+                statusEl.textContent = '📍 佈局繞線最佳化中...';
+                statusEl.style.color = '#e67e22';
+                
+                setTimeout(() => {
+                    cteSystem.log(`🎯 佈局完成 - 關鍵路徑: 8.2ns (122MHz)`, 'success');
+                    cteSystem.log(`📱 Bitstream生成完成 (4.2MB)`, 'success');
+                    statusEl.textContent = '🚀 Bitstream就緒 - 可燒錄至FPGA';
+                    statusEl.style.color = '#27ae60';
+                }, 4000);
+            }
+        }
+        
+        // ModelSim 模擬功能
+        function runModelSim(action) {
+            const statusEl = document.getElementById('modelsimStatus');
+            
+            if (action === 'simulate') {
+                cteSystem.log(`▶️ 啟動ModelSim仿真...`, 'info');
+                statusEl.textContent = '▶️ HDL仿真執行中...';
+                statusEl.style.color = '#3498db';
+                
+                setTimeout(() => {
+                    cteSystem.log(`🎯 ISP Pipeline仿真完成`, 'success');
+                    cteSystem.log(`📊 4K@32.5fps處理驗證通過`, 'success');
+                    cteSystem.log(`⚡ AI推理延遲: 0.85ms`, 'success');
+                    statusEl.textContent = '✅ 仿真完成 - 4K@32.5fps驗證通過';
+                    statusEl.style.color = '#2ecc71';
+                }, 2500);
+                
+            } else if (action === 'waveform') {
+                cteSystem.log(`📈 生成波形分析...`, 'info');
+                statusEl.textContent = '📈 波形數據分析中...';
+                statusEl.style.color = '#9b59b6';
+                
+                setTimeout(() => {
+                    cteSystem.log(`📊 生成VCD波形檔案 (125MB)`, 'info');
+                    cteSystem.log(`🔍 時序分析: Setup/Hold時間正常`, 'success');
+                    cteSystem.log(`⚡ 關鍵訊號完整性驗證通過`, 'success');
+                    statusEl.textContent = '📈 波形分析完成 - 訊號完整性良好';
+                    statusEl.style.color = '#8e44ad';
+                }, 2000);
+            }
+        }
+        
+        // 啟動 CTE Vibe Code
+        function launchCTEVibe() {
+            cteSystem.log(`🚀 正在啟動完整版CTE Vibe Code...`, 'success');
+            cteSystem.log(`🔧 整合Radiant + ModelSim + OTA系統`, 'info');
+            cteSystem.log(`🤖 載入13種場景AI模型庫`, 'info');
+            cteSystem.log(`📡 建立ROS2通訊節點`, 'info');
+            
+            setTimeout(() => {
+                cteSystem.log(`✨ CTE Vibe Code完整版啟動成功！`, 'success');
+                cteSystem.log(`🎯 所有工具鏈就緒，開始AI晶片開發`, 'success');
+                
+                // 顯示啟動成功的視覺效果
+                document.querySelector('button[onclick="launchCTEVibe()"]').innerHTML = '✅ CTE Vibe Code 已啟動';
+                document.querySelector('button[onclick="launchCTEVibe()"]').style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
+            }, 3000);
+        }
+        
+        // 場景啟動功能
+        function activateScene(sceneType) {
+            const scene = cteSystem.scenes[sceneType];
+            if (scene) {
+                cteSystem.log(`🎯 啟動 ${scene.name} 場景識別模式 (準確率: ${scene.accuracy}%)`, 'success');
+                cteSystem.log(`📸 ISP 參數自動優化中...`, 'info');
+                
+                setTimeout(() => {
+                    cteSystem.log(`✅ ${scene.name} 場景優化完成，準備處理影像`, 'success');
+                }, 1500);
+            }
+        }
+        
+        // 初始化完成提示
+        setTimeout(() => {
+            cteSystem.log(`🎵 CTE Vibe Code 系統啟動完成`, 'success');
+            cteSystem.log(`🔧 支援13種場景智能識別`, 'info');
+            cteSystem.log(`⚡ AI ISP晶片就緒 - BGA-484封裝`, 'info');
+            cteSystem.log(`🚀 三大核心工具已整合`, 'info');
+            cteSystem.log(`📡 等待開發指令...`, 'info');
+        }, 1000);
+    </script>
+    
+    <!-- Footer -->
+    <div style="text-align: center; padding: 2rem; background: rgba(0,0,0,0.5); margin-top: 2rem;">
+        <p style="color: #888; font-size: 0.9rem;">
+            🔧 CTE Vibe Code - AI Image Drone Chip 開發平台 | 
+            整合OTA、Radiant FPGA、ModelSim系統 | 
+            支援ROS2無人機2天快速整合
+        </p>
+        <p style="color: #666; font-size: 0.8rem; margin-top: 1rem;">
+            © 2024 CTE Technology. 專為無人機AI應用設計的完整開發解決方案
+        </p>
+    </div>
+    
+</body>
+</html>

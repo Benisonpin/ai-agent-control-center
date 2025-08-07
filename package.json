@@ -1,23 +1,37 @@
 {
-  "name": "cte-ai-agent-control-center",
-  "version": "2.1.0",
-  "description": "CTE AI Agent 控制中心 with Cloud Shell 整合",
+  "name": "cte-vibe-code",
+  "version": "2.0.0",
+  "description": "AI Image Drone Chip 開發平台 - 完整的軟硬體整合解決方案",
   "main": "public/index.html",
-  "dependencies": {
-    "node-fetch": "^2.6.7"
-  },
   "scripts": {
-    "build": "echo 'Build completed successfully'",
-    "start": "echo 'Starting development server'",
-    "test": "echo 'Tests passed'"
+    "dev": "npx live-server public --port=8080",
+    "build": "echo 'Static build - no build process needed'",
+    "deploy": "netlify deploy --prod --dir=public",
+    "preview": "netlify deploy --dir=public"
   },
   "keywords": [
-    "cte",
-    "ai-agent", 
-    "cloud-shell",
-    "netlify",
-    "control-center"
+    "AI",
+    "ISP",
+    "SoC",
+    "FPGA",
+    "Radiant",
+    "ModelSim", 
+    "OTA",
+    "無人機",
+    "場景識別",
+    "drone",
+    "computer-vision"
   ],
-  "author": "CTE Group",
-  "license": "MIT"
+  "author": "CTE Vision Technology",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Benisonpin/ai-agent-control-center.git"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
 }
