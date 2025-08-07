@@ -1,6 +1,6 @@
 [build]
   publish = "public"
-  command = "echo 'Static site ready'"
+  command = "echo 'Static site build complete'"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -12,7 +12,6 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: https:; font-src 'self' data: https:;"
 
 [[redirects]]
   from = "/api/*"
