@@ -1,0 +1,56 @@
+{
+  "private_repo": "cte-fpga-rtl",
+  "connection_status": "linked",
+  "last_sync": "2025-08-08T14:32:05Z",
+  "rtl_files": {
+    "ai_hdr_isp_integrated_top.v": {
+      "path": "hdl/integrated/ai_hdr_isp_integrated_top.v",
+      "type": "top_level",
+      "status": "private",
+      "description": "HDR ISP 整合頂層模組 - 主要系統"
+    },
+    "ai_accelerator_top.v": {
+      "path": "hdl/modules/ai_accelerator_top.v",
+      "type": "accelerator",
+      "status": "private",
+      "description": "AI 硬體加速器 - ML 推理引擎"
+    },
+    "ai_agent_core.v": {
+      "path": "hdl/modules/ai_agent_core.v",
+      "type": "control",
+      "status": "private",
+      "description": "AI 代理核心 - 智能控制中心"
+    },
+    "isp_pipeline_advance.v": {
+      "path": "hdl/pipeline/isp_pipeline_advance.v",
+      "type": "pipeline",
+      "status": "private",
+      "description": "進階 ISP 流水線 - 完整影像處理"
+    },
+    "HDR_TOP_Verilog.v": {
+      "path": "hdl/integrated/HDR_TOP_Verilog.v",
+      "type": "hdr_processing",
+      "status": "private",
+      "description": "HDR 處理頂層 - 高動態範圍成像"
+    }
+  },
+  "verification_files": {
+    "isp_pipeline_TEST_envir_1.v": {
+      "path": "verification/testbench/isp_pipeline_TEST_envir_1.v",
+      "type": "testbench",
+      "status": "private",
+      "description": "ISP 流水線測試環境"
+    }
+  },
+  "project_info": {
+    "total_rtl_files": 10,
+    "total_size": "592K",
+    "target_device": "CrossLink-NX LIFCL-40",
+    "clock_frequency": "100MHz",
+    "main_modules": [
+      "ai_hdr_isp_integrated_top.v",
+      "ai_accelerator_top.v", 
+      "isp_pipeline_advance.v"
+    ]
+  }
+}
