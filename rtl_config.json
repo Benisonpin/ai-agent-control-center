@@ -2,29 +2,35 @@
   "private_repo": "cte-fpga-rtl",
   "connection_status": "linked",
   "rtl_files": {
-    "ai_hdr_isp_integrated_top.v": {
+    "ai_hdr_isp_system_complete_final.v": {
       "type": "top_level",
       "status": "private",
-      "description": "HDR ISP 整合頂層模組 - 主要系統"
+      "description": "AI HDR ISP 系統最終整合版本 - 主要頂層模組 ⭐"
+    },
+    "ai_isp_top.v": {
+      "type": "control_center",
+      "status": "private", 
+      "description": "AI ISP 頂層控制模組 - 系統協調中心"
+    },
+    "isp_pipeline_ai.v": {
+      "type": "pipeline",
+      "status": "private",
+      "description": "AI 增強型 ISP 流水線 - 核心處理管道"
+    },
+    "ai_hdr_isp_final_integration.v": {
+      "type": "integration",
+      "status": "private",
+      "description": "HDR ISP 最終整合模組"
     },
     "ai_accelerator_top.v": {
-      "type": "accelerator", 
+      "type": "accelerator",
       "status": "private",
-      "description": "AI 硬體加速器 - ML 推理引擎"
-    },
-    "isp_pipeline_advance.v": {
-      "type": "pipeline",
-      "status": "private", 
-      "description": "進階 ISP 流水線 - 完整影像處理"
-    },
-    "HDR_TOP_Verilog.v": {
-      "type": "hdr_processing",
-      "status": "private",
-      "description": "HDR 處理頂層 - 高動態範圍成像"
+      "description": "AI 硬體加速器頂層"
     }
   },
   "project_info": {
+    "main_module": "ai_hdr_isp_system_complete_final.v",
     "target_device": "CrossLink-NX LIFCL-40",
-    "main_features": ["HDR處理", "AI加速", "進階ISP"]
+    "features": ["HDR處理", "AI場景識別", "即時降噪", "4K@60fps"]
   }
 }
