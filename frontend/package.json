@@ -1,0 +1,27 @@
+{
+  "name": "cte-vibe-code-center",
+  "version": "1.0.0",
+  "description": "AI-Powered 軟硬體協同開發平台",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080",
+    "dev": "python3 -m http.server 8080",
+    "serve": "npx serve -l 8080",
+    "backend": "cd ../backend && python3 app.py"
+  },
+  "keywords": [
+    "AI",
+    "FPGA",
+    "Verilog", 
+    "Python",
+    "ROS",
+    "無人機",
+    "ISP",
+    "代碼生成"
+  ],
+  "author": "CTE Group",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
