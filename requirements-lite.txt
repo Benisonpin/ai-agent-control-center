@@ -1,0 +1,5 @@
+# CTE Vibe Code Center - 精簡版依賴
+opencv-python-headless>=4.8.0
+numpy>=1.24.0
+fastapi>=0.100.0
+uvicorn>=0.20.0
