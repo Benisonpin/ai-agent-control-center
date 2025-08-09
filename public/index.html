@@ -432,6 +432,13 @@ CTE Vibe Code Center v2.0 已啟動
             <div class="code-editor-section">
                 <div class="panel-header">
                     <h3 class="panel-title">💻 AI 協作程式編輯器</h3>
+                    <select id="templateSelect" style="background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 0.5rem; border-radius: 4px;">
+                        <option value="">選擇AI模板</option>
+                        <option value="isp_pipeline">ISP管線模組</option>
+                        <option value="knowledge_distillation">知識蒸餾</option>
+                        <option value="model_compression">模型壓縮</option>
+                    </select>
+                    <button class="btn" onclick="generateFromTemplate()">🚀 生成模板</button>
                     <button class="btn" onclick="aiGenerateCode()">🤖 AI 生成程式碼</button>
                 </div>
                 <div class="editor-tabs">
@@ -548,27 +555,59 @@ scene_detector u_scene_detector (
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                     <div>
                         <h4>💡 智能程式碼生成</h4>
+                        <select style="width: 100%; background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem;">
+                            <option>基於ConvNeXt的知識蒸餾</option>
+                            <option>MobileNetV3到INT8量化</option>
+                            <option>UMS整合的ISP管線</option>
+                            <option>SMAI智能預取算法</option>
+                            <option>DPM動態分區管理</option>
+                        </select>
                         <textarea 
-                            placeholder="描述您想要的功能，例如：建立一個 HDR 融合演算法..."
-                            style="width: 100%; height: 150px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 6px; padding: 1rem; font-family: monospace;"
+                            placeholder="描述您想要的功能，例如：建立一個結合UMS架構的HDR融合演算法，支援SMAI預取和DPM動態分區..."
+                            style="width: 100%; height: 120px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 6px; padding: 1rem; font-family: monospace;"
                             id="aiPrompt"></textarea>
-                        <button class="btn" onclick="generateCode()">生成程式碼</button>
-                        <button class="btn btn-success" onclick="optimizeCode()">優化程式碼</button>
+                        <button class="btn" onclick="generateCode()">🚀 生成架構程式碼</button>
+                        <button class="btn btn-success" onclick="optimizeCode()">⚡ UMA優化</button>
+                        <button class="btn btn-warning" onclick="generateTestbench()">🧪 生成測試台</button>
                     </div>
                     <div>
-                        <h4>🔍 智能除錯</h4>
-                        <div class="log-output">
-[AI 分析] 檢測到 HDR 融合模組時序違規
-建議：增加暫存器階層以滿足 100MHz 時脈要求
+                        <h4>🔍 AI架構分析</h4>
+                        <div class="log-output" style="height: 200px;">
+[AI 分析] 檢測到UMS記憶體存取模式優化機會
+建議：結合SMAI預測器，可提升35%記憶體頻寬效率
 
-[AI 建議] scene_detector 模組可優化：
-- 使用查表法替代乘法運算，節省 15% 功耗
-- 啟用管線處理，提升 2x 吞吐量
+[架構建議] ISP管線與NPU協同處理分析：
+- 使用零拷貝共享減少50%資料傳輸
+- DPM動態分區可優化80%記憶體碎片
+- 知識蒸餾精度保持92%以上
 
-[AI 優化] 記憶體存取模式分析：
-- 建議使用 burst 模式，減少 30% 記憶體延遲
+[效能預測] ConvNeXt→MobileNetV3蒸餾結果：
+- 模型大小：88M→20M (77.5%壓縮)
+- 推理速度：52ms→5.1ms (10倍提升)
+- 功耗降低：80%
+- INT8量化後：20M→5M，精度損失<2%
+
+[硬體適配] AI ISP SoC 7nm FinFET優化：
+- ARM Cortex A55/A78雙核配置最適
+- AI NPU 2TOPS@INT8滿足實時需求
+- 統一記憶體架構L1:32KB×4, L2:512KB, AI SRAM:5MB
                         </div>
-                        <button class="btn btn-warning" onclick="runAIAnalysis()">執行 AI 分析</button>
+                        <button class="btn btn-warning" onclick="runArchitectureAnalysis()">🏗️ 執行架構分析</button>
+                        <button class="btn" onclick="generateDeploymentPlan()">📋 生成部署計劃</button>
+                    </div>
+                </div>
+                
+                <!-- 新增：開發效率工具 -->
+                <div style="margin-top: 2rem; background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px;">
+                    <h4>⚡ 開發效率加速器</h4>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem;">
+                        <button class="btn" onclick="oneClickSetup()">🚀 一鍵環境設置</button>
+                        <button class="btn btn-success" onclick="autoIntegration()">🔗 自動整合測試</button>
+                        <button class="btn btn-warning" onclick="performanceBenchmark()">📊 效能基準測試</button>
+                        <button class="btn btn-danger" onclick="deployToHardware()">🔧 硬體部署</button>
+                    </div>
+                    <div style="margin-top: 1rem; color: #888; font-size: 0.9rem;">
+                        ⏱️ 預計開發時間節省：傳統18個月 → AI輔助5.4個月 (70%加速)
                     </div>
                 </div>
             </div>
