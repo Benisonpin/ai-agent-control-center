@@ -62,10 +62,22 @@
             color: #000;
         }
 
+        .nav-tab:hover {
+            background: rgba(0, 210, 255, 0.3);
+        }
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .dashboard-grid {
@@ -136,127 +148,6 @@
             margin-top: 0.5rem;
         }
 
-        .code-editor-section {
-            grid-column: 1 / -1;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .editor-tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .editor-tab {
-            padding: 0.5rem 1rem;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .editor-tab.active {
-            background: #e74c3c;
-            color: #fff;
-        }
-
-        .code-editor {
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 1rem;
-            font-family: 'Cascadia Code', monospace;
-            min-height: 400px;
-            overflow-x: auto;
-        }
-
-        .ai-assistant {
-            position: fixed;
-            right: 2rem;
-            bottom: 2rem;
-            width: 350px;
-            height: 500px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 1px solid #00d2ff;
-            border-radius: 12px;
-            padding: 1rem;
-            display: none;
-            z-index: 200;
-        }
-
-        .ai-toggle {
-            position: fixed;
-            right: 2rem;
-            bottom: 2rem;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #00d2ff, #3498db);
-            border: none;
-            border-radius: 50%;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 210, 255, 0.3);
-            transition: all 0.3s;
-        }
-
-        .ai-toggle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 30px rgba(0, 210, 255, 0.5);
-        }
-
-        .visualization-panel {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .pipeline-viz {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 2rem 0;
-        }
-
-        .pipeline-stage {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            text-align: center;
-            min-width: 120px;
-            position: relative;
-        }
-
-        .pipeline-stage::after {
-            content: '→';
-            position: absolute;
-            right: -20px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.5rem;
-            color: #00d2ff;
-        }
-
-        .pipeline-stage:last-child::after {
-            display: none;
-        }
-
-        .command-panel {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #333;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
         .btn {
             background: linear-gradient(45deg, #00d2ff, #3498db);
             color: #fff;
@@ -283,6 +174,47 @@
 
         .btn-danger {
             background: linear-gradient(45deg, #e74c3c, #c0392b);
+        }
+
+        .log-output {
+            background: #000;
+            border: 1px solid #333;
+            border-radius: 6px;
+            padding: 1rem;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        .code-editor {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Cascadia Code', monospace;
+            min-height: 400px;
+            overflow-x: auto;
+        }
+
+        .editor-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .editor-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .editor-tab.active {
+            background: #e74c3c;
+            color: #fff;
         }
 
         .floating-particles {
@@ -319,23 +251,6 @@
                 opacity: 0;
             }
         }
-
-        .log-output {
-            background: #000;
-            border: 1px solid #333;
-            border-radius: 6px;
-            padding: 1rem;
-            height: 200px;
-            overflow-y: auto;
-            font-family: monospace;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-        }
-
-        .highlight-verilog .keyword { color: #e74c3c; }
-        .highlight-verilog .string { color: #2ecc71; }
-        .highlight-verilog .comment { color: #95a5a6; }
-        .highlight-verilog .number { color: #f39c12; }
     </style>
 </head>
 <body>
@@ -356,7 +271,7 @@
 
     <div class="container">
         <!-- 儀表板頁面 -->
-        <div id="dashboard-tab" class="tab-content">
+        <div id="dashboard-tab" class="tab-content active">
             <div class="dashboard-grid">
                 <div class="panel">
                     <div class="panel-header">
@@ -428,17 +343,10 @@ CTE Vibe Code Center v2.0 已啟動
         </div>
 
         <!-- 程式編輯器頁面 -->
-        <div id="editor-tab" class="tab-content" style="display: none;">
-            <div class="code-editor-section">
+        <div id="editor-tab" class="tab-content">
+            <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">💻 AI 協作程式編輯器</h3>
-                    <select id="templateSelect" style="background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 0.5rem; border-radius: 4px;">
-                        <option value="">選擇AI模板</option>
-                        <option value="isp_pipeline">ISP管線模組</option>
-                        <option value="knowledge_distillation">知識蒸餾</option>
-                        <option value="model_compression">模型壓縮</option>
-                    </select>
-                    <button class="btn" onclick="generateFromTemplate()">🚀 生成模板</button>
                     <button class="btn" onclick="aiGenerateCode()">🤖 AI 生成程式碼</button>
                 </div>
                 <div class="editor-tabs">
@@ -447,195 +355,58 @@ CTE Vibe Code Center v2.0 已啟動
                     <div class="editor-tab" onclick="switchEditorTab('python')">isp_agent.py</div>
                 </div>
                 <div class="code-editor" id="codeEditor">
-<span class="highlight-verilog">
-<span class="comment">// AI-Powered ISP 頂層模組</span>
-<span class="keyword">module</span> ai_isp_top (
-    <span class="keyword">input</span> clk,
-    <span class="keyword">input</span> rst_n,
-    <span class="keyword">input</span> [<span class="number">7</span>:<span class="number">0</span>] raw_data,
-    <span class="keyword">output</span> [<span class="number">23</span>:<span class="number">0</span>] processed_rgb,
-    <span class="keyword">output</span> valid_out
+// AI-Powered ISP 頂層模組
+module ai_isp_top (
+    input clk,
+    input rst_n,
+    input [7:0] raw_data,
+    output [23:0] processed_rgb,
+    output valid_out
 );
 
-<span class="comment">// UMS 記憶體管理</span>
-<span class="keyword">wire</span> [<span class="number">31</span>:<span class="number">0</span>] ums_addr;
-<span class="keyword">wire</span> [<span class="number">63</span>:<span class="number">0</span>] ums_data;
-<span class="keyword">wire</span> ums_valid;
+// UMS 記憶體管理
+wire [31:0] ums_addr;
+wire [63:0] ums_data;
+wire ums_valid;
 
-<span class="comment">// AI NPU 控制訊號</span>
-<span class="keyword">wire</span> [<span class="number">15</span>:<span class="number">0</span>] ai_scene_type;
-<span class="keyword">wire</span> ai_denoise_enable;
-<span class="keyword">wire</span> [<span class="number">7</span>:<span class="number">0</span>] ai_enhancement_level;
+// AI NPU 控制訊號
+wire [15:0] ai_scene_type;
+wire ai_denoise_enable;
 
-<span class="comment">// ISP 管線實例化</span>
-isp_pipeline_top u_isp_pipeline (
-    .clk(clk),
-    .rst_n(rst_n),
-    .raw_data(raw_data),
-    .scene_type(ai_scene_type),
-    .denoise_enable(ai_denoise_enable),
-    .enhancement_level(ai_enhancement_level),
-    .processed_rgb(processed_rgb),
-    .valid_out(valid_out)
-);
-
-<span class="comment">// AI 場景偵測器</span>
-scene_detector u_scene_detector (
-    .clk(clk),
-    .rst_n(rst_n),
-    .image_data(raw_data),
-    .scene_type(ai_scene_type)
-);
-
-<span class="keyword">endmodule</span>
-</span>
+endmodule
                 </div>
             </div>
         </div>
 
         <!-- ISP 管線頁面 -->
-        <div id="pipeline-tab" class="tab-content" style="display: none;">
-            <div class="visualization-panel">
+        <div id="pipeline-tab" class="tab-content">
+            <div class="panel">
                 <div class="panel-header">
-                    <h3 class="panel-title">🔄 AI ISP 處理管線視覺化</h3>
+                    <h3 class="panel-title">🔄 AI ISP 處理管線</h3>
                 </div>
-                <div class="pipeline-viz">
-                    <div class="pipeline-stage" style="background: linear-gradient(45deg, #3498db, #2980b9);">
-                        <div>感測器輸入</div>
-                        <small>4K@60fps</small>
-                    </div>
-                    <div class="pipeline-stage" style="background: linear-gradient(45deg, #e74c3c, #c0392b);">
-                        <div>ISP 處理</div>
-                        <small>HDR + 降噪</small>
-                    </div>
-                    <div class="pipeline-stage" style="background: linear-gradient(45deg, #f39c12, #e67e22);">
-                        <div>AI 處理</div>
-                        <small>場景偵測</small>
-                    </div>
-                    <div class="pipeline-stage" style="background: linear-gradient(45deg, #2ecc71, #27ae60);">
-                        <div>參數調整</div>
-                        <small>ISP 優化</small>
-                    </div>
-                    <div class="pipeline-stage" style="background: linear-gradient(45deg, #9b59b6, #8e44ad);">
-                        <div>最終輸出</div>
-                        <small>影像/影片</small>
-                    </div>
-                </div>
-                
-                <div class="panel">
-                    <h4>🎯 即時效能監控</h4>
-                    <div class="metrics-grid">
-                        <div class="metric">
-                            <div class="metric-value" id="throughput">32.5</div>
-                            <div class="metric-label">處理幀率 (fps)</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value" id="latency">28</div>
-                            <div class="metric-label">延遲 (ms)</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value" id="power">3.5</div>
-                            <div class="metric-label">功耗 (W)</div>
-                        </div>
-                        <div class="metric">
-                            <div class="metric-value" id="efficiency">92</div>
-                            <div class="metric-label">效率 (%)</div>
-                        </div>
-                    </div>
-                </div>
+                <p>ISP 管線視覺化內容...</p>
             </div>
         </div>
 
         <!-- AI 助手頁面 -->
-        <div id="ai-tab" class="tab-content" style="display: none;">
+        <div id="ai-tab" class="tab-content">
             <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">🤖 AI 開發助手</h3>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                    <div>
-                        <h4>💡 智能程式碼生成</h4>
-                        <select style="width: 100%; background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 0.5rem; border-radius: 4px; margin-bottom: 1rem;">
-                            <option>基於ConvNeXt的知識蒸餾</option>
-                            <option>MobileNetV3到INT8量化</option>
-                            <option>UMS整合的ISP管線</option>
-                            <option>SMAI智能預取算法</option>
-                            <option>DPM動態分區管理</option>
-                        </select>
-                        <textarea 
-                            placeholder="描述您想要的功能，例如：建立一個結合UMS架構的HDR融合演算法，支援SMAI預取和DPM動態分區..."
-                            style="width: 100%; height: 120px; background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 6px; padding: 1rem; font-family: monospace;"
-                            id="aiPrompt"></textarea>
-                        <button class="btn" onclick="generateCode()">🚀 生成架構程式碼</button>
-                        <button class="btn btn-success" onclick="optimizeCode()">⚡ UMA優化</button>
-                        <button class="btn btn-warning" onclick="generateTestbench()">🧪 生成測試台</button>
-                    </div>
-                    <div>
-                        <h4>🔍 AI架構分析</h4>
-                        <div class="log-output" style="height: 200px;">
-[AI 分析] 檢測到UMS記憶體存取模式優化機會
-建議：結合SMAI預測器，可提升35%記憶體頻寬效率
-
-[架構建議] ISP管線與NPU協同處理分析：
-- 使用零拷貝共享減少50%資料傳輸
-- DPM動態分區可優化80%記憶體碎片
-- 知識蒸餾精度保持92%以上
-
-[效能預測] ConvNeXt→MobileNetV3蒸餾結果：
-- 模型大小：88M→20M (77.5%壓縮)
-- 推理速度：52ms→5.1ms (10倍提升)
-- 功耗降低：80%
-- INT8量化後：20M→5M，精度損失<2%
-
-[硬體適配] AI ISP SoC 7nm FinFET優化：
-- ARM Cortex A55/A78雙核配置最適
-- AI NPU 2TOPS@INT8滿足實時需求
-- 統一記憶體架構L1:32KB×4, L2:512KB, AI SRAM:5MB
-                        </div>
-                        <button class="btn btn-warning" onclick="runArchitectureAnalysis()">🏗️ 執行架構分析</button>
-                        <button class="btn" onclick="generateDeploymentPlan()">📋 生成部署計劃</button>
-                    </div>
-                </div>
-                
-                <!-- 新增：開發效率工具 -->
-                <div style="margin-top: 2rem; background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 8px;">
-                    <h4>⚡ 開發效率加速器</h4>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1rem;">
-                        <button class="btn" onclick="oneClickSetup()">🚀 一鍵環境設置</button>
-                        <button class="btn btn-success" onclick="autoIntegration()">🔗 自動整合測試</button>
-                        <button class="btn btn-warning" onclick="performanceBenchmark()">📊 效能基準測試</button>
-                        <button class="btn btn-danger" onclick="deployToHardware()">🔧 硬體部署</button>
-                    </div>
-                    <div style="margin-top: 1rem; color: #888; font-size: 0.9rem;">
-                        ⏱️ 預計開發時間節省：傳統18個月 → AI輔助5.4個月 (70%加速)
-                    </div>
-                </div>
+                <p>AI 助手功能...</p>
             </div>
         </div>
 
         <!-- 部署頁面 -->
-        <div id="deploy-tab" class="tab-content" style="display: none;">
+        <div id="deploy-tab" class="tab-content">
             <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">🚀 一鍵部署</h3>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
-                    <div style="text-align: center;">
-                        <h4>📡 OTA 部署</h4>
-                        <p>無線更新到現有設備</p>
-                        <button class="btn" onclick="deployOTA()">開始 OTA 部署</button>
-                    </div>
-                    <div style="text-align: center;">
-                        <h4>⚡ FPGA 燒錄</h4>
-                        <p>直接燒錄到 FPGA 開發板</p>
-                        <button class="btn btn-success" onclick="deployFPGA()">燒錄 FPGA</button>
-                    </div>
-                    <div style="text-align: center;">
-                        <h4>☁️ 雲端部署</h4>
-                        <p>部署到 CTE 雲端平台</p>
-                        <button class="btn btn-warning" onclick="deployCloud()">雲端部署</button>
-                    </div>
-                </div>
+                <button class="btn" onclick="deployOTA()">開始 OTA 部署</button>
+                <button class="btn btn-success" onclick="deployFPGA()">燒錄 FPGA</button>
+                <button class="btn btn-warning" onclick="deployCloud()">雲端部署</button>
                 <div class="log-output" id="deployLog">
 部署系統已就緒
 選擇部署目標以開始...
@@ -644,54 +415,188 @@ scene_detector u_scene_detector (
         </div>
     </div>
 
-    <!-- AI 助手浮動按鈕 -->
-    <button class="ai-toggle" onclick="toggleAI()">🤖</button>
-
-    <!-- AI 助手面板 -->
-    <div class="ai-assistant" id="aiAssistant">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <h4 style="color: #00d2ff;">AI 程式設計助手</h4>
-            <button onclick="toggleAI()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">×</button>
-        </div>
-        <div style="height: 300px; overflow-y: auto; border: 1px solid #333; border-radius: 6px; padding: 1rem; background: #1a1a1a; margin-bottom: 1rem;" id="aiChat">
-            <div style="color: #00d2ff; margin-bottom: 0.5rem;">🤖 AI:</div>
-            <div style="margin-bottom: 1rem;">您好！我是 CTE AI 開發助手。我可以幫您：<br>
-            • 生成 Verilog/C 程式碼<br>
-            • 優化 ISP 演算法<br>
-            • 分析效能瓶頸<br>
-            • 除錯硬體問題</div>
-        </div>
-        <div style="display: flex; gap: 0.5rem;">
-            <input type="text" placeholder="輸入您的問題..." style="flex: 1; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; padding: 0.5rem; color: #fff;" id="aiInput">
-            <button class="btn" onclick="sendAIMessage()">發送</button>
-        </div>
-    </div>
-
     <script>
-        // 確保所有函數全局可用
-        window.switchTab = switchTab;
-        window.switchEditorTab = switchEditorTab;
-        window.executeCommand = executeCommand;
-        window.aiGenerateCode = aiGenerateCode;
-        window.generateFromTemplate = generateFromTemplate;
-        window.generateCode = generateCode;
-        window.optimizeCode = optimizeCode;
-        window.deployOTA = deployOTA;
-        window.deployFPGA = deployFPGA;
-        window.deployCloud = deployCloud;
-        window.toggleAI = toggleAI;
-        window.sendAIMessage = sendAIMessage;
-        window.oneClickSetup = oneClickSetup;
-        window.autoIntegration = autoIntegration;
-        window.performanceBenchmark = performanceBenchmark;
-        window.deployToHardware = deployToHardware;
-        window.generateTestbench = generateTestbench;
-        window.runArchitectureAnalysis = runArchitectureAnalysis;
-        window.generateDeploymentPlan = generateDeploymentPlan;
+        // 全局函數定義 - 確保在HTML載入前就存在
+        
+        function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            
+            try {
+                // 隱藏所有頁籤
+                const allTabs = document.querySelectorAll('.tab-content');
+                allTabs.forEach(tab => {
+                    tab.style.display = 'none';
+                    tab.classList.remove('active');
+                });
+                
+                // 移除所有導航的活動狀態
+                const navTabs = document.querySelectorAll('.nav-tab');
+                navTabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // 顯示選中的頁籤
+                const targetTab = document.getElementById(tabName + '-tab');
+                if (targetTab) {
+                    targetTab.style.display = 'block';
+                    targetTab.classList.add('active');
+                }
+                
+                // 設置導航活動狀態
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+                
+                console.log('Successfully switched to:', tabName);
+            } catch (error) {
+                console.error('Error switching tabs:', error);
+            }
+        }
 
-        // 初始化粒子效果
+        function switchEditorTab(lang) {
+            try {
+                const editorTabs = document.querySelectorAll('.editor-tab');
+                editorTabs.forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+
+                const editor = document.getElementById('codeEditor');
+                if (!editor) return;
+
+                if (lang === 'verilog') {
+                    editor.innerHTML = `// AI-Powered ISP 頂層模組
+module ai_isp_top (
+    input clk,
+    input rst_n,
+    input [7:0] raw_data,
+    output [23:0] processed_rgb,
+    output valid_out
+);
+
+// UMS 記憶體管理
+wire [31:0] ums_addr;
+wire [63:0] ums_data;
+wire ums_valid;
+
+endmodule`;
+                } else if (lang === 'cpp') {
+                    editor.innerHTML = `// HDR 融合演算法 - C 實現
+#include "hdr_fusion.h"
+
+void hdr_fusion_process(uint16_t* short_exp, 
+                       uint16_t* long_exp,
+                       uint8_t* output) {
+    // AI 優化的 HDR 融合演算法
+    for (int i = 0; i < IMAGE_SIZE; i++) {
+        output[i] = hdr_blend(short_exp[i], long_exp[i]);
+    }
+}`;
+                } else if (lang === 'python') {
+                    editor.innerHTML = `# CTE AI Agent - FastAPI 控制介面
+from fastapi import FastAPI
+import asyncio
+
+app = FastAPI(title="CTE AI ISP Controller")
+
+class ISPController:
+    def __init__(self):
+        self.params = {"hdr_strength": 0.8}
+    
+    async def process_frame(self):
+        return "Processing complete"`;
+                }
+            } catch (error) {
+                console.error('Error switching editor tab:', error);
+            }
+        }
+
+        function executeCommand(cmd) {
+            const log = document.getElementById('commandLog');
+            if (!log) return;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            let message = '';
+            
+            switch(cmd) {
+                case 'ota_check':
+                    message = `[${timestamp}] 檢查 OTA 更新中...\n[INFO] 發現新版本 v2.1.3`;
+                    break;
+                case 'compile_rtl':
+                    message = `[${timestamp}] 編譯 RTL 程式碼...\n[INFO] 編譯成功，0 錯誤`;
+                    break;
+                case 'run_simulation':
+                    message = `[${timestamp}] 執行模擬...\n[INFO] 模擬完成`;
+                    break;
+                case 'deploy_fpga':
+                    message = `[${timestamp}] 部署到 FPGA...\n[INFO] 部署成功`;
+                    break;
+                default:
+                    message = `[${timestamp}] 執行指令: ${cmd}`;
+            }
+            
+            log.textContent += '\n' + message;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function aiGenerateCode() {
+            const editor = document.getElementById('codeEditor');
+            if (!editor) return;
+            
+            editor.innerHTML = `// AI 自動生成：智能場景偵測模組
+module ai_scene_detector (
+    input clk,
+    input rst_n,
+    input [23:0] pixel_data,
+    output reg [3:0] scene_type
+);
+
+// AI 特徵提取
+wire [7:0] brightness = (pixel_data[23:16] + pixel_data[15:8] + pixel_data[7:0]) / 3;
+
+always @(posedge clk) begin
+    if (!rst_n) begin
+        scene_type <= 4'b0000;
+    end else begin
+        if (brightness < 50)
+            scene_type <= 4'b0001; // 夜間模式
+        else
+            scene_type <= 4'b0000; // 自動模式
+    end
+end
+
+endmodule`;
+        }
+
+        function deployOTA() {
+            const log = document.getElementById('deployLog');
+            if (log) {
+                log.textContent += '\n[OTA] 開始無線部署...\n[OTA] 部署完成';
+            }
+        }
+
+        function deployFPGA() {
+            const log = document.getElementById('deployLog');
+            if (log) {
+                log.textContent += '\n[FPGA] 燒錄成功';
+            }
+        }
+
+        function deployCloud() {
+            const log = document.getElementById('deployLog');
+            if (log) {
+                log.textContent += '\n[Cloud] 雲端部署完成';
+            }
+        }
+
+        // 創建粒子效果
         function createParticles() {
             const container = document.getElementById('particles');
+            if (!container) return;
+            
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -702,70 +607,18 @@ scene_detector u_scene_detector (
             }
         }
 
-        // 切換頁籤函數
-        function switchTab(tabName) {
-            console.log('Switching to tab:', tabName);
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('CTE Vibe Code Center initialized');
+            createParticles();
             
-            try {
-                // 隱藏所有頁籤
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.style.display = 'none';
-                });
-                
-                // 移除所有活動狀態
-                document.querySelectorAll('.nav-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // 顯示選中的頁籤
-                const targetTab = document.getElementById(tabName + '-tab');
-                if (targetTab) {
-                    targetTab.style.display = 'block';
-                    console.log('Successfully switched to:', tabName);
-                } else {
-                    console.error('Tab not found:', tabName + '-tab');
-                }
-                
-                // 設置活動狀態
-                if (event && event.target) {
-                    event.target.classList.add('active');
-                }
-            } catch (error) {
-                console.error('Error switching tabs:', error);
+            // 確保默認頁籤顯示
+            const dashboardTab = document.getElementById('dashboard-tab');
+            if (dashboardTab) {
+                dashboardTab.style.display = 'block';
+                dashboardTab.classList.add('active');
             }
-        }
-
-        // 切換編輯器頁籤
-        function switchEditorTab(lang) {
-            document.querySelectorAll('.editor-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            event.target.classList.add('active');
-
-            const editor = document.getElementById('codeEditor');
-            if (lang === 'cpp') {
-                editor.innerHTML = `<span style="color: #888;">// HDR 融合演算法 - C 實現</span>
-<span style="color: #e74c3c;">#include</span> <span style="color: #2ecc71;">"hdr_fusion.h"</span>
-
-<span style="color: #e74c3c;">typedef struct</span> {
-    <span style="color: #e74c3c;">uint16_t</span> exposure_ratio[<span style="color: #f39c12;">3</span>];
-    <span style="color: #e74c3c;">uint8_t</span> tone_mapping_strength;
-    <span style="color: #e74c3c;">float</span> gamma_correction;
-} hdr_params_t;
-
-<span style="color: #e74c3c;">void</span> <span style="color: #3498db;">hdr_fusion_process</span>(<span style="color: #e74c3c;">uint16_t</span>* short_exp, 
-                         <span style="color: #e74c3c;">uint16_t</span>* long_exp,
-                         <span style="color: #e74c3c;">uint8_t</span>* output,
-                         hdr_params_t* params) {
-    <span style="color: #888;">// AI 優化的 HDR 融合演算法</span>
-    <span style="color: #e74c3c;">for</span> (<span style="color: #e74c3c;">int</span> i = <span style="color: #f39c12;">0</span>; i < IMAGE_WIDTH * IMAGE_HEIGHT; i++) {
-        <span style="color: #888;">// 動態權重計算</span>
-        <span style="color: #e74c3c;">float</span> weight = ai_calculate_fusion_weight(short_exp[i], long_exp[i]);
-        
-        <span style="color: #888;">// HDR 融合</span>
-        <span style="color: #e74c3c;">uint16_t</span> fused = (short_exp[i] * weight + long_exp[i] * (<span style="color: #f39c12;">1.0</span> - weight));
-        
-        <span style="color: #888;">// 色調映射</span>
-        output[i] = tone_mapping(fused, params->tone_mapping_strength);
-    }
-}
+        });
+    </script>
+</body>
+</html>
