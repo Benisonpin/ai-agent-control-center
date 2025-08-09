@@ -668,6 +668,27 @@ scene_detector u_scene_detector (
     </div>
 
     <script>
+        // 確保所有函數全局可用
+        window.switchTab = switchTab;
+        window.switchEditorTab = switchEditorTab;
+        window.executeCommand = executeCommand;
+        window.aiGenerateCode = aiGenerateCode;
+        window.generateFromTemplate = generateFromTemplate;
+        window.generateCode = generateCode;
+        window.optimizeCode = optimizeCode;
+        window.deployOTA = deployOTA;
+        window.deployFPGA = deployFPGA;
+        window.deployCloud = deployCloud;
+        window.toggleAI = toggleAI;
+        window.sendAIMessage = sendAIMessage;
+        window.oneClickSetup = oneClickSetup;
+        window.autoIntegration = autoIntegration;
+        window.performanceBenchmark = performanceBenchmark;
+        window.deployToHardware = deployToHardware;
+        window.generateTestbench = generateTestbench;
+        window.runArchitectureAnalysis = runArchitectureAnalysis;
+        window.generateDeploymentPlan = generateDeploymentPlan;
+
         // 初始化粒子效果
         function createParticles() {
             const container = document.getElementById('particles');
@@ -681,36 +702,38 @@ scene_detector u_scene_detector (
             }
         }
 
-        // 切換頁籤 - 修復版本
+        // 切換頁籤函數
         function switchTab(tabName) {
             console.log('Switching to tab:', tabName);
             
-            // 隱藏所有頁籤
-            document.querySelectorAll('.tab-content').forEach(tab => {
-                tab.style.display = 'none';
-            });
-            
-            // 移除所有活動狀態
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            // 顯示選中的頁籤
-            const targetTab = document.getElementById(tabName + '-tab');
-            if (targetTab) {
-                targetTab.style.display = 'block';
-            } else {
-                console.error('Tab not found:', tabName + '-tab');
-            }
-            
-            // 設置活動狀態
-            if (event && event.target) {
-                event.target.classList.add('active');
+            try {
+                // 隱藏所有頁籤
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.style.display = 'none';
+                });
+                
+                // 移除所有活動狀態
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // 顯示選中的頁籤
+                const targetTab = document.getElementById(tabName + '-tab');
+                if (targetTab) {
+                    targetTab.style.display = 'block';
+                    console.log('Successfully switched to:', tabName);
+                } else {
+                    console.error('Tab not found:', tabName + '-tab');
+                }
+                
+                // 設置活動狀態
+                if (event && event.target) {
+                    event.target.classList.add('active');
+                }
+            } catch (error) {
+                console.error('Error switching tabs:', error);
             }
         }
-
-        // 全局函數確保可以被 HTML 調用
-        window.switchTab = switchTab;
 
         // 切換編輯器頁籤
         function switchEditorTab(lang) {
