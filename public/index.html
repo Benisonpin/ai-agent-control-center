@@ -681,8 +681,10 @@ scene_detector u_scene_detector (
             }
         }
 
-        // 切換頁籤
+        // 切換頁籤 - 修復版本
         function switchTab(tabName) {
+            console.log('Switching to tab:', tabName);
+            
             // 隱藏所有頁籤
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.style.display = 'none';
@@ -694,9 +696,21 @@ scene_detector u_scene_detector (
             });
             
             // 顯示選中的頁籤
-            document.getElementById(tabName + '-tab').style.display = 'block';
-            event.target.classList.add('active');
+            const targetTab = document.getElementById(tabName + '-tab');
+            if (targetTab) {
+                targetTab.style.display = 'block';
+            } else {
+                console.error('Tab not found:', tabName + '-tab');
+            }
+            
+            // 設置活動狀態
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
         }
+
+        // 全局函數確保可以被 HTML 調用
+        window.switchTab = switchTab;
 
         // 切換編輯器頁籤
         function switchEditorTab(lang) {
