@@ -1,10 +1,12 @@
 {
-  "name": "cte-ai-isp-agent",
-  "version": "2.0.0",
+  "name": "ai-agent-control-center",
+  "version": "1.0.0",
   "description": "CTE AI-Powered ISP Agent Control Center",
+  "main": "public/index.html",
   "scripts": {
-    "deploy": "netlify deploy --prod"
+    "build": "echo 'Static site - no build needed'"
   },
+  "keywords": ["ai", "isp", "cte"],
   "author": "CTE Group",
   "license": "MIT"
 }

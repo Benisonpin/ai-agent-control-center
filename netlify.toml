@@ -1,6 +1,9 @@
 [build]
   publish = "public"
-  functions = "netlify/functions"
+  command = "echo 'No build step required'"
+
+[build.environment]
+  NODE_VERSION = "18"
 
 [[redirects]]
   from = "/api/*"
