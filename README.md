@@ -5,25 +5,37 @@
 
 ## 🚀 專案簡介
 
-CTE AI-Powered ISP Agent 是一個先進的 FPGA 圖像信號處理控制中心。
+CTE AI-Powered ISP Agent 是一個先進的 FPGA 圖像信號處理控制中心，整合了人工智慧優化技術。
 
 ## ✨ 主要功能
 
-- 🎛️ 即時監控: CPU、NPU、記憶體使用率
-- 📷 場景檢測: 9種智能場景識別  
-- 📝 系統日誌: 即時日誌監控
-- 🌐 響應式設計: 支援所有設備
+- 🎛️ **即時監控**: CPU、NPU、記憶體使用率監控
+- 📷 **場景檢測**: 9種智能場景自動識別  
+- 📝 **系統日誌**: 即時日誌監控和分析
+- 🌐 **響應式設計**: 支援桌面和移動設備
 
 ## 🛠️ 技術架構
 
-- 前端: HTML5, CSS3, Vanilla JavaScript
-- 後端: Netlify Functions (Serverless)
-- 部署: Netlify + GitHub
+- **前端**: HTML5, CSS3, Vanilla JavaScript
+- **後端**: Netlify Functions (Serverless)
+- **部署**: Netlify + GitHub 自動部署
 
-## 🚀 快速開始
+## 📊 系統規格
 
-訪問: https://your-site.netlify.app
+- **處理器**: ARM Cortex-A55 (4核心 @ 1.8GHz)
+- **AI 加速器**: NPU (2 TOPS)
+- **記憶體**: 2GB LPDDR4
+- **圖像處理**: 4K@30fps ISP 管線
 
-## 📞 聯絡
+## 🚀 線上體驗
 
-CTE Group - support@ctegroup.com.tw
+訪問: [您的 Netlify 網址]
+
+## 📞 聯絡我們
+
+- **公司**: CTE Group
+- **Email**: support@ctegroup.com.tw
+
+---
+
+⚡ Powered by Netlify | 🚀 Built with ❤️ by CTE Group

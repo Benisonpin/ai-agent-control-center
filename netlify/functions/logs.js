@@ -1,7 +1,8 @@
 exports.handler = async (event, context) => {
   const logMessages = [
     'ISP 管線處理完成', '場景檢測結果更新', 'AI 模型推論完成',
-    '硬體狀態檢查', '記憶體使用率正常', 'NPU 溫度穩定'
+    '硬體狀態檢查', '記憶體使用率正常', 'NPU 溫度穩定',
+    'HDR 融合處理完成', '降噪演算法執行', '色彩校正完成'
   ];
   
   const logs = [];

@@ -27,10 +27,7 @@
             padding: 2rem;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         .header {
             text-align: center;
@@ -44,11 +41,6 @@
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
-        }
-
-        .header p {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
         }
 
         .nav {
@@ -90,9 +82,7 @@
             transition: transform 0.3s ease;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
+        .card:hover { transform: translateY(-5px); }
 
         .card h3 {
             color: var(--primary-color);
@@ -132,14 +122,7 @@
             transition: all 0.3s ease;
         }
 
-        .scene-item:hover {
-            background: rgba(0, 210, 255, 0.1);
-        }
-
-        .scene-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
+        .scene-item:hover { background: rgba(0, 210, 255, 0.1); }
 
         .log-container {
             background: var(--primary-bg);
@@ -151,22 +134,6 @@
             font-family: 'Consolas', monospace;
             font-size: 0.9rem;
         }
-
-        .log-entry {
-            margin-bottom: 0.5rem;
-            padding: 0.25rem 0;
-        }
-
-        .log-level {
-            padding: 0.1rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-right: 0.5rem;
-        }
-
-        .log-level.INFO { background: var(--primary-color); }
-        .log-level.WARNING { background: var(--warning-color); }
-        .log-level.DEBUG { background: var(--card-bg); }
 
         .status-indicator {
             width: 12px;
@@ -181,14 +148,6 @@
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
-            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -266,61 +225,47 @@
         <div id="scenes" class="content" style="display: none;">
             <div class="card" style="grid-column: 1 / -1;">
                 <h3><i class="fas fa-eye"></i> 場景檢測結果</h3>
-                <div class="scene-grid" id="scenes-container">
-                    載入中...
-                </div>
+                <div class="scene-grid" id="scenes-container">載入中...</div>
             </div>
         </div>
 
         <div id="logs" class="content" style="display: none;">
             <div class="card" style="grid-column: 1 / -1;">
                 <h3><i class="fas fa-file-alt"></i> 即時系統日誌</h3>
-                <div class="log-container" id="log-container">
-                    載入日誌中...
-                </div>
+                <div class="log-container" id="log-container">載入日誌中...</div>
             </div>
         </div>
 
-        <div class="footer">
+        <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
             <p>⚡ Powered by Netlify | 🚀 Built with ❤️ by CTE Group</p>
         </div>
     </div>
 
     <script>
-        let currentTab = 'dashboard';
         let systemData = {};
 
-        // 初始化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🎵 CTE AI-Powered ISP Agent 載入中...');
             startDataUpdates();
             document.getElementById('status-text').textContent = '系統運行正常';
         });
 
-        // 標籤切換
         function showTab(tabName) {
-            document.querySelectorAll('.content').forEach(content => {
-                content.style.display = 'none';
-            });
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
+            document.querySelectorAll('.content').forEach(content => content.style.display = 'none');
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).style.display = 'grid';
             event.target.classList.add('active');
-            currentTab = tabName;
             
             if (tabName === 'scenes') loadScenes();
             if (tabName === 'logs') loadLogs();
         }
 
-        // 開始數據更新
         function startDataUpdates() {
             updateSystemStatus();
             setInterval(updateSystemStatus, 5000);
         }
 
-        // 更新系統狀態
         async function updateSystemStatus() {
             try {
                 const response = await fetch('/.netlify/functions/status');
@@ -333,7 +278,6 @@
             }
         }
 
-        // 更新儀表板
         function updateDashboard(data) {
             if (data.hardware) {
                 document.getElementById('cpu-usage').textContent = data.hardware.cpu.usage + '%';
@@ -350,7 +294,6 @@
             }
         }
 
-        // 載入場景檢測
         async function loadScenes() {
             try {
                 const response = await fetch('/.netlify/functions/scenes');
@@ -359,7 +302,7 @@
                 const container = document.getElementById('scenes-container');
                 container.innerHTML = data.scenes.map(scene => `
                     <div class="scene-item">
-                        <div class="scene-icon">${scene.icon}</div>
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">${scene.icon}</div>
                         <div style="font-weight: bold; margin-bottom: 0.5rem;">${scene.name}</div>
                         <div style="color: var(--primary-color);">${scene.confidence}%</div>
                         <div style="font-size: 0.8rem; color: var(--text-secondary);">使用 ${scene.usage_count} 次</div>
@@ -370,7 +313,6 @@
             }
         }
 
-        // 載入系統日誌
         async function loadLogs() {
             try {
                 const response = await fetch('/.netlify/functions/logs');
@@ -378,9 +320,9 @@
                 
                 const container = document.getElementById('log-container');
                 container.innerHTML = data.logs.map(log => `
-                    <div class="log-entry">
+                    <div style="margin-bottom: 0.5rem; padding: 0.25rem 0;">
                         <span style="color: var(--text-secondary);">${new Date(log.timestamp).toLocaleTimeString('zh-TW')}</span>
-                        <span class="log-level ${log.level}">${log.level}</span>
+                        <span style="margin: 0 0.5rem; padding: 0.1rem 0.5rem; border-radius: 4px; font-size: 0.7rem; background: var(--primary-color); color: white;">${log.level}</span>
                         <span>[${log.component}] ${log.message}</span>
                     </div>
                 `).join('');
@@ -389,7 +331,6 @@
             }
         }
 
-        // 模擬數據
         function updateWithMockData() {
             const mockData = {
                 hardware: {
@@ -397,17 +338,10 @@
                     npu: { usage: 85 },
                     memory: { usage_percent: 71 }
                 },
-                isp: {
-                    fps: 30.2,
-                    latency: 28,
-                    quality_score: 94.7,
-                    power_consumption: 3.5
-                }
+                isp: { fps: 30.2, latency: 28, quality_score: 94.7, power_consumption: 3.5 }
             };
             updateDashboard(mockData);
         }
-
-        console.log('✅ CTE AI-Powered ISP Agent UI 載入完成');
     </script>
 </body>
 </html>

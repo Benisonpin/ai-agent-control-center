@@ -28,7 +28,6 @@ exports.handler = async (event, context) => {
     }
   };
 
-  // 計算記憶體使用率
   data.hardware.memory.usage_percent = data.hardware.memory.usage_percent;
 
   return {
